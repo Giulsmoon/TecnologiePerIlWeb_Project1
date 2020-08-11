@@ -11,7 +11,7 @@
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value>Mysqleffy2710</param-value>
+    <param-value>TecnologieWeb</param-value>
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>
