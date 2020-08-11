@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Worker assignment to project</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+</head>
+<body>
+	<div align="right">
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	<h1>Welcome to the Worker Assignment page</h1>
+	Nice to see you again
+	<span th:text="${session.user.username}">Piero</span>
+	<p>
+		Please use the lists below to assign workers project <span
+			th:text="${default}"> 11 </span>
+	</p>
+	<table>
+		<tr>
+			<td>
+				<table border="1">
+					<thead>
+						<tr>
+							<th>Project ID</th>
+							<th>Project Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="p : ${projects}" th:class="(${p.id} == ${projectid})? 'current'">
+							<td th:text="${p.id}"></td>
+							<td><a href="ProjectManagement.html"
+								th:href="@{/GoToProjectManagement(projectid=${p.id})}"><span
+									th:text="${p.name}"></span></a></td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+			<td>
+				<div th:if="${#lists.isEmpty(workers)}">
+					All workers already assigned for project <span
+						th:text="${projectid}"></span>
+				</div>
+				<div th:if="${not #lists.isEmpty(workers)}">
+					<form th:action="
+					@{/CreateAssignment}" method="POST">
+						Choose a worker for project <span th:text="${projectid}"></span>:
+						<br> <select name="workerid">
+							<option th:each="w : ${workers}" th:value="${w.id}"
+								th:text="${w.username}">worker100</option>
+						</select> <br> Specify max n. of hours: <input type="text"
+							name="maxhours" required> <br> <input type="hidden"
+							name="projectid" th:value="${projectid}"> <input
+							type="submit" name="submit" value="Submit Assignment">
+					</form>
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
