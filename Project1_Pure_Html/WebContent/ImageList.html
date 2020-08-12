@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Messages application</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css" th:href="@{/css/mystyle.css}" />
+</head>
+<body>
+<h2>Images of a album</h2>
+	<table border="1">
+		<thead>
+			<tr><th>Image title</th></tr>
+		</thead>
+		<tbody th:remove="all-but-first">
+			<tr th:each="image : ${images}" th:class="${imageStat.even}? 'even'">
+				<td th:text="${image.title}">Image 1 </td>
+				<td th:text="${image.description}">Text of Image 1 </td>
+				<td th:text="${image.date}">2020-01-02 </td>		
+			</tr>
+			<tr class="even">
+				<td>Image 1</td>
+				<td>Text of Image 1</td>
+				<td>2020-01-02 </td>
+			</tr>
+			<tr>
+				<td>Image 2</td>
+				<td>Text of Image 2</td>
+				<td>2020-01-03 </td>
+			</tr>
+			<tr class="even">
+				<td>Image 3</td>
+				<td>Text of Image 3</td>
+				<td>2020-01-04 </td>
+			</tr>
+			<tr>
+				<td>Oranges</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>
+
