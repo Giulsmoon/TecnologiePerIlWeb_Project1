@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html>
-	<head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
 
-		<link rel="stylesheet" href="css/bootstrap.min.css">
-		<link rel="stylesheet" href="css/mystyle.css">
-		<meta charset="ISO-8859-1">
-		<title>Login page</title>
-	</head>
+<title>Messages application</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css" th:href="@{/css/mystyle.css}">
+</head>
 	<body>
 		<div class="container">
 			<div class="text-center">
@@ -36,6 +37,6 @@
 
 			<img src="/Project1_Pure_Html/ServerImages/viareggio.jpg" />
 		</div>
-		<a href="ClickableAlbumList.html" th:href="@{/GoToHomePage}">Go to home page albums</a>
+		<a th:href="@{/GoToHomePage}" href="ClickableAlbumList.html">Go to home page albums</a>
 	</body>
 </html>
