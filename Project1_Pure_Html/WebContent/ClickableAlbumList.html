@@ -17,20 +17,20 @@
 		</thead>
 		<tbody th:remove="all-but-first">
 			<tr th:each="album : ${albums}" th:class="${albumStat.even}? 'even'">
-				<td><a th:href="@{/GetImagesOfAlbum(albumId=${album.id})}"><span
+				<td><a href="ImageList.html" th:href="@{/GetImagesOfAlbum(albumId=${album.id})}"><span
 						th:text="${album.title}">Onions</span></a></td>
 			</tr>
 			<tr class="even">
-				<td>Blue Lettuce</td>
+				<td><a href="ImageList.html">Blue Lettuce</a></td>
 			</tr>
 			<tr>
-				<td>Mild Cinnamon</td>
+				<td><a href="ImageList.html">Mild Cinnamon</a></td>
 			</tr>
 			<tr class="even">
-				<td>Apples</td>
+				<td><a href="ImageList.html">Apples</a></td>
 			</tr>
 			<tr>
-				<td>Oranges</td>
+				<td><a href="ImageList.html">Oranges</a></td>
 			</tr>
 		</tbody>
 	</table>
