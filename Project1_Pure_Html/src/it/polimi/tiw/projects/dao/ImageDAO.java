@@ -12,9 +12,11 @@ import it.polimi.tiw.projects.beans.Image;
 public class ImageDAO {
 	private Connection con;
 	
+	
 
 	public ImageDAO(Connection connection) {
 		this.con = connection;
+		
 	}
 
 	public List<Image> findImagesByAlbum(int albumId) throws SQLException {
@@ -55,27 +57,10 @@ public class ImageDAO {
 	}
 
 	
-	//System.out.println(findImagesByAlbum(1));
-	
-	public void createComment(String t, int img, int u) throws SQLException {
-		String query = "INSERT into project1_pure_html.comment (text, idImage, idUser)   VALUES(?, ?, ?)";
-		
-		PreparedStatement pstatement = null;
-		try {
-			pstatement = con.prepareStatement(query);
-			pstatement.setString(1, t);
-			pstatement.setInt(2, img);
-			pstatement.setInt(3, u);
-			pstatement.executeUpdate();
-		} catch (SQLException e) {
-			throw new SQLException(e);
-		} finally {
-			try {
-				pstatement.close();
-			} catch (Exception e1) {
-
-			}
-		}
+	public Image findDefaultImage() throws SQLException {
+		return null;
 	}
+	
+	
 
 }

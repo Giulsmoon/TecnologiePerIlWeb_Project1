@@ -11,8 +11,8 @@ public class Album {
 		return id;
 	}
 
-	public void setId(int iden) {
-		this.id = iden;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getTitle() {

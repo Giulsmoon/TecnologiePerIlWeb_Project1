@@ -39,6 +39,13 @@
 			</tr>
 		</tbody>
 	</table>
+	<p>Please use the form to create a new comment</p>
+	<form
+		th:action="@{/CreateComment}"
+		method="POST">
+		<input type="text" name="comment" required> 
+		<input type="submit" name="create" value="Create Comment" >
+	</form>
 </body>
 </html>
 
