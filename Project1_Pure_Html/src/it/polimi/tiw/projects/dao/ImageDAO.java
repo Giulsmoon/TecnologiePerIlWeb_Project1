@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.polimi.tiw.projects.beans.Album;
 import it.polimi.tiw.projects.beans.Image;
 
 
@@ -56,9 +58,39 @@ public class ImageDAO {
 		return images;
 	}
 
-	
-	public Image findDefaultImage() throws SQLException {
-		return null;
+ public Image findImagesById(int imageId) throws SQLException {
+		Image image = new Image();
+		String query = "SELECT * FROM project1_pure_html.image WHERE id = ?";
+		System.out.println("ciao");
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		try {
+			pstatement = con.prepareStatement(query);
+			pstatement.setInt(1, imageId);
+			result = pstatement.executeQuery();
+			while (result.next()) {
+				image.setId(result.getInt("id"));
+				image.setTitle(result.getString("title"));
+				image.setDescription(result.getString("description"));
+				image.setDate(result.getDate("date"));
+				image.setFilePath(result.getString("filePath"));
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+
+		} finally {
+			try {
+				result.close();
+			} catch (Exception e1) {
+				throw new SQLException("Cannot close result");
+			}
+			try {
+				pstatement.close();
+			} catch (Exception e1) {
+				throw new SQLException("Cannot close statement");
+			}
+		}
+		return image;
 	}
 	
 	

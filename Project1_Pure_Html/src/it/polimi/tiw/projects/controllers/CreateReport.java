@@ -48,6 +48,7 @@ public class CreateReport extends HttpServlet {
 		doPost(request, response);
 	}
 
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String loginpath = getServletContext().getContextPath() + "/index.html";
