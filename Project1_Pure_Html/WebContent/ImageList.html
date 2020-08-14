@@ -28,6 +28,14 @@ div.desc {
 	padding: 15px;
 	text-align: center;
 }
+
+#BARRA
+{
+   width: 180px;
+   height: 130px;
+   overflow: auto;
+   border: 1px solid black;
+}
 </style>
 </head>
 <body>
@@ -110,14 +118,37 @@ div.desc {
 			</tr>
 		</thead>
 		<tbody th:remove="all-but-first">
+			
+			
+				
 			<tr>
-				<td th:text="${chosenImageId}">Default image</td>
-				<td th:text="${comments}">comments</td>
-				<td th:text="${imageSelected.title}">title of Default image</td>
+					<td th:text="${chosenImageId}">Default image</td>
+					
+					<td>
+						<div id="BARRA">
+						 <br th:each="comment : ${comments}" th:class="${commentStat.even}? 'even'" 
+						 th:text="${comment.text}">
+						 comment image selected<br>
+						</div>
+					</td>
+					<td th:text="${imageSelected.title}">title image</td>
 			</tr>
+			    
 			<tr class="even">
 				<td>Image 1</td>
-				<td>This is the image number one</td>
+				<td><div id="BARRA">
+						text 1<br>
+						text 2<br>
+						text 3<br>
+						text 4<br>
+						text 5<br>
+						text 1<br>
+						text 2<br>
+						text 3<br>
+						text 4<br>
+						text 5<br>
+						</div>
+				</td>
 				<td>title image 1</td>
 			</tr>
 		</tbody>
