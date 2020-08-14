@@ -1,169 +1,202 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="ISO-8859-1">
+	<head>
+		<meta charset="ISO-8859-1">
 
-<title th:text="${albumId}">Images of default album</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="stylesheet" type="text/css" media="all"
-	href="css/mystyle.css" th:href="@{/css/mystyle.css}" />
-<style>
-div.gallery {
-	margin: 5px;
-	border: 1px solid #ccc;
-	float: left;
-	width: 180px;
-}
+		<title th:text="${albumId}">Images of default album</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" media="all"
+			  href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+		<link rel="stylesheet" type="text/css" media="all"
+			  href="css/mystyle.css" th:href="@{/css/mystyle.css}">
+		<style>
+		</style>
+	</head>
+	<body>
+		<div class=" container text-center">
 
-div.gallery:hover {
-	border: 1px solid #777;
-}
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
 
-div.gallery img {
-	width: 100%;
-	height: auto;
-}
+					<h2>Images of a album</h2>
+					<div class='table-responsive'>
+						<table class="table gallery-table">
 
-div.desc {
-	padding: 15px;
-	text-align: center;
-}
+							<tbody >
+								<tr th:remove="all-but-first">
+									<td th:each="image : ${images}" th:class="${imageStat.even}? 'even'">
+										<div class='table-responsive'>
+											<table class="table" >
+												<tbody>
+													<tr>
+														<td th:text="${image.title}">Image 1</td>
+													</tr>
+													<tr>
+														<td>
+															<a
+															   th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id})}">
+																<img class="image img-fluid  img-thumbnail" th:src="${image.filePath}"
+																	 src="/TestImage/casa.jpg">
+															</a>
+														</td>
+													</tr>
 
-#BARRA
-{
-   width: 180px;
-   height: 130px;
-   overflow: auto;
-   border: 1px solid black;
-}
-</style>
-</head>
-<body>
-	<h2>Images of a album</h2>
-	<table border="1">
-		<thead>
-			<tr>
-				<th>Image title</th>
-			</tr>
-		</thead>
-		<tbody th:remove="all-but-first">
-			<tr th:each="image : ${images}" th:class="${imageStat.even}? 'even'">
-
-				<td th:text="${image.title}">Image 0</td>
-				<td th:text="${image.description}">Text of Image 0</td>
-				<td th:text="${albumId}">2020-01-00</td>
-
-				<td>
-					<div class="gallery">
-						<a
-							th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id})}">
-							<img th:src="${image.filePath}"
-							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
-							height="400">
-						</a>
-						<div class="desc">Add a description of the image here</div>
+												</tbody> 
+											</table>
+										</div>
+									</td>
+									<td class="even">
+										<div class='table-responsive'>
+											<table class="table" >
+												<tbody>
+													<tr>
+														<td>Image 2</td>
+													</tr>
+													<tr>
+														<td>
+															<a target="_blank" href="ImageList.html"> 
+																<img class="image img-fluid  img-thumbnail"
+																	 src="/TestImage/casa.jpg" ></a>
+														</td>
+													</tr>
+												</tbody> 
+											</table>
+										</div>	
+									</td>
+									<td >
+										<div class='table-responsive'>
+											<table class="table" >
+												<tbody>
+													<tr>
+														<td>Image 3</td>
+													</tr>
+													<tr>
+														<td>
+															<a target="_blank" href="ImageList.html"> 
+																<img class="image img-fluid  img-thumbnail"
+																	 src="/TestImage/casa.jpg" ></a>
+														</td>
+													</tr>
+												</tbody> 
+											</table>
+										</div>	
+									</td>
+									<td class="even">
+										<div class='table-responsive'>
+											<table class="table" >
+												<tbody>
+													<tr>
+														<td>Image 4</td>
+													</tr>
+													<tr>
+														<td>
+															<a target="_blank" href="ImageList.html"> 
+																<img class="image img-fluid  img-thumbnail"
+																	 src="/TestImage/casa.jpg" ></a>
+														</td>
+													</tr>
+												</tbody> 
+											</table>
+										</div>	
+									</td>
+									<td >
+										<div class='table-responsive'>
+											<table class="table" >
+												<tbody>
+													<tr>
+														<td>Image 5</td>	
+													</tr>
+													<tr>
+														<td>
+															<a target="_blank" href="ImageList.html"> 
+																<img class="image img-fluid  img-thumbnail"
+																	 src="/TestImage/casa.jpg" ></a>
+														</td>
+													</tr>
+												</tbody> 
+											</table>
+										</div>	
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
-				</td>
+				</div>
+			</div>
 
-			</tr>
-			<tr class="even">
-				<td>Image 1</td>
-				<td>Text of Image 1</td>
-				<td>2020-01-02</td>
-				<td>
-					<div class="gallery">
-						<a target="_blank" href="ImageList.html"> <img
-							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
-							height="400"></a>
-						<div class="desc">Add a description of the image here</div>
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<p class="h6" th:text="${imageSelected.title}">title image
+					</p>
+				</div>
+			</div>	
+
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<div class='table-responsive'>
+						<table class="table single-image-table">
+							<tbody th:remove="all-but-first">
+
+								<tr>
+									<td > 
+										<div class="image">
+											<img  th:src="${imageSelected.filePath}"
+												 src="/TestImage/casa.jpg">
+										</div>
+									</td>
+
+									<td>
+										<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
+											<div class="force-overflow">    										
+												<div class="comment-Body">
+													<p th:each="comment : ${comments}"
+													   th:class="${commentStat.even}? 'even'" th:text="${comment.text}">
+														comment image selected</p>
+												</div>
+											</div>
+										</div>  
+									</td>
+								</tr>
+
+								<tr class="even">
+									<td>
+										<div class="image">
+											<img 
+												 src="/TestImage/casa.jpg">
+										</div>
+									</td>
+									<td>
+										<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
+											<div class="force-overflow">    										
+												<div class="comment-Body">
+													text 1<br> text 2<br> text 3<br> text 4<br>
+													text 5<br> text 1<br> text 2<br> text 3<br>
+													text 4<br> text 5<br>
+												</div>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
-				</td>
+				</div>
+			</div>
 
-			</tr>
-			<tr>
-				<td>Image 2</td>
-				<td>Text of Image 2</td>
-				<td>2020-01-03</td>
-				<td>
-					<div class="gallery">
-						<a target="_blank" href="ImageList.html"> <img
-							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
-							height="400"></a>
-						<div class="desc">Add a description of the image here</div>
-					</div>
-				</td>
-			</tr>
-			<tr class="even">
-				<td>Image 3</td>
-				<td>Text of Image 3</td>
-				<td>2020-01-04</td>
-				<td>
-					<div class="gallery">
-						<a target="_blank" href="ImageList.html"> <img
-							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
-							height="400"></a>
-						<div class="desc">Add a description of the image here</div>
-					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<table border="1">
-		<thead>
-			<tr>
-				<th>Image ID</th>
-				<th>Image Comments</th>
-				<th>Image Title</th>
-			</tr>
-		</thead>
-		<tbody th:remove="all-but-first">
-			
-			
-				
-			<tr>
-					<td th:text="${chosenImageId}">Default image</td>
-					
-					<td>
-						<div id="BARRA">
-						 <br th:each="comment : ${comments}" th:class="${commentStat.even}? 'even'" 
-						 th:text="${comment.text}">
-						 comment image selected<br>
-						</div>
-					</td>
-					<td th:text="${imageSelected.title}">title image</td>
-			</tr>
-			    
-			<tr class="even">
-				<td>Image 1</td>
-				<td><div id="BARRA">
-						text 1<br>
-						text 2<br>
-						text 3<br>
-						text 4<br>
-						text 5<br>
-						text 1<br>
-						text 2<br>
-						text 3<br>
-						text 4<br>
-						text 5<br>
-						</div>
-				</td>
-				<td>title image 1</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<form th:action="@{/CreateComment}" method="POST">
-		Please use the form to create a new comment <span
-			th:text="${imageSelected.id}"></span>: <input type="text"
-			name="comment" required> <input name="imageId" type="hidden"
-			th:value="${chosenImageId}"> <input name="albumId"
-			type="hidden" th:value="${albumId}"> <input type="submit"
-			name="submit" value="Submit Comment">
-	</form>
-
-
-</body>
+			<br><br><br>
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<form th:action="@{/CreateComment}" method="POST">
+						Please use the form to create a new comment: 
+						<span th:text="${imageSelected.id}"></span> 
+						<input type="text" name="comment" required> 
+						<input name="imageId" type="hidden" th:value="${chosenImageId}"> 
+						<input name="albumId" type="hidden" th:value="${albumId}">
+						<input type="submit" name="submit" value="Submit Comment">
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
 
