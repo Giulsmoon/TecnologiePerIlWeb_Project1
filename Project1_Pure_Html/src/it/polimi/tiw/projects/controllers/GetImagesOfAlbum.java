@@ -79,10 +79,12 @@ public class GetImagesOfAlbum extends HttpServlet {
 			try {
 				if (urlImageId == null) {
 					chosenImageId = albumDao.findDefaultImage(albumId).getId();
+					System.out.println(chosenImageId);
 					selectedImage = albumDao.findDefaultImage(albumId);
 	 			} else {
-					chosenImageId = Integer.parseInt(urlImageId);
-					
+					System.out.println("entrato nel try else");
+	 				chosenImageId = Integer.parseInt(urlImageId);
+	 				System.out.println(chosenImageId);
 					selectedImage = imgDao.findImagesById(chosenImageId);
 				}
 				images = imgDao.findImagesByAlbum(albumId);
@@ -95,6 +97,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 				ctx.setVariable("chosenImageId", chosenImageId);
 				ctx.setVariable("imageSelected", selectedImage);
 				ctx.setVariable("comments", comments);
+				System.out.println(ctx.getVariable("imageSelected"));
+				System.out.println(ctx.getVariable("albumId"));
 				templateEngine.process(path, ctx, res.getWriter());
 
 			} catch (

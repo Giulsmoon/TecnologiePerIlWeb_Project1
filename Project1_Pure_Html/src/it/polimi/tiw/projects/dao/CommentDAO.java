@@ -19,6 +19,7 @@ public class CommentDAO {
 
 	public CommentDAO(Connection connection) {
 		this.con = connection;
+		
 	}
 
 

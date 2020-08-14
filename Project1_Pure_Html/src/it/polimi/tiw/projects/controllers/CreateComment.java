@@ -25,12 +25,16 @@ import it.polimi.tiw.projects.dao.AdminDAO;
 import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.ImageDAO;
 
+
 @WebServlet("/CreateComment")
 public class CreateComment extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
 
+	
+
+	
 	public CreateComment() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -69,7 +73,8 @@ public class CreateComment extends HttpServlet {
 		User u = null;
 		HttpSession s = request.getSession();
 		String comment = request.getParameter("comment");
-		String imageId = request.getParameter("chosenImageId");
+		String imageId = request.getParameter("imageId");
+		
 		u = (User) s.getAttribute("user");
 		System.out.println(comment);
 		System.out.println(imageId);
@@ -81,9 +86,11 @@ public class CreateComment extends HttpServlet {
 		}
 		int imgId = 0;
 		int userId = 0;
+		
 		try {
 			userId = u.getId();
 			imgId = Integer.parseInt(imageId);
+			
 		} catch (NumberFormatException e) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter in comment creation");
 			return;
@@ -91,11 +98,12 @@ public class CreateComment extends HttpServlet {
 		
 		
 		CommentDAO commentDAO = new CommentDAO(connection);
-		System.out.println("comment");
-		System.out.println("imgId");
-		System.out.println("userId");
+		System.out.println(request.getParameter("comment"));
+		
+	
 		try{
 			commentDAO.createComment(comment, imgId, userId);
+			
 		} catch (SQLException e) {
 			
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of comment creation in database");
