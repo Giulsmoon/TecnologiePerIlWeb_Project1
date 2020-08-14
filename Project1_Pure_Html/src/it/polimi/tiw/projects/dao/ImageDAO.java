@@ -7,18 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.polimi.tiw.projects.beans.Album;
 import it.polimi.tiw.projects.beans.Image;
-
 
 public class ImageDAO {
 	private Connection con;
-	
-	
 
 	public ImageDAO(Connection connection) {
 		this.con = connection;
-		
+
 	}
 
 	public List<Image> findImagesByAlbum(int albumId) throws SQLException {
@@ -54,14 +50,13 @@ public class ImageDAO {
 				throw new SQLException(e2);
 			}
 		}
-		
+
 		return images;
 	}
 
- public Image findImagesById(int imageId) throws SQLException {
+	public Image findImagesById(int imageId) throws SQLException {
 		Image image = new Image();
 		String query = "SELECT * FROM project1_pure_html.image WHERE id = ?";
-		System.out.println("ciao");
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
@@ -92,7 +87,5 @@ public class ImageDAO {
 		}
 		return image;
 	}
-	
-	
 
 }

@@ -7,35 +7,28 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.polimi.tiw.projects.beans.Album;
 import it.polimi.tiw.projects.beans.Comment;
-import it.polimi.tiw.projects.beans.Image;
-
 
 public class CommentDAO {
 	private Connection con;
-	
-	
 
 	public CommentDAO(Connection connection) {
 		this.con = connection;
-		
+
 	}
 
-
-	
 	public void createComment(String text, int imageId, int userId) throws SQLException {
 		String query = "INSERT into project1_pure_html.comment (text, idImage, idUser)   VALUES(?, ?, ?)";
-		
+
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
-			
+
 			pstatement.setString(1, text);
 			pstatement.setInt(2, imageId);
 			pstatement.setInt(3, userId);
 			pstatement.executeUpdate();
 		}
 	}
-	
+
 	public List<Comment> findCommentsOfImage(int imageId) throws SQLException {
 		List<Comment> comments = new ArrayList<Comment>();
 		String query = "SELECT * FROM project1_pure_html.comment  WHERE idImage= ?";
@@ -59,8 +52,7 @@ public class CommentDAO {
 		} finally {
 			try {
 				result.close();
-			} catch (Exception e1) 
-			{
+			} catch (Exception e1) {
 				throw new SQLException("Cannot close result");
 			}
 			try {
@@ -71,5 +63,5 @@ public class CommentDAO {
 		}
 		return comments;
 	}
-	
+
 }

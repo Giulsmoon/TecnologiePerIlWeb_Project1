@@ -24,7 +24,6 @@ import it.polimi.tiw.projects.dao.AlbumDAO;
 import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.ImageDAO;
 
-
 @WebServlet("/GetImagesOfAlbum")
 public class GetImagesOfAlbum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -74,22 +73,19 @@ public class GetImagesOfAlbum extends HttpServlet {
 			AlbumDAO albumDao = new AlbumDAO(connection);
 			List<Comment> comments = null;
 			CommentDAO cDao = new CommentDAO(connection);
-			int chosenImageId =0;
+			int chosenImageId = 0;
 			Image selectedImage = null;
 			try {
 				if (urlImageId == null) {
 					chosenImageId = albumDao.findDefaultImage(albumId).getId();
-					System.out.println(chosenImageId);
 					selectedImage = albumDao.findDefaultImage(albumId);
-	 			} else {
-					System.out.println("entrato nel try else");
-	 				chosenImageId = Integer.parseInt(urlImageId);
-	 				System.out.println(chosenImageId);
+				} else {
+					chosenImageId = Integer.parseInt(urlImageId);
 					selectedImage = imgDao.findImagesById(chosenImageId);
 				}
 				images = imgDao.findImagesByAlbum(albumId);
 				comments = cDao.findCommentsOfImage(selectedImage.getId());
-				String path =  "ImageList.html";
+				String path = "ImageList.html";
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
 				ctx.setVariable("images", images);
@@ -97,8 +93,6 @@ public class GetImagesOfAlbum extends HttpServlet {
 				ctx.setVariable("chosenImageId", chosenImageId);
 				ctx.setVariable("imageSelected", selectedImage);
 				ctx.setVariable("comments", comments);
-				System.out.println(ctx.getVariable("imageSelected"));
-				System.out.println(ctx.getVariable("albumId"));
 				templateEngine.process(path, ctx, res.getWriter());
 
 			} catch (
@@ -109,6 +103,6 @@ public class GetImagesOfAlbum extends HttpServlet {
 		} else {
 			res.sendError(505, "Bad album ID");
 		}
-		
+
 	}
 }

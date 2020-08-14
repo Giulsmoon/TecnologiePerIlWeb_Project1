@@ -1,4 +1,5 @@
 package it.polimi.tiw.projects.beans;
+
 import java.util.Date;
 
 public class Image {
@@ -30,7 +31,7 @@ public class Image {
 	}
 
 	public void setDescription(String d) {
-		this.description= d;
+		this.description = d;
 	}
 
 	public Date getDate() {
@@ -48,7 +49,7 @@ public class Image {
 	public void setFilePath(String fp) {
 		this.filePath = fp;
 	}
-	
+
 	public Album getAlbum() {
 		return album;
 	}
@@ -57,4 +58,3 @@ public class Image {
 		this.album = a;
 	}
 }
-

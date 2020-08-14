@@ -58,7 +58,7 @@ public class CheckLogin extends HttpServlet {
 		} catch (SQLException e) {
 			// throw new ServletException(e); for debugging
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking");
- 		}
+		}
 		String path = getServletContext().getContextPath();
 		if (u == null) {
 			path = getServletContext().getContextPath() + "/index.html";

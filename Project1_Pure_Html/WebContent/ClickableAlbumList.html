@@ -17,7 +17,8 @@
 		</thead>
 		<tbody th:remove="all-but-first">
 			<tr th:each="album : ${albums}" th:class="${albumStat.even}? 'even'">
-				<td><a href="ImageList.html" th:href="@{/GetImagesOfAlbum(albumId=${album.id})}"><span
+				<td><a href="ImageList.html"
+					th:href="@{/GetImagesOfAlbum(albumId=${album.id})}"><span
 						th:text="${album.title}">Onions</span></a></td>
 			</tr>
 			<tr class="even">

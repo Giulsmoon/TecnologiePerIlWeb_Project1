@@ -3,112 +3,136 @@
 <head>
 <meta charset="ISO-8859-1">
 
-<title th:text="${albumId}"> Images of default album </title>
+<title th:text="${albumId}">Images of default album</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css" th:href="@{/css/mystyle.css}" />
+<link rel="stylesheet" type="text/css" media="all"
+	href="css/mystyle.css" th:href="@{/css/mystyle.css}" />
 <style>
 div.gallery {
-  margin: 5px;
-  border: 1px solid #ccc;
-  float: left;
-  width: 180px;
+	margin: 5px;
+	border: 1px solid #ccc;
+	float: left;
+	width: 180px;
 }
 
 div.gallery:hover {
-  border: 1px solid #777;
+	border: 1px solid #777;
 }
 
 div.gallery img {
-  width: 100%;
-  height: auto;
+	width: 100%;
+	height: auto;
 }
 
 div.desc {
-  padding: 15px;
-  text-align: center;
+	padding: 15px;
+	text-align: center;
 }
 </style>
 </head>
 <body>
-<h2>Images of a album</h2>
+	<h2>Images of a album</h2>
 	<table border="1">
 		<thead>
-			<tr><th>Image title</th></tr>
+			<tr>
+				<th>Image title</th>
+			</tr>
 		</thead>
 		<tbody th:remove="all-but-first">
 			<tr th:each="image : ${images}" th:class="${imageStat.even}? 'even'">
-				
-				<td th:text="${image.title}">Image 0 </td>
-				<td th:text="${image.description}">Text of Image 0 </td>
-				<td th:text="${albumId}">2020-01-00 </td>
-				
-				<td> <div class="gallery">  
-				<a th:href= "@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id})}">
-    				<img th:src="${image.filePath}" src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600" height="400"></a>
-  					<div class="desc">Add a description of the image here</div> </div> </td>
-							
+
+				<td th:text="${image.title}">Image 0</td>
+				<td th:text="${image.description}">Text of Image 0</td>
+				<td th:text="${albumId}">2020-01-00</td>
+
+				<td>
+					<div class="gallery">
+						<a
+							th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id})}">
+							<img th:src="${image.filePath}"
+							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
+							height="400">
+						</a>
+						<div class="desc">Add a description of the image here</div>
+					</div>
+				</td>
+
 			</tr>
 			<tr class="even">
 				<td>Image 1</td>
 				<td>Text of Image 1</td>
-				<td>2020-01-02 </td>
-				<td> <div class="gallery"> <a target="_blank" href="ImageList.html">
-    				<img src="/Project1_Pure_Html/ServerImages/casa.jpg"  width="600" height="400"></a>
-  					<div class="desc">Add a description of the image here</div> </div> </td>
-				
+				<td>2020-01-02</td>
+				<td>
+					<div class="gallery">
+						<a target="_blank" href="ImageList.html"> <img
+							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
+							height="400"></a>
+						<div class="desc">Add a description of the image here</div>
+					</div>
+				</td>
+
 			</tr>
 			<tr>
 				<td>Image 2</td>
 				<td>Text of Image 2</td>
-				<td>2020-01-03 </td>
-				<td> <div class="gallery"> <a target="_blank" href="ImageList.html">
-    				<img src="/Project1_Pure_Html/ServerImages/casa.jpg"  width="600" height="400"></a>
-  					<div class="desc">Add a description of the image here</div> </div> </td>
+				<td>2020-01-03</td>
+				<td>
+					<div class="gallery">
+						<a target="_blank" href="ImageList.html"> <img
+							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
+							height="400"></a>
+						<div class="desc">Add a description of the image here</div>
+					</div>
+				</td>
 			</tr>
 			<tr class="even">
 				<td>Image 3</td>
 				<td>Text of Image 3</td>
-				<td>2020-01-04 </td>
-				<td> <div class="gallery"> <a target="_blank" href="ImageList.html">
-    				<img src="/Project1_Pure_Html/ServerImages/casa.jpg"  width="600" height="400"></a>
-  					<div class="desc">Add a description of the image here</div> </div> </td>
+				<td>2020-01-04</td>
+				<td>
+					<div class="gallery">
+						<a target="_blank" href="ImageList.html"> <img
+							src="/Project1_Pure_Html/ServerImages/casa.jpg" width="600"
+							height="400"></a>
+						<div class="desc">Add a description of the image here</div>
+					</div>
+				</td>
 			</tr>
 		</tbody>
 	</table>
-	
+
 	<table border="1">
-					<thead>
-						<tr>
-							<th>Image ID</th>
-							<th>Image Comments</th>
-							<th>Image Title</th>
-						</tr>
-					</thead>
-					<tbody th:remove="all-but-first">
-						<tr>
-							<td th:text="${chosenImageId}">Default image</td>
-							<td th:text="${comments}">comments</td>
-							<td th:text="${imageSelected.title}">title of Default image</td>
-						</tr>
-						<tr class="even">
-						<td>Image 1</td>
-						<td>This is the image number one</td>
-						<td>title image 1 </td>
-						</tr>
-			</tbody>
+		<thead>
+			<tr>
+				<th>Image ID</th>
+				<th>Image Comments</th>
+				<th>Image Title</th>
+			</tr>
+		</thead>
+		<tbody th:remove="all-but-first">
+			<tr>
+				<td th:text="${chosenImageId}">Default image</td>
+				<td th:text="${comments}">comments</td>
+				<td th:text="${imageSelected.title}">title of Default image</td>
+			</tr>
+			<tr class="even">
+				<td>Image 1</td>
+				<td>This is the image number one</td>
+				<td>title image 1</td>
+			</tr>
+		</tbody>
 	</table>
-				
-				<form th:action="@{/CreateComment}" method="POST">
-						Please use the form to create a new comment 
-						<span th:text="${imageSelected.id}"></span>:
-						
-						<input type="text" name="comment" required>
-						<input name="imageId" type="hidden" th:value="${chosenImageId}">
-						<input name="albumId" type="hidden" th:value="${albumId}">
-						<input type="submit" name="submit" value="Submit Comment">
-				</form>
-				
-				
+
+	<form th:action="@{/CreateComment}" method="POST">
+		Please use the form to create a new comment <span
+			th:text="${imageSelected.id}"></span>: <input type="text"
+			name="comment" required> <input name="imageId" type="hidden"
+			th:value="${chosenImageId}"> <input name="albumId"
+			type="hidden" th:value="${albumId}"> <input type="submit"
+			name="submit" value="Submit Comment">
+	</form>
+
+
 </body>
 </html>
 

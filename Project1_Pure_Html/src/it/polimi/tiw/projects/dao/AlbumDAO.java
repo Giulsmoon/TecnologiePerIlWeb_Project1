@@ -1,6 +1,5 @@
 package it.polimi.tiw.projects.dao;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -82,7 +81,7 @@ public class AlbumDAO {
 		}
 		return a;
 	}
-	
+
 	public Image findDefaultImage(int albumId) throws SQLException {
 		String query = "SELECT * FROM project1_pure_html.image as i, project1_pure_html.albumimage as ai WHERE i.id=ai.idImage and ai.idALbum= ? ORDER BY i.title ASC LIMIT 1";
 		Image image = new Image();
@@ -96,7 +95,7 @@ public class AlbumDAO {
 					image.setDescription(result.getString("description"));
 					image.setFilePath(result.getString("filePath"));
 				}
-						
+
 			}
 		}
 		return image;

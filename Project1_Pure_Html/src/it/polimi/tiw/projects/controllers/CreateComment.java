@@ -15,16 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import it.polimi.tiw.projects.beans.Image;
 import it.polimi.tiw.projects.beans.User;
-import it.polimi.tiw.projects.dao.AdminDAO;
 import it.polimi.tiw.projects.dao.CommentDAO;
-import it.polimi.tiw.projects.dao.ImageDAO;
-
 
 @WebServlet("/CreateComment")
 public class CreateComment extends HttpServlet {
@@ -32,9 +27,6 @@ public class CreateComment extends HttpServlet {
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
 
-	
-
-	
 	public CreateComment() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -69,18 +61,14 @@ public class CreateComment extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("entrato post");
 		User u = null;
 		HttpSession s = request.getSession();
 		String comment = request.getParameter("comment");
 		String imageId = request.getParameter("imageId");
 		String albumId = request.getParameter("albumId");
-		
+
 		u = (User) s.getAttribute("user");
-		System.out.println(comment);
-		System.out.println(imageId);
-		System.out.println(u);
-		
+
 		if (comment == null || imageId == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in comment creation");
 			return;
@@ -88,7 +76,7 @@ public class CreateComment extends HttpServlet {
 		int imgId = 0;
 		int userId = 0;
 		int alId = 0;
-		
+
 		try {
 			userId = u.getId();
 			imgId = Integer.parseInt(imageId);
@@ -97,27 +85,21 @@ public class CreateComment extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter in comment creation");
 			return;
 		}
-		
-		
 		CommentDAO commentDAO = new CommentDAO(connection);
-		System.out.println(request.getParameter("comment"));
-		
-	
-		try{
+		try {
 			commentDAO.createComment(comment, imgId, userId);
-			
+
 		} catch (SQLException e) {
-			
+
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of comment creation in database");
 			return;
 		}
-				
-				String ctxpath = getServletContext().getContextPath();
-				String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId;
-				response.sendRedirect(path);
+
+		String ctxpath = getServletContext().getContextPath();
+		String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId;
+		response.sendRedirect(path);
 	}
 
-	
 	public void destroy() {
 		try {
 			if (connection != null) {

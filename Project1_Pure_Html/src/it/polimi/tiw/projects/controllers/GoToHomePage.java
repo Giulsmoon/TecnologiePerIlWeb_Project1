@@ -35,7 +35,7 @@ public class GoToHomePage extends HttpServlet {
 		this.templateEngine.setTemplateResolver(templateResolver);
 		templateResolver.setSuffix(".html");
 		try {
-			
+
 			String driver = servletContext.getInitParameter("dbDriver");
 			String url = servletContext.getInitParameter("dbUrl");
 			String user = servletContext.getInitParameter("dbUser");
@@ -54,11 +54,10 @@ public class GoToHomePage extends HttpServlet {
 		List<Album> albums;
 		try {
 			albums = aDAO.findAllAlbums();
-			System.out.println(albums);
 			String path = "ClickableAlbumList.html";
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
-			ctx.setVariable("albums",albums);
+			ctx.setVariable("albums", albums);
 			templateEngine.process(path, ctx, res.getWriter());
 		} catch (
 
