@@ -74,6 +74,7 @@ public class CreateComment extends HttpServlet {
 		HttpSession s = request.getSession();
 		String comment = request.getParameter("comment");
 		String imageId = request.getParameter("imageId");
+		String albumId = request.getParameter("albumId");
 		
 		u = (User) s.getAttribute("user");
 		System.out.println(comment);
@@ -86,11 +87,12 @@ public class CreateComment extends HttpServlet {
 		}
 		int imgId = 0;
 		int userId = 0;
+		int alId = 0;
 		
 		try {
 			userId = u.getId();
 			imgId = Integer.parseInt(imageId);
-			
+			alId = Integer.parseInt(albumId);
 		} catch (NumberFormatException e) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter in comment creation");
 			return;
@@ -111,7 +113,7 @@ public class CreateComment extends HttpServlet {
 		}
 				
 				String ctxpath = getServletContext().getContextPath();
-				String path = ctxpath + "/GetImagesOfAlbum?albumId=1";
+				String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId;
 				response.sendRedirect(path);
 	}
 
