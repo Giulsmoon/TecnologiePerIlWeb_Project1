@@ -24,6 +24,7 @@ import it.polimi.tiw.projects.beans.User;
 import it.polimi.tiw.projects.beans.Comment;
 import it.polimi.tiw.projects.beans.Image;
 import it.polimi.tiw.projects.beans.Project;
+import it.polimi.tiw.projects.dao.AlbumDAO;
 import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.ImageDAO;
 import it.polimi.tiw.projects.dao.ProjectDAO;
@@ -64,19 +65,17 @@ public class GetImageInfo extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String urlImageId = request.getParameter("imageId");
+		
 		ImageDAO imageDao = new ImageDAO(connection);
-		int chosenImageId = 0;
+		int chosenImageId =0;
 		List<Comment> comments = null;
-		Image selectedImage;
+		Image selectedImage = null;
 		try {
-			if (urlImageId == null) {
-				chosenImageId = imageDao.findDefaultImage().getId();
-				
- 			} else {
+			
 				chosenImageId = Integer.parseInt(urlImageId);
-			}
+				selectedImage = (Image) imageDao.findImagesByAlbum(chosenImageId);
+			
 			CommentDAO cDao = new CommentDAO(connection);
-			selectedImage = imageDao.findDefaultImage();
 			comments = cDao.findCommentsOfImage(chosenImageId);
 		} catch (SQLException e) {
 			// throw new ServletException(e);
@@ -85,8 +84,9 @@ public class GetImageInfo extends HttpServlet {
 		String path = "ImageList.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("chosenImage", urlImageId);
-		ctx.setVariable("comments", comments);
+		ctx.setVariable("selectedImageID", chosenImageId);
+		ctx.setVariable("commentsSelectedImage", comments);
+		ctx.setVariable("selectedImage", selectedImage);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 

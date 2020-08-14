@@ -18,7 +18,10 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import it.polimi.tiw.projects.beans.Comment;
 import it.polimi.tiw.projects.beans.Image;
+import it.polimi.tiw.projects.dao.AlbumDAO;
+import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.ImageDAO;
 
 
@@ -58,6 +61,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String id = req.getParameter("albumId");
+		String urlImageId = req.getParameter("imageId");
 		if (id != null) {
 			int albumId = 0;
 			try {
@@ -67,12 +71,30 @@ public class GetImagesOfAlbum extends HttpServlet {
 			}
 			ImageDAO imgDao = new ImageDAO(connection);
 			List<Image> images;
+			AlbumDAO albumDao = new AlbumDAO(connection);
+			List<Comment> comments = null;
+			CommentDAO cDao = new CommentDAO(connection);
+			int chosenImageId =0;
+			Image selectedImage = null;
 			try {
+				if (urlImageId == null) {
+					chosenImageId = albumDao.findDefaultImage(albumId).getId();
+					selectedImage = albumDao.findDefaultImage(albumId);
+	 			} else {
+					chosenImageId = Integer.parseInt(urlImageId);
+					
+					selectedImage = imgDao.findImagesById(chosenImageId);
+				}
 				images = imgDao.findImagesByAlbum(albumId);
+				comments = cDao.findCommentsOfImage(selectedImage.getId());
 				String path =  "ImageList.html";
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
 				ctx.setVariable("images", images);
+				ctx.setVariable("albumId", albumId);
+				ctx.setVariable("chosenImageId", chosenImageId);
+				ctx.setVariable("imageSelected", selectedImage);
+				ctx.setVariable("comments", comments);
 				templateEngine.process(path, ctx, res.getWriter());
 
 			} catch (
@@ -81,7 +103,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 				res.sendError(500, "Database access failed");
 			}
 		} else {
-			res.sendError(505, "Bad topic ID");
+			res.sendError(505, "Bad album ID");
 		}
+		
 	}
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.tiw.projects.beans.Album;
+import it.polimi.tiw.projects.beans.Image;
 
 public class AlbumDAO {
 	private Connection con;
@@ -80,6 +81,25 @@ public class AlbumDAO {
 			}
 		}
 		return a;
+	}
+	
+	public Image findDefaultImage(int albumId) throws SQLException {
+		String query = "SELECT * FROM project1_pure_html.image as i, project1_pure_html.albumimage as ai WHERE i.id=ai.idImage and ai.idALbum= ? ORDER BY i.title ASC LIMIT 1";
+		Image image = new Image();
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, albumId);
+			try (ResultSet result = pstatement.executeQuery();) {
+				while (result.next()) {
+					image.setId(result.getInt("id"));
+					image.setTitle(result.getString("title"));
+					image.setDate(result.getDate("date"));
+					image.setDescription(result.getString("description"));
+					image.setFilePath(result.getString("filePath"));
+				}
+						
+			}
+		}
+		return image;
 	}
 
 }

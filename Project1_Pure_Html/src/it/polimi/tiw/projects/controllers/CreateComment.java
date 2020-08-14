@@ -65,33 +65,49 @@ public class CreateComment extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		String comment = request.getParameter("comment");
-		if (comment == null) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing comment");
-		}
+		System.out.println("entrato post");
 		User u = null;
-		int imgId = 0;
 		HttpSession s = request.getSession();
+		String comment = request.getParameter("comment");
+		String imageId = request.getParameter("chosenImageId");
 		u = (User) s.getAttribute("user");
-		int userid = u.getId();
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		imgId = ((Image) ctx.getVariable("chosenImage")).getId();
-		CommentDAO commentDAO = new CommentDAO(connection);
-		try{
-			commentDAO.createComment(comment, imgId, userid);
-		} catch (SQLException e) {
-			// throw new ServletException(e);
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of project creation in database");
-
+		System.out.println(comment);
+		System.out.println(imageId);
+		System.out.println(u);
+		
+		if (comment == null || imageId == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in comment creation");
+			return;
 		}
-		// debugged on April 20, 2020 		
+		int imgId = 0;
+		int userId = 0;
+		try {
+			userId = u.getId();
+			imgId = Integer.parseInt(imageId);
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter in comment creation");
+			return;
+		}
+		
+		
+		CommentDAO commentDAO = new CommentDAO(connection);
+		System.out.println("comment");
+		System.out.println("imgId");
+		System.out.println("userId");
+		try{
+			commentDAO.createComment(comment, imgId, userId);
+		} catch (SQLException e) {
+			
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of comment creation in database");
+			return;
+		}
+				
 				String ctxpath = getServletContext().getContextPath();
-				String path = ctxpath + "/GoToHomeAdmin";
+				String path = ctxpath + "/GetImagesOfAlbum?albumId=1";
 				response.sendRedirect(path);
 	}
 
+	
 	public void destroy() {
 		try {
 			if (connection != null) {
