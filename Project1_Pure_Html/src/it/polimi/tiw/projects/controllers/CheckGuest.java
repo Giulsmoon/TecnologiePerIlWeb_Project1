@@ -1,6 +1,7 @@
 package it.polimi.tiw.projects.controllers;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -12,10 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 /**
  * Servlet implementation class CheckGuest
@@ -23,7 +20,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 @WebServlet("/CheckGuest")
 public class CheckGuest extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private TemplateEngine templateEngine;
+	private Connection connection = null;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -37,21 +34,27 @@ public class CheckGuest extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
+		try {
+		ServletContext context = getServletContext();
+		String driver = context.getInitParameter("dbDriver");
+		String url = context.getInitParameter("dbUrl");
+		String user = context.getInitParameter("dbUser");
+		String password = context.getInitParameter("dbPassword");
+		Class.forName(driver);
+		connection = DriverManager.getConnection(url, user, password);
+
+	}catch (ClassNotFoundException e) {
+		throw new UnavailableException("Can't load database driver");
+	} catch (SQLException e) {
+		throw new UnavailableException("Couldn't get db connection");
 	}
+	}
+
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-	
-		String path = "/WEB-INF/GuestPage.html";
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		templateEngine.process(path, ctx, response.getWriter());
+		String path = getServletContext().getContextPath()+ "/GoToHomePage";
+		response.sendRedirect(path);
 	}
 
 
