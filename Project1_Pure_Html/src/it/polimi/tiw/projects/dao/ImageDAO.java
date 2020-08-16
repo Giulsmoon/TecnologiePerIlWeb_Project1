@@ -54,6 +54,10 @@ public class ImageDAO {
 		return images;
 	}
 
+	
+	
+	
+	
 	public Image findImagesById(int imageId) throws SQLException {
 		Image image = new Image();
 		String query = "SELECT * FROM project1_pure_html.image WHERE id = ?";

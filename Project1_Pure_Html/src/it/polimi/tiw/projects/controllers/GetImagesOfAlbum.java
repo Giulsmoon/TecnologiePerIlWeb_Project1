@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -58,9 +59,24 @@ public class GetImagesOfAlbum extends HttpServlet {
 		}
 	}
 
+	
+	public List<Image> findImagesToDisplay(int startingPoint, List<Image> totalImagesList){
+		List<Image> imagesToDisplay = new ArrayList<Image>();
+		int i= startingPoint*5;
+		while(i< startingPoint+5 || i<totalImagesList.size()) {
+			imagesToDisplay.add(totalImagesList.get(i));
+			i++;
+		}
+		
+		return imagesToDisplay;
+	}
+	
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String id = req.getParameter("albumId");
 		String urlImageId = req.getParameter("imageId");
+		String urlNextImages = req.getParameter("next");
+		String urlPreviousImages = req.getParameter("previous");
+
 		if (id != null) {
 			int albumId = 0;
 			try {
@@ -70,6 +86,11 @@ public class GetImagesOfAlbum extends HttpServlet {
 			}
 			ImageDAO imgDao = new ImageDAO(connection);
 			List<Image> images;
+			List<Image> imagesToDisplay;
+			int numberOfBlocks = 0; // il numero di immagini dell'album diviso 5, per capire quante volte posso
+									// usare i bottoni per scorrere la lista di immagini
+			int nextImages = 0;
+			int previousImages = 0;
 			AlbumDAO albumDao = new AlbumDAO(connection);
 			List<Comment> comments = null;
 			CommentDAO cDao = new CommentDAO(connection);
@@ -84,15 +105,49 @@ public class GetImagesOfAlbum extends HttpServlet {
 					selectedImage = imgDao.findImagesById(chosenImageId);
 				}
 				images = imgDao.findImagesByAlbum(albumId);
+				if (images.size() % 5 == 0) {
+					numberOfBlocks = Math.floorDiv(images.size(), 5);
+				} else {
+					numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
+				}
+				// Se questi due valori dalla request sono null vuol dire
+				// che sono nel caso in cui la pagina è stata appena aperta
+				// e quindi setto dei valori di default
+				if (urlNextImages == null || urlPreviousImages == null) {
+					nextImages = numberOfBlocks - 1;
+					previousImages = 0;
+				} else {
+					int nextImagesFromRequest = 0;
+					int previousImagesFromRequest = 0;
+					try {
+						nextImagesFromRequest = Integer.parseInt(urlNextImages);
+						previousImagesFromRequest = Integer.parseInt(urlPreviousImages);
+					} catch (NumberFormatException e) {
+						res.sendError(505, "Bad number format");
+					}
+					int somma = 0;
+					somma = nextImagesFromRequest + previousImagesFromRequest;
+					if (somma != (numberOfBlocks - 1)) {
+						nextImages = numberOfBlocks - 1;
+						previousImages = 0;
+					}else {
+						nextImages = nextImagesFromRequest;
+						previousImages = previousImagesFromRequest;
+					}
+				}
+
+				imagesToDisplay = findImagesToDisplay(previousImages, images);
 				comments = cDao.findCommentsOfImage(selectedImage.getId());
 				String path = "ImageList.html";
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
-				ctx.setVariable("images", images);
+				ctx.setVariable("images", imagesToDisplay);
 				ctx.setVariable("albumId", albumId);
 				ctx.setVariable("chosenImageId", chosenImageId);
 				ctx.setVariable("imageSelected", selectedImage);
 				ctx.setVariable("comments", comments);
+				ctx.setVariable("nextImages", nextImages);
+				ctx.setVariable("previousImages", previousImages);
 				templateEngine.process(path, ctx, res.getWriter());
 
 			} catch (
