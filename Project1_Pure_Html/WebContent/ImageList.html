@@ -185,7 +185,6 @@
 				<div class="col-lg-12 col-md-12">
 					<form th:action="@{/CreateComment}" method="POST">
 						Please use the form to create a new comment: 
-						<span th:text="${imageSelected.id}"></span> 
 						<input type="text" name="comment" required> 
 						<input name="imageId" type="hidden" th:value="${chosenImageId}"> 
 						<input name="albumId" type="hidden" th:value="${albumId}">
