@@ -13,9 +13,18 @@
 		</style>
 	</head>
 	<body>
-		<div class=" container text-center">
 
-			<div class="row">
+
+		<div class=" container text-center pt-4">
+			<div class="row pt-4 h4">
+				<div class="col-lg-12 col-md-12">
+					<a th:href="@{/GoToHomePage}" href="ClickableAlbumList.html">Back</a>
+				</div>
+			</div>
+
+
+
+			<div class="row pt-4">
 				<div class="col-lg-12 col-md-12">
 
 					<h2>Images of a album</h2>
@@ -124,7 +133,7 @@
 				</div>
 			</div>
 
-			<div class="row">
+			<div class="row pt-4 h4">
 				<div class="col-lg-12 col-md-12">
 					<p class="h6" th:text="${imageSelected.title}">title image
 					</p>
@@ -144,34 +153,36 @@
 									</td>
 
 									<td class="comment-column">
-										<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
-											<div class="force-overflow">    										
-												<div class="comment-Body">
-													<p th:each="comment : ${comments}"
-													   th:class="${commentStat.even}? 'even'" th:text="${comment.text}">
-														comment image selected</p>
-												</div>
-											</div>
-										</div>  
-									</td>
-								</tr>
-
-								<tr class="even">
-									<td>
-
-										<img class="image img-fluid"
-											 src="TestImage/casa.jpg">
-									</td>
-									<td class="comment-column">
-										<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
-											<div class="force-overflow">    										
-												<div class="comment-Body">
-													text 1<br> text 2<br> text 3<br> text 4<br>
-													text 5<br> text 1<br> text 2<br> text 3<br>
-													text 4<br> text 5<br>
-												</div>
-											</div>
-										</div>
+										<div class='table-responsive'>
+											<table class="table" >
+												<tbody>
+													<tr>
+														<td>
+															<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
+																<div class="force-overflow">    										
+																	<div class="comment-Body">
+																		<p th:each="comment : ${comments}"
+																		   th:class="${commentStat.even}? 'even'" th:text="${comment.text}">
+																			comment image selected</p>
+																	</div>
+																</div>
+															</div>  
+														</td>	
+													</tr>
+													<tr>
+														<td>
+															<form th:action="@{/CreateComment}" method="POST">
+																Please use the form to create a new comment: 
+																<input type="text" name="comment" required> 
+																<input name="imageId" type="hidden" th:value="${chosenImageId}"> 
+																<input name="albumId" type="hidden" th:value="${albumId}">
+																<input type="submit" name="submit" value="Submit Comment">
+															</form>
+														</td>
+													</tr>
+												</tbody> 
+											</table>
+										</div>	
 									</td>
 								</tr>
 							</tbody>
@@ -180,18 +191,9 @@
 				</div>
 			</div>
 
-			<br><br><br>
-			<div class="row">
-				<div class="col-lg-12 col-md-12">
-					<form th:action="@{/CreateComment}" method="POST">
-						Please use the form to create a new comment: 
-						<input type="text" name="comment" required> 
-						<input name="imageId" type="hidden" th:value="${chosenImageId}"> 
-						<input name="albumId" type="hidden" th:value="${albumId}">
-						<input type="submit" name="submit" value="Submit Comment">
-					</form>
-				</div>
-			</div>
+
+
+
 		</div>
 	</body>
 </html>
