@@ -19,7 +19,7 @@ public class AlbumDAO {
 
 	public List<Album> findAllAlbums() throws SQLException {
 		List<Album> albums = new ArrayList<Album>();
-		String query = "SELECT * FROM project1_pure_html.album";
+		String query = "SELECT * FROM project1_pure_html.album ORDER BY creationDate DESC";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
@@ -83,7 +83,7 @@ public class AlbumDAO {
 	}
 
 	public Image findDefaultImage(int albumId) throws SQLException {
-		String query = "SELECT * FROM project1_pure_html.image as i, project1_pure_html.albumimage as ai WHERE i.id=ai.idImage and ai.idALbum= ? ORDER BY i.title ASC LIMIT 1";
+		String query = "SELECT * FROM project1_pure_html.image as i, project1_pure_html.albumimage as ai WHERE i.id=ai.idImage and ai.idALbum= ? ORDER BY i.date DESC LIMIT 1";
 		Image image = new Image();
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setInt(1, albumId);
