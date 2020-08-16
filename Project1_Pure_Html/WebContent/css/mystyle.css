@@ -31,9 +31,7 @@ height: 200px; }
 }
 
 .image{
-	margin: 5px;
-	border: 1px solid #ccc;
-	float: left;
+	border: 4px solid #ccc;
 }
 
 .gallery-table .image{
@@ -54,5 +52,12 @@ div.desc {
 	padding: 15px;
 	text-align: center;
 }
+.container{
+	padding-left: 0px;
+	padding-right: 0px;
+}
 
+.comment-column{
+	width: 30vh;
+}
 
