@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<title>Messages application</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="stylesheet" type="text/css" media="all"
-	href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-<link rel="stylesheet" type="text/css" media="all"
-	href="css/mystyle.css" th:href="@{/css/mystyle.css}">
-</head>
-<body>
-	<h1>Welcome to the message application</h1>
-	<h2>Select an album to see its images</h2>
-	<table border="1">
-		<thead>
-			<tr>
-				<th>Album title</th>
-			</tr>
-		</thead>
-		<tbody th:remove="all-but-first">
-			<tr th:each="album : ${albums}" th:class="${albumStat.even}? 'even'">
-				<td><a href="ImageList.html"
-					th:href="@{/GetImagesOfAlbum(albumId=${album.id})}"><span
-						th:text="${album.title}">Onions</span></a></td>
-			</tr>
-			<tr class="even">
-				<td><a href="ImageList.html">Blue Lettuce</a></td>
-			</tr>
-			<tr>
-				<td><a href="ImageList.html">Mild Cinnamon</a></td>
-			</tr>
-			<tr class="even">
-				<td><a href="ImageList.html">Apples</a></td>
-			</tr>
-			<tr>
-				<td><a href="ImageList.html">Oranges</a></td>
-			</tr>
-		</tbody>
-	</table>
-</body>
+	<head>
+		<title>Messages application</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" media="all"
+			  href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+		<link rel="stylesheet" type="text/css" media="all"
+			  href="css/mystyle.css" th:href="@{/css/mystyle.css}">
+	</head>
+	<body>
+		<div class=" container text-center">
+
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<h1>Welcome to the message application</h1>
+					<h2>Select an album to see its images</h2>
+					<table border="1">
+						<thead>
+							<tr>
+								<th>Album title</th>
+							</tr>
+						</thead>
+						<tbody th:remove="all-but-first">
+							<tr th:each="album : ${albums}" th:class="${albumStat.even}? 'even'">
+								<td><a href="ImageList.html"
+									   th:href="@{/GetImagesOfAlbum(albumId=${album.id})}"><span
+																								 th:text="${album.title}">Onions</span></a></td>
+							</tr>
+							<tr class="even">
+								<td><a href="ImageList.html">Blue Lettuce</a></td>
+							</tr>
+							<tr>
+								<td><a href="ImageList.html">Mild Cinnamon</a></td>
+							</tr>
+							<tr class="even">
+								<td><a href="ImageList.html">Apples</a></td>
+							</tr>
+							<tr>
+								<td><a href="ImageList.html">Oranges</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
 
