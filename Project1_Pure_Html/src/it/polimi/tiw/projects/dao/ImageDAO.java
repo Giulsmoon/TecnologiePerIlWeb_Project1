@@ -19,7 +19,7 @@ public class ImageDAO {
 
 	public List<Image> findImagesByAlbum(int albumId) throws SQLException {
 		List<Image> images = new ArrayList<Image>();
-		String query = "SELECT i.id, i.title, i.description, i.date, i.filePath FROM project1_pure_html.image as i,project1_pure_html.albumimage as ai  WHERE i.id= ai.idImage and ai.idAlbum = ?";
+		String query = "SELECT i.id, i.title, i.description, i.date, i.filePath FROM project1_pure_html.image as i,project1_pure_html.albumimage as ai  WHERE i.id= ai.idImage and ai.idAlbum = ? ORDER BY i.title ";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
