@@ -37,7 +37,8 @@ height: 200px; }
 }
 
 .gallery-table .image{
-
+	height: 20vh;
+	width: auto;
 }
 
 .gallery:hover {

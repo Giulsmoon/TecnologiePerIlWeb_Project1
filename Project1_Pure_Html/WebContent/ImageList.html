@@ -35,8 +35,8 @@
 														<td>
 															<a
 															   th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id})}">
-																<img class="image img-fluid  img-thumbnail" th:src="${image.filePath}"
-																	 src="/TestImage/casa.jpg">
+																<img class="image img-thumbnail" th:src="${image.filePath}"
+																	 src="TestImage/casa.jpg">
 															</a>
 														</td>
 													</tr>
@@ -55,8 +55,8 @@
 													<tr>
 														<td>
 															<a target="_blank" href="ImageList.html"> 
-																<img class="image img-fluid  img-thumbnail"
-																	 src="/TestImage/casa.jpg" ></a>
+																<img class="image  img-thumbnail"
+																	 src="TestImage/casa.jpg" ></a>
 														</td>
 													</tr>
 												</tbody> 
@@ -73,8 +73,8 @@
 													<tr>
 														<td>
 															<a target="_blank" href="ImageList.html"> 
-																<img class="image img-fluid  img-thumbnail"
-																	 src="/TestImage/casa.jpg" ></a>
+																<img class="image img-thumbnail"
+																	 src="TestImage/casa.jpg" ></a>
 														</td>
 													</tr>
 												</tbody> 
@@ -91,8 +91,8 @@
 													<tr>
 														<td>
 															<a target="_blank" href="ImageList.html"> 
-																<img class="image img-fluid  img-thumbnail"
-																	 src="/TestImage/casa.jpg" ></a>
+																<img class="image  img-thumbnail"
+																	 src="TestImage/casa.jpg" ></a>
 														</td>
 													</tr>
 												</tbody> 
@@ -109,8 +109,8 @@
 													<tr>
 														<td>
 															<a target="_blank" href="ImageList.html"> 
-																<img class="image img-fluid  img-thumbnail"
-																	 src="/TestImage/casa.jpg" ></a>
+																<img class="image img-thumbnail"
+																	 src="TestImage/casa.jpg" ></a>
 														</td>
 													</tr>
 												</tbody> 
@@ -139,10 +139,8 @@
 
 								<tr>
 									<td > 
-										<div class="image">
-											<img  th:src="${imageSelected.filePath}"
-												 src="/TestImage/casa.jpg">
-										</div>
+										<img  class="image img-fluid"th:src="${imageSelected.filePath}"
+											 src="TestImage/casa.jpg">
 									</td>
 
 									<td>
@@ -160,10 +158,9 @@
 
 								<tr class="even">
 									<td>
-										<div class="image">
-											<img 
-												 src="/TestImage/casa.jpg">
-										</div>
+
+										<img class="image img-fluid"
+											 src="TestImage/casa.jpg">
 									</td>
 									<td>
 										<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
