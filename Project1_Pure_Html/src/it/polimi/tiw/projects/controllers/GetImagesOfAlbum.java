@@ -74,8 +74,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String id = req.getParameter("albumId");
 		String urlImageId = req.getParameter("imageId");
-		String urlNextImages = req.getParameter("next");
-		String urlPreviousImages = req.getParameter("previous");
+		String urlNextImages = req.getParameter("nextImages");
+		String urlPreviousImages = req.getParameter("previousImages");
 
 		if (id != null) {
 			int albumId = 0;

@@ -48,7 +48,29 @@ public class PreviousImages extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		String next = request.getParameter("nextImages");
+		String previous = request.getParameter("previousImages");
+		String albumId = request.getParameter("albumId");
+
+		if (next == null || previous == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter ");
+			return;
+		}
+		int nextNum = 0;
+		int previousNum = 0;
+		int alId = 0;
+		try {
+			nextNum = Integer.parseInt(next) +1 ;
+			previousNum = Integer.parseInt(previous) - 1;
+			alId = Integer.parseInt(albumId);
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter ");
+			return;
+		}
+		
+
+		String ctxpath = getServletContext().getContextPath();
+		String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&nextImages=" + nextNum + "&previousImages=" + previousNum;
+		response.sendRedirect(path);
 	}
 }
