@@ -29,7 +29,9 @@
 					<form th:action="@{/PreviousImages}" method="POST">
 						<input  name="nextImages" type="hidden" th:value=${nextImages}>
 						<input  name="previousImages" type="hidden" th:value=${previousImages}>
-						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Back">
+						<input  name="albumId" type="hidden" th:value=${albumId}>
+						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Back"
+							   th:classappend="${previousImages} ? 'btn-visible' : 'btn-hidden'" th:disabled="not ${previousImages}">
 					</form>
 				</div>
 
@@ -51,7 +53,7 @@
 													<tr>
 														<td>
 															<a
-															   th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id})}">
+															   th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id},nextImages=${nextImages},previousImages=${previousImages})}">
 																<img class="image img-thumbnail" th:src="${image.filePath}"
 																	 src="TestImage/casa.jpg">
 															</a>
@@ -144,7 +146,11 @@
 					<form th:action="@{/NextImages}" method="POST">
 						<input  name="nextImages" type="hidden" th:value=${nextImages}>
 						<input  name="previousImages" type="hidden" th:value=${previousImages}>
-						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Next">
+						<input  name="albumId" type="hidden" th:value=${albumId}>
+
+						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Next"
+							   th:classappend=" ${nextImages} ? 'btn-visible' : 'btn-hidden'"
+							   th:disabled="not ${nextImages}">
 					</form>
 				</div>
 			</div>

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -14,8 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import it.polimi.tiw.projects.beans.Image;
 import it.polimi.tiw.projects.beans.User;
 import it.polimi.tiw.projects.dao.CommentDAO;
+import it.polimi.tiw.projects.dao.ImageDAO;
 
 /**
  * Servlet implementation class CheckGuest
@@ -23,6 +26,7 @@ import it.polimi.tiw.projects.dao.CommentDAO;
 @WebServlet("/NextImages")
 public class NextImages extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private Connection connection = null;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -37,7 +41,20 @@ public class NextImages extends HttpServlet {
 	 *      response)
 	 */
 	public void init() throws ServletException {
+		try {
+			ServletContext context = getServletContext();
+			String driver = context.getInitParameter("dbDriver");
+			String url = context.getInitParameter("dbUrl");
+			String user = context.getInitParameter("dbUser");
+			String password = context.getInitParameter("dbPassword");
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, user, password);
 
+		} catch (ClassNotFoundException e) {
+			throw new UnavailableException("Can't load database driver");
+		} catch (SQLException e) {
+			throw new UnavailableException("Couldn't get db connection");
+		}
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,7 +73,7 @@ public class NextImages extends HttpServlet {
 		String next = request.getParameter("nextImages");
 		String previous = request.getParameter("previousImages");
 		String albumId = request.getParameter("albumId");
-
+		System.out.println(next+"   "+previous+"   "+albumId);
 		if (next == null || previous == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter ");
 			return;
@@ -73,10 +90,35 @@ public class NextImages extends HttpServlet {
 			return;
 		}
 		
+		int  numberOfBlocks;
+		List<Image> images = null;
+		ImageDAO imgDao = new ImageDAO(connection);
+		try {
+			images = imgDao.findImagesByAlbum(alId);
+		}catch (
 
-		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&nextImages=" + nextNum + "&previousImages=" + previousNum;
-		response.sendRedirect(path);
+				SQLException e) {
+					response.sendError(500, "Database access failed");
+				}
+		if (images.size() % 5 == 0) {
+			numberOfBlocks = Math.floorDiv(images.size(), 5);
+		} else {
+			numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
+		}
+		if(nextNum<0) {
+			String ctxpath = getServletContext().getContextPath();
+			String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId;
+			response.sendRedirect(path);
+		}else {
+			if(nextNum+previousNum!=(numberOfBlocks - 1)){
+				response.sendError(500, "Bad Post Request");
+			}
+			else {
+				String ctxpath = getServletContext().getContextPath();
+				String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&nextImages=" + nextNum + "&previousImages=" + previousNum;
+				response.sendRedirect(path);
+			}
+		}
 	}
 
 

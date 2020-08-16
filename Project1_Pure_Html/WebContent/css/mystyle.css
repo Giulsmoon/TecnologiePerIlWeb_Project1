@@ -66,3 +66,10 @@ div.desc {
 	position: absolute;
 	top: 50%;
 }
+.btn-hidden{
+	visibility: hidden;
+}
+
+.btn-visible{
+	visibility: visible;
+}

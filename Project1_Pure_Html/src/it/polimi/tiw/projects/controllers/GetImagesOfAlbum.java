@@ -60,10 +60,12 @@ public class GetImagesOfAlbum extends HttpServlet {
 	}
 
 	
-	public List<Image> findImagesToDisplay(int startingPoint, List<Image> totalImagesList){
+	public List<Image> findImagesToDisplay(int previousBlockNumber, List<Image> totalImagesList){
 		List<Image> imagesToDisplay = new ArrayList<Image>();
-		int i= startingPoint*5;
-		while(i< startingPoint+5 || i<totalImagesList.size()) {
+		int startingPoint=previousBlockNumber*5;
+		int endingPoint=startingPoint+5;
+		int i= startingPoint;
+		while(i< endingPoint && i<totalImagesList.size()) {
 			imagesToDisplay.add(totalImagesList.get(i));
 			i++;
 		}
@@ -85,7 +87,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 				res.sendError(505, "Bad number format");
 			}
 			ImageDAO imgDao = new ImageDAO(connection);
-			List<Image> images;
+			List<Image> images=null;
 			List<Image> imagesToDisplay;
 			int numberOfBlocks = 0; // il numero di immagini dell'album diviso 5, per capire quante volte posso
 									// usare i bottoni per scorrere la lista di immagini
@@ -97,14 +99,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 			int chosenImageId = 0;
 			Image selectedImage = null;
 			try {
-				if (urlImageId == null) {
-					chosenImageId = albumDao.findDefaultImage(albumId).getId();
-					selectedImage = albumDao.findDefaultImage(albumId);
-				} else {
-					chosenImageId = Integer.parseInt(urlImageId);
-					selectedImage = imgDao.findImagesById(chosenImageId);
-				}
 				images = imgDao.findImagesByAlbum(albumId);
+				
 				if (images.size() % 5 == 0) {
 					numberOfBlocks = Math.floorDiv(images.size(), 5);
 				} else {
@@ -134,6 +130,15 @@ public class GetImagesOfAlbum extends HttpServlet {
 						nextImages = nextImagesFromRequest;
 						previousImages = previousImagesFromRequest;
 					}
+				}
+				
+				//image selection (default or with id)
+				if (urlImageId == null) {
+					chosenImageId = findImagesToDisplay(previousImages, images).get(0).getId();
+					selectedImage = findImagesToDisplay(previousImages, images).get(0);
+				} else {
+					chosenImageId = Integer.parseInt(urlImageId);
+					selectedImage = imgDao.findImagesById(chosenImageId);
 				}
 
 				imagesToDisplay = findImagesToDisplay(previousImages, images);
