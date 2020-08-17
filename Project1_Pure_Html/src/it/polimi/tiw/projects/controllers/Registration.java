@@ -74,44 +74,67 @@ public class Registration extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		if (username == null || password == null) {
+		String passwordReinserted = request.getParameter("passwordReinserted");
+		System.out.println(password);
+		System.out.println(passwordReinserted);
+		if (username == null || password == null || passwordReinserted == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in registration creation");
 			return;
 		}
 		
-		
-		RegistrationDAO registrationDAO = new RegistrationDAO(connection);
-		try {
-			if(registrationDAO.controlRegistrationOfUser(username)) {
-				System.out.println(registrationDAO.controlRegistrationOfUser(username));
-				try {
-					//lo username non è presente nel database, provo a creare un nuovo utente
-					registrationDAO.createRegistrationOfUser(username, password);
+			RegistrationDAO registrationDAO = new RegistrationDAO(connection);
+			try {
+				if(registrationDAO.controlRegistrationOfUser(username)&& password.equals(passwordReinserted)) {
+					System.out.println("registrazione effettuata");
+					try {
+						//lo username non è presente nel database, provo a creare un nuovo utente
+						registrationDAO.createRegistrationOfUser(username, password);
+						
+						String path = "index.html";
+						ServletContext servletContext = getServletContext();
+						final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+						ctx.setVariable("checkUsername", false); // lo username inserito è già esistente nel database
+						templateEngine.process(path, ctx, response.getWriter());
 
-				} catch (SQLException e) {
+					} catch (SQLException e) {
 
-					response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of user creation in database");
-					return;
+						response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of user creation in database");
+						return;
+					}
+				} else {
+					
+					
+					String path = "index.html";
+					ServletContext servletContext = getServletContext();
+					final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+					
+					ctx.setVariable("RegistrationForm", true); //deve rimostrare la form per la registrazione
+					
+					if(!password.equals(passwordReinserted)) {
+						System.out.println("password sbagliate");
+						System.out.println(password);
+						System.out.println(passwordReinserted);
+						ctx.setVariable("WrongPasswords", true); //le due password inserite sono sbagliate
+					}
+					if(!registrationDAO.controlRegistrationOfUser(username)) {	
+						System.out.println("username già esistente");
+						ctx.setVariable("checkUsername", true); // lo username inserito è già esistente nel database
+					}
+					templateEngine.process(path, ctx, response.getWriter());
+					
 				}
-			} else {
-				System.out.println(registrationDAO.controlRegistrationOfUser(username));
-				String path = "ImageList.html";
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				//ctx.setVariable("checkUsername ", true); // lo username inserito è già esistente nel database
-				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
-		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/index.html";
-		response.sendRedirect(path);
+
+		
+		
 	}
 
-}
+
