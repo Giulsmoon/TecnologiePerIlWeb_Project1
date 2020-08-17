@@ -59,110 +59,147 @@ public class GetImagesOfAlbum extends HttpServlet {
 		}
 	}
 
-	
-	public List<Image> findImagesToDisplay(int previousBlockNumber, List<Image> totalImagesList){
+	public List<Image> findImagesToDisplay(int previousBlockNumber, List<Image> totalImagesList) {
 		List<Image> imagesToDisplay = new ArrayList<Image>();
-		int startingPoint=previousBlockNumber*5;
-		int endingPoint=startingPoint+5;
-		int i= startingPoint;
-		while(i< endingPoint && i<totalImagesList.size()) {
+		int startingPoint = previousBlockNumber * 5;
+		int endingPoint = startingPoint + 5;
+		int i = startingPoint;
+		while (i < endingPoint && i < totalImagesList.size()) {
 			imagesToDisplay.add(totalImagesList.get(i));
 			i++;
 		}
-		
+
 		return imagesToDisplay;
 	}
-	
+
+	public boolean checkALbumId(int albumId) {
+		boolean correct = false;
+		AlbumDAO albumDao = new AlbumDAO(connection);
+		try {
+			if (albumDao.findAlbumById(albumId).getId() != 0) {
+				correct = true;
+			} else {
+				correct = false;
+			}
+		} catch (SQLException e) {
+			correct = false;
+		}
+
+		return correct;
+	}
+
+	public boolean selectedImageInTheAlbum(String urlImageId, List<Image> images) {
+		boolean correct = false;
+		if (urlImageId != null) {
+			int chosenImageId = Integer.parseInt(urlImageId);
+
+			for (Image image : images) {
+				if (image.getId() == chosenImageId) {
+					correct = true;
+					break;
+				}
+			}
+		}
+		return correct;
+	}
+
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String id = req.getParameter("albumId");
+		String urlAlbumId = req.getParameter("albumId");
 		String urlImageId = req.getParameter("imageId");
 		String urlNextImages = req.getParameter("nextImages");
 		String urlPreviousImages = req.getParameter("previousImages");
 
-		if (id != null) {
+		if (urlAlbumId != null) {
 			int albumId = 0;
 			try {
-				albumId = Integer.parseInt(id);
+				albumId = Integer.parseInt(urlAlbumId);
 			} catch (NumberFormatException e) {
 				res.sendError(505, "Bad number format");
 			}
-			ImageDAO imgDao = new ImageDAO(connection);
-			List<Image> images=null;
-			List<Image> imagesToDisplay;
-			int numberOfBlocks = 0; // il numero di immagini dell'album diviso 5, per capire quante volte posso
-									// usare i bottoni per scorrere la lista di immagini
-			int nextImages = 0;
-			int previousImages = 0;
-			AlbumDAO albumDao = new AlbumDAO(connection);
-			List<Comment> comments = null;
-			CommentDAO cDao = new CommentDAO(connection);
-			int chosenImageId = 0;
-			Image selectedImage = null;
-			try {
-				images = imgDao.findImagesByAlbum(albumId);
-				
-				if (images.size() % 5 == 0) {
-					numberOfBlocks = Math.floorDiv(images.size(), 5);
-				} else {
-					numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
-				}
-				// Se questi due valori dalla request sono null vuol dire
-				// che sono nel caso in cui la pagina è stata appena aperta
-				// e quindi setto dei valori di default
-				if (urlNextImages == null || urlPreviousImages == null) {
-					nextImages = numberOfBlocks - 1;
-					previousImages = 0;
-				} else {
-					int nextImagesFromRequest = 0;
-					int previousImagesFromRequest = 0;
-					try {
-						nextImagesFromRequest = Integer.parseInt(urlNextImages);
-						previousImagesFromRequest = Integer.parseInt(urlPreviousImages);
-					} catch (NumberFormatException e) {
-						res.sendError(505, "Bad number format");
+
+			if (checkALbumId(albumId)) {
+
+				ImageDAO imgDao = new ImageDAO(connection);
+				List<Image> images = null;
+				List<Image> imagesToDisplay;
+				int numberOfBlocks = 0; // il numero di immagini dell'album diviso 5, per capire quante volte posso
+										// usare i bottoni per scorrere la lista di immagini
+				int nextImages = 0;
+				int previousImages = 0;
+
+				int chosenImageId = 0;
+				Image selectedImage = null;
+				try {
+					images = imgDao.findImagesByAlbum(albumId);
+
+					if (images.size() % 5 == 0) {
+						numberOfBlocks = Math.floorDiv(images.size(), 5);
+					} else {
+						numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
 					}
-					int somma = 0;
-					somma = nextImagesFromRequest + previousImagesFromRequest;
-					if (somma != (numberOfBlocks - 1)) {
+					// Se questi due valori dalla request sono null vuol dire
+					// che sono nel caso in cui la pagina è stata appena aperta
+					// e quindi setto dei valori di default
+					if (urlNextImages == null || urlPreviousImages == null) {
 						nextImages = numberOfBlocks - 1;
 						previousImages = 0;
-					}else {
-						nextImages = nextImagesFromRequest;
-						previousImages = previousImagesFromRequest;
+					} else {
+						int nextImagesFromRequest = 0;
+						int previousImagesFromRequest = 0;
+						try {
+							nextImagesFromRequest = Integer.parseInt(urlNextImages);
+							previousImagesFromRequest = Integer.parseInt(urlPreviousImages);
+						} catch (NumberFormatException e) {
+							res.sendError(505, "Bad number format");
+						}
+						int somma = 0;
+						somma = nextImagesFromRequest + previousImagesFromRequest;
+						if (somma != (numberOfBlocks - 1) || nextImagesFromRequest < 0
+								|| previousImagesFromRequest < 0) {
+							nextImages = numberOfBlocks - 1;
+							previousImages = 0;
+						} else {
+							nextImages = nextImagesFromRequest;
+							previousImages = previousImagesFromRequest;
+						}
 					}
+					imagesToDisplay = findImagesToDisplay(previousImages, images);
+
+					// image selection (default or with id)
+					if (urlImageId == null || urlImageId != null && !selectedImageInTheAlbum(urlImageId, imagesToDisplay)) {
+						chosenImageId = imagesToDisplay.get(0).getId();
+						selectedImage = imagesToDisplay.get(0); // Get the first as "default"
+					} else {
+						chosenImageId = Integer.parseInt(urlImageId);
+						selectedImage = imgDao.findImagesById(chosenImageId);
+					}
+
+					CommentDAO cDao = new CommentDAO(connection);
+					List<Comment> comments = cDao.findCommentsOfImage(selectedImage.getId());
+
+					String path = "ImageList.html";
+					ServletContext servletContext = getServletContext();
+					final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
+					ctx.setVariable("images", imagesToDisplay);
+					ctx.setVariable("albumId", albumId);
+					ctx.setVariable("chosenImageId", chosenImageId);
+					ctx.setVariable("imageSelected", selectedImage);
+					ctx.setVariable("comments", comments);
+					ctx.setVariable("nextImages", nextImages);
+					ctx.setVariable("previousImages", previousImages);
+					templateEngine.process(path, ctx, res.getWriter());
+
+				} catch (
+
+				SQLException e) {
+					res.sendError(500, "Database access failed");
 				}
-				
-				//image selection (default or with id)
-				if (urlImageId == null) {
-					chosenImageId = findImagesToDisplay(previousImages, images).get(0).getId();
-					selectedImage = findImagesToDisplay(previousImages, images).get(0);
-				} else {
-					chosenImageId = Integer.parseInt(urlImageId);
-					selectedImage = imgDao.findImagesById(chosenImageId);
-				}
-
-				imagesToDisplay = findImagesToDisplay(previousImages, images);
-				comments = cDao.findCommentsOfImage(selectedImage.getId());
-				String path = "ImageList.html";
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
-				ctx.setVariable("images", imagesToDisplay);
-				ctx.setVariable("albumId", albumId);
-				ctx.setVariable("chosenImageId", chosenImageId);
-				ctx.setVariable("imageSelected", selectedImage);
-				ctx.setVariable("comments", comments);
-				ctx.setVariable("nextImages", nextImages);
-				ctx.setVariable("previousImages", previousImages);
-				templateEngine.process(path, ctx, res.getWriter());
-
-			} catch (
-
-			SQLException e) {
-				res.sendError(500, "Database access failed");
+			} else {
+				String path = getServletContext().getContextPath() + "/GoToHomePage";
+				res.sendRedirect(path);
 			}
 		} else {
 			res.sendError(505, "Bad album ID");
 		}
-
 	}
 }

@@ -51,8 +51,8 @@ public class AlbumDAO {
 	}
 
 	public Album findAlbumById(int albumId) throws SQLException {
-		Album a = new Album();
-		String query = "SELECT * project1_pure_html.album where id = ?";
+		Album album = new Album();
+		String query = "SELECT * FROM project1_pure_html.album WHERE id = ?";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
@@ -60,9 +60,9 @@ public class AlbumDAO {
 			pstatement.setInt(1, albumId);
 			result = pstatement.executeQuery();
 			while (result.next()) {
-				a.setId(result.getInt("id"));
-				a.setTitle(result.getString("title"));
-				a.setDate(result.getDate("creationDate"));
+				album.setId(result.getInt("id"));
+				album.setTitle(result.getString("title"));
+				album.setDate(result.getDate("creationDate"));
 			}
 		} catch (SQLException e) {
 			throw new SQLException(e);
@@ -79,7 +79,7 @@ public class AlbumDAO {
 				throw new SQLException("Cannot close statement");
 			}
 		}
-		return a;
+		return album;
 	}
 
 	

@@ -23,7 +23,6 @@ import it.polimi.tiw.projects.dao.ImageDAO;
 @WebServlet("/PreviousImages")
 public class PreviousImages extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private Connection connection = null;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -38,20 +37,6 @@ public class PreviousImages extends HttpServlet {
 	 *      response)
 	 */
 	public void init() throws ServletException {
-		try {
-			ServletContext context = getServletContext();
-			String driver = context.getInitParameter("dbDriver");
-			String url = context.getInitParameter("dbUrl");
-			String user = context.getInitParameter("dbUser");
-			String password = context.getInitParameter("dbPassword");
-			Class.forName(driver);
-			connection = DriverManager.getConnection(url, user, password);
-
-		} catch (ClassNotFoundException e) {
-			throw new UnavailableException("Can't load database driver");
-		} catch (SQLException e) {
-			throw new UnavailableException("Couldn't get db connection");
-		}
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -69,7 +54,6 @@ public class PreviousImages extends HttpServlet {
 		String next = request.getParameter("nextImages");
 		String previous = request.getParameter("previousImages");
 		String albumId = request.getParameter("albumId");
-		System.out.println(next + "   " + previous + "   " + albumId);
 
 		if (next == null || previous == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter ");
@@ -86,35 +70,9 @@ public class PreviousImages extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter ");
 			return;
 		}
-		int numberOfBlocks;
-		List<Image> images = null;
-		ImageDAO imgDao = new ImageDAO(connection);
-		try {
-			images = imgDao.findImagesByAlbum(alId);
-		} catch (
-
-		SQLException e) {
-			response.sendError(500, "Database access failed");
-		}
-		if (images.size() % 5 == 0) {
-			numberOfBlocks = Math.floorDiv(images.size(), 5);
-		} else {
-			numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
-		}
-		if(previousNum<0) {
-			String ctxpath = getServletContext().getContextPath();
-			String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId;
-			response.sendRedirect(path);
-		}else {
-			if(nextNum+previousNum!=(numberOfBlocks - 1)){
-				response.sendError(500, "Bad Post Request");
-			}
-			else {
-				String ctxpath = getServletContext().getContextPath();
-				String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&nextImages=" + nextNum + "&previousImages=" + previousNum;
-				response.sendRedirect(path);
-			}
+		String ctxpath = getServletContext().getContextPath();
+		String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&nextImages=" + nextNum + "&previousImages=" + previousNum;
+		response.sendRedirect(path);
 		}
 		
 	}
-}
