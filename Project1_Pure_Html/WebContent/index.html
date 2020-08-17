@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="ISO-8859-1">
 
-		<title>Messages application</title>
+		<title>Gallery Image</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link rel="stylesheet" type="text/css" media="all"
 			  href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
@@ -51,7 +51,7 @@
 				<div class="form-group">
 					<label for="exampleInputUsernam">Insert your Username</label> <input
 						type="text" class="form-control"
-						th:class=" ${checkUsername} ? 'form-control is-invalid' : 'form-control is-valid'"
+						th:class=" ${checkUsername} ? 'form-control is-invalid' : 'form-control'"
 						name="username" required aria-describedby="usernameHelp"
 						placeholder=" Insert username">
 					<div class="invalid-feedback">Already existing username, insert another one.</div>
@@ -59,14 +59,14 @@
 				<div class="form-group">
 					<label for="exampleInputPassword1">Password</label> 
 					<input type="password" class="form-control" 
-					th:class=" ${WrongPasswords} ? 'form-control is-invalid' : 'form-control is-valid'"
+					th:class=" ${WrongPasswords} ? 'form-control is-invalid' : 'form-control'"
 					placeholder="Password" name="password" required>
 					<div class="invalid-feedback">Please reinsert password.</div>
 				</div>
 				<div class="form-group">
 					<label for="exampleInputPassword2">Reinsert the Password</label> 
 					<input type="password" class="form-control"
-					th:class=" ${WrongPasswords} ? 'form-control is-invalid' : 'form-control is-valid'" 
+					th:class=" ${WrongPasswords} ? 'form-control is-invalid' : 'form-control'" 
 					placeholder="Password" name="passwordReinserted" required>
 					<div class="invalid-feedback">Please reinsert password.</div>
 				</div>
