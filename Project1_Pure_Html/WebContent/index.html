@@ -41,11 +41,11 @@
             <br>
 		<div class="col-lg-6 col-md-6" th:classappend=" not ${RegistrationForm} ? 'btn-visible' : 'btn-hidden'"
 							   th:disabled="${RegistrationForm}" >
-			<a th:href="@{/OpenRegistrationForm}" class="btn btn-outline-success">Sign
+			<a href=" OpenRegistrationForm" th:href="@{/OpenRegistrationForm}" class="btn btn-outline-success">Sign
 				in</a>
 
 		</div>
-		<div class="row" th:classappend=" ${RegistrationForm} ? 'btn-visible' : 'btn-hidden'"
+		<div class="row btn-hidden" th:class=" ${RegistrationForm} ? 'row btn-visible' : 'row btn-hidden'"
 							   th:disabled="not ${RegistrationForm}">
 
 			<form  th:action="@{/Registration}" method="POST">
