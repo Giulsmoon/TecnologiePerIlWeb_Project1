@@ -1,0 +1,117 @@
+package it.polimi.tiw.projects.controllers;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+
+import it.polimi.tiw.projects.dao.CommentDAO;
+import it.polimi.tiw.projects.dao.RegistrationDAO;
+
+/**
+ * Servlet implementation class Registration
+ */
+@WebServlet("/Registration")
+public class Registration extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private Connection connection = null;
+	private TemplateEngine templateEngine;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Registration() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    public void init() throws ServletException {
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
+		try {
+			ServletContext context = getServletContext();
+			String driver = context.getInitParameter("dbDriver");
+			String url = context.getInitParameter("dbUrl");
+			String user = context.getInitParameter("dbUser");
+			String password = context.getInitParameter("dbPassword");
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, user, password);
+		} catch (ClassNotFoundException e) {
+			throw new UnavailableException("Can't load database driver");
+		} catch (SQLException e) {
+			throw new UnavailableException("Couldn't get db connection");
+		}
+	}
+    
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		if (username == null || password == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in registration creation");
+			return;
+		}
+		
+		
+		RegistrationDAO registrationDAO = new RegistrationDAO(connection);
+		try {
+			if(registrationDAO.controlRegistrationOfUser(username)) {
+				System.out.println(registrationDAO.controlRegistrationOfUser(username));
+				try {
+					//lo username non è presente nel database, provo a creare un nuovo utente
+					registrationDAO.createRegistrationOfUser(username, password);
+
+				} catch (SQLException e) {
+
+					response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of user creation in database");
+					return;
+				}
+			} else {
+				System.out.println(registrationDAO.controlRegistrationOfUser(username));
+				String path = "ImageList.html";
+				ServletContext servletContext = getServletContext();
+				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				//ctx.setVariable("checkUsername ", true); // lo username inserito è già esistente nel database
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String ctxpath = getServletContext().getContextPath();
+		String path = ctxpath + "/index.html";
+		response.sendRedirect(path);
+	}
+
+}
