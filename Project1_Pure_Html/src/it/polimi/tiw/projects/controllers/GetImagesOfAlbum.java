@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -21,6 +22,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.projects.beans.Comment;
 import it.polimi.tiw.projects.beans.Image;
+import it.polimi.tiw.projects.beans.User;
 import it.polimi.tiw.projects.dao.AlbumDAO;
 import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.ImageDAO;
@@ -104,11 +106,14 @@ public class GetImagesOfAlbum extends HttpServlet {
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		User u = null;
+		HttpSession s = req.getSession();
 		String urlAlbumId = req.getParameter("albumId");
 		String urlImageId = req.getParameter("imageId");
 		String urlNextImages = req.getParameter("nextImages");
 		String urlPreviousImages = req.getParameter("previousImages");
-
+		u = (User) s.getAttribute("user");
+		
 		if (urlAlbumId != null) {
 			int albumId = 0;
 			try {
@@ -126,6 +131,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 										// usare i bottoni per scorrere la lista di immagini
 				int nextImages = 0;
 				int previousImages = 0;
+				
+				
 
 				int chosenImageId = 0;
 				Image selectedImage = null;
@@ -188,6 +195,12 @@ public class GetImagesOfAlbum extends HttpServlet {
 					String path = "ImageList.html";
 					ServletContext servletContext = getServletContext();
 					final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
+					if(u!=null) {
+						ctx.setVariable("userLogged", true);
+					}else {
+						ctx.setVariable("userLogged", false);
+					}
+					
 					ctx.setVariable("images", imagesToDisplay);
 					ctx.setVariable("albumId", albumId);
 					ctx.setVariable("chosenImageId", chosenImageId);
