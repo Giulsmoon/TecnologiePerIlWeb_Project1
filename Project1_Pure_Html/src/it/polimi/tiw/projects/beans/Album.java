@@ -4,6 +4,9 @@ import java.util.Date;
 
 public class Album {
 	private int id;
+	private String iconPath;
+
+
 	private String title;
 	private Date date;
 
@@ -30,5 +33,11 @@ public class Album {
 	public void setDate(Date d) {
 		this.date = d;
 	}
+	public String getIconPath() {
+		return iconPath;
+	}
 
+	public void setIconPath(String iconPath) {
+		this.iconPath = iconPath;
+	}
 }

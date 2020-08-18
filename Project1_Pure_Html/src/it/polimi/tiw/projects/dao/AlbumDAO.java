@@ -30,6 +30,7 @@ public class AlbumDAO {
 				a.setId(result.getInt("id"));
 				a.setTitle(result.getString("title"));
 				a.setDate(result.getDate("creationDate"));
+				a.setIconPath(result.getString("iconPath"));
 				albums.add(a);
 			}
 		} catch (SQLException e) {

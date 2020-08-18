@@ -60,7 +60,7 @@
 														</td>
 													</tr>
 
-												</tbody> 
+												</tbody>
 											</table>
 										</div>
 									</td>
@@ -73,14 +73,14 @@
 													</tr>
 													<tr>
 														<td>
-															<a target="_blank" href="ImageList.html"> 
+															<a target="_blank" href="ImageList.html">
 																<img class="image  img-thumbnail"
 																	 src="TestImage/casa.jpg" ></a>
 														</td>
 													</tr>
-												</tbody> 
+												</tbody>
 											</table>
-										</div>	
+										</div>
 									</td>
 									<td >
 										<div class='table-responsive'>
@@ -91,14 +91,14 @@
 													</tr>
 													<tr>
 														<td>
-															<a target="_blank" href="ImageList.html"> 
+															<a target="_blank" href="ImageList.html">
 																<img class="image img-thumbnail"
 																	 src="TestImage/casa.jpg" ></a>
 														</td>
 													</tr>
-												</tbody> 
+												</tbody>
 											</table>
-										</div>	
+										</div>
 									</td>
 									<td class="even">
 										<div class='table-responsive'>
@@ -109,32 +109,32 @@
 													</tr>
 													<tr>
 														<td>
-															<a target="_blank" href="ImageList.html"> 
+															<a target="_blank" href="ImageList.html">
 																<img class="image  img-thumbnail"
 																	 src="TestImage/casa.jpg" ></a>
 														</td>
 													</tr>
-												</tbody> 
+												</tbody>
 											</table>
-										</div>	
+										</div>
 									</td>
 									<td >
 										<div class='table-responsive'>
 											<table class="table" >
 												<tbody>
 													<tr>
-														<td>Image 5</td>	
+														<td>Image 5</td>
 													</tr>
 													<tr>
 														<td>
-															<a target="_blank" href="ImageList.html"> 
+															<a target="_blank" href="ImageList.html">
 																<img class="image img-thumbnail"
 																	 src="TestImage/casa.jpg" ></a>
 														</td>a
 													</tr>
-												</tbody> 
+												</tbody>
 											</table>
-										</div>	
+										</div>
 									</td>
 								</tr>
 							</tbody>
@@ -160,7 +160,7 @@
 					<p class="h6" th:text="${imageSelected.title}">title image
 					</p>
 				</div>
-			</div>	
+			</div>
 
 			<div class="row">
 				<div class="col-lg-12 col-md-12">
@@ -169,7 +169,7 @@
 							<tbody th:remove="all-but-first">
 
 								<tr>
-									<td > 
+									<td >
 										<img  class="image img-fluid"th:src="${imageSelected.filePath}"
 											 src="TestImage/casa.jpg">
 									</td>
@@ -193,10 +193,10 @@
 
 																			<div class="media-body" th:text="${comment.text}">
 																			Wow! this is really great.</div>
-																			
+
 																			<div>
 																				<h4 class="media-heading user_name" th:text="${comment.username}">Baltej
-																					Singh</h4> 
+																					Singh</h4>
 																			</div>
 
 
@@ -207,7 +207,7 @@
 																</div>
 															</div>
 														</div>
-													</td>	
+													</td>
 													</tr>
 													<tr>
 													<td>
@@ -220,7 +220,8 @@
 															<input name="date" type="date" required> <input
 																name="albumId" type="hidden" th:value="${albumId}">
 															<input type="submit" name="submit" value="Submit Comment">
-														
+															<input name="urlNextImages" type="hidden" th:value="${nextImages}">
+															<input name="urlPreviousImages" type="hidden" th:value="${previousImages}">
 														<div class="p-3"
 															th:classappend="${userLogged} ? 'btn-hidden' : 'btn-visible'">
 															<a th:href="@{/OpenRegistrationForm}"
@@ -230,9 +231,9 @@
 														</form>
 													</td>
 												</tr>
-												</tbody> 
+												</tbody>
 											</table>
-										</div>	
+										</div>
 									</td>
 								</tr>
 							</tbody>
@@ -247,5 +248,3 @@
 		</div>
 	</body>
 </html>
-
- 

@@ -70,10 +70,13 @@ public class CreateComment extends HttpServlet {
 		String imageId = request.getParameter("imageId");
 		String albumId = request.getParameter("albumId");
 		String ds = request.getParameter("date");
+		String urlPreviousImages = request.getParameter("urlPreviousImages");
+		String urlNextImages = request.getParameter("urlNextImages");
 
 		u = (User) s.getAttribute("user");
 
-		if (comment == null || imageId == null || albumId == null || ds == null) {
+		if (comment == null || imageId == null || albumId == null || 
+				ds == null|| urlPreviousImages == null || urlNextImages == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in comment creation");
 			return;
 		}
@@ -108,7 +111,8 @@ public class CreateComment extends HttpServlet {
 		}
 
 		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&imageId=" + imgId;
+		String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&imageId=" + imgId + 
+				"&nextImages=" + urlNextImages + "&previousImages=" + urlPreviousImages;
 		response.sendRedirect(path);
 	}
 
