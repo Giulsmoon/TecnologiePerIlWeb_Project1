@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -66,11 +69,20 @@ public class CreateComment extends HttpServlet {
 		String comment = request.getParameter("comment");
 		String imageId = request.getParameter("imageId");
 		String albumId = request.getParameter("albumId");
+		String ds = request.getParameter("date");
 
 		u = (User) s.getAttribute("user");
 
-		if (comment == null || imageId == null) {
+		if (comment == null || imageId == null || albumId == null || ds == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in comment creation");
+			return;
+		}
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yyyy-MM-dd").parse(ds);
+
+		} catch (ParseException e1) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter in comment creation");
 			return;
 		}
 		int imgId = 0;
@@ -87,7 +99,7 @@ public class CreateComment extends HttpServlet {
 		}
 		CommentDAO commentDAO = new CommentDAO(connection);
 		try {
-			commentDAO.createComment(comment, imgId, userId);
+			commentDAO.createComment(comment, imgId, userId, date);
 
 		} catch (SQLException e) {
 

@@ -22,7 +22,7 @@ scrollbar-color: #00bcd4 #F5F5F5;
 .scrollbarContainer1 {
 position: relative;
 overflow-y: scroll;
-	
+
 height: 40vh; }
 
 .container{
@@ -136,3 +136,11 @@ div.desc {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.user_name{
+    font-size:14px;
+    font-weight: bold;
+}
+
+.comments-list .media{
+    border-bottom: 1px dotted #ccc;

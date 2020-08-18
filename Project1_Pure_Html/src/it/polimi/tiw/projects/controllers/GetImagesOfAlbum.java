@@ -21,9 +21,11 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.projects.beans.Comment;
 import it.polimi.tiw.projects.beans.Image;
+import it.polimi.tiw.projects.beans.User;
 import it.polimi.tiw.projects.dao.AlbumDAO;
 import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.ImageDAO;
+import it.polimi.tiw.projects.dao.UserDAO;
 
 @WebServlet("/GetImagesOfAlbum")
 public class GetImagesOfAlbum extends HttpServlet {
@@ -176,6 +178,14 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 					CommentDAO cDao = new CommentDAO(connection);
 					List<Comment> comments = cDao.findCommentsOfImage(selectedImage.getId());
+					
+					if (!comments.isEmpty()) {
+						for (int i = 0; i < comments.size(); i++) {
+
+							cDao.findUsernameOfComment(comments.get(i));
+
+						}
+					}
 
 					String path = "ImageList.html";
 					ServletContext servletContext = getServletContext();
