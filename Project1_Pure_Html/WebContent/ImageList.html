@@ -186,7 +186,7 @@
 																<div class="comment-Body">
 																	<div th:each="comment : ${comments}" class="comments-list" th:class="comments-list">
 
-																		<div>
+																		<div class="media">
 																			<div class="pull-right" th:text="${comment.date}">
 																				<small>Date comment 1</small>
 																			</div>
@@ -210,17 +210,26 @@
 													</td>	
 													</tr>
 													<tr>
-														<td>
-															<form th:action="@{/CreateComment}" method="POST">
-																Please use the form to create a new comment: 
-																<input type="text" name="comment" required> 
-																<input name="imageId" type="hidden" th:value="${chosenImageId}">
-																<input name="date" type="date" required> 
-																<input name="albumId" type="hidden" th:value="${albumId}">
-																<input type="submit" name="submit" value="Submit Comment">
-															</form>
-														</td>
-													</tr>
+													<td>
+														<form
+															th:classappend="${userLogged} ? 'btn-visible' : 'btn-hidden'"
+															th:action="@{/CreateComment}" method="POST">
+															Please use the form to create a new comment: <input
+																type="text" name="comment" required> <input
+																name="imageId" type="hidden" th:value="${chosenImageId}">
+															<input name="date" type="date" required> <input
+																name="albumId" type="hidden" th:value="${albumId}">
+															<input type="submit" name="submit" value="Submit Comment">
+														
+														<div class="p-3"
+															th:classappend="${userLogged} ? 'btn-hidden' : 'btn-visible'">
+															<a th:href="@{/OpenRegistrationForm}"
+																class="p-3 btn btn-outline-success">to comment you have to log in</a>
+
+														</div>
+														</form>
+													</td>
+												</tr>
 												</tbody> 
 											</table>
 										</div>	
