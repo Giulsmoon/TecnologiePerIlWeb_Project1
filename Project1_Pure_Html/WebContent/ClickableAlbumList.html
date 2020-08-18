@@ -33,7 +33,7 @@
 					<tbody th:remove="all-but-first">
 						<tr th:each="album : ${albums}" th:class="${albumStat.even}? 'even'">
 							<td>
-								<p th:text="${album.date}">Icon</p>
+								<img class="img-thumbnail" th:src="${album.iconPath}" src="TestImage/Icon1.png">
 							</td>
 							<td><a href="ImageList.html" th:href="@{/GetImagesOfAlbum(albumId=${album.id})}"><span th:text="${album.title}">Onions</span></a></td>
 							<td>
@@ -42,40 +42,40 @@
 						</tr>
 						<tr class="even">
 							<td>
-								<p th:text="${album.date}">Icon</p>
+								<img class="img-thumbnail" src="TestImage/Icon1.png">
 							</td>
-							<td><a href="ImageList.html">Blue Lettuce</a></td>
+							<td><p class="h5"><a href="ImageList.html">Blue Lettuce</a></p></td>
 							<td>
-								<p th:text="${album.date}">20-03-2020</p>
+								<p>20-03-2020</p>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<p th:text="${album.date}">Icon</p>
+								<img class="img-thumbnail" src="TestImage/Icon1.png">
 							</td>
 							<td><a href="ImageList.html">Mild Cinnamon</a></td>
 							<td>
-								<p th:text="${album.date}">20-03-2020</p>
+								<p>20-03-2020</p>
 							</td>
 						</tr>
 						<tr class="even">
 							<td>
-								<p th:text="${album.date}">Icon</p>
+								<img class="img-thumbnail" src="TestImage/Icon1.png">
 							</td>
 							<td>
 								<a href="ImageList.html">Apples</a>
 							</td>
 							<td>
-								<p th:text="${album.date}">20-03-2020</p>
+								<p>20-03-2020</p>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<p th:text="${album.date}">Icon</p>
+								<img class="img-thumbnail" src="TestImage/Icon1.png">
 							</td>
 							<td><a href="ImageList.html">Oranges</a></td>
 							<td>
-								<p th:text="${album.date}">20-03-2020</p>
+								<p>20-03-2020</p>
 							</td>
 						</tr>
 					</tbody>
