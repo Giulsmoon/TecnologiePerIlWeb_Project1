@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 	<head>
 		<meta charset="ISO-8859-1">
 
 		<title th:text="${albumId}">Images of default album</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link rel="stylesheet" type="text/css" media="all"
-			  href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-		<link rel="stylesheet" type="text/css" media="all"
-			  href="css/mystyle.css" th:href="@{/css/mystyle.css}">
+		<link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+		<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css" th:href="@{/css/mystyle.css}">
 		<style>
 		</style>
 	</head>
+
 	<body>
 
 
 		<div class=" container text-center pt-4">
-			<div class="row pt-4 h4">
+			<div class="row align-items-center pt-4 h4">
 				<div class="col-lg-12 col-md-12">
 					<a th:href="@{/GoToHomePage}" href="ClickableAlbumList.html">BackLink</a>
 				</div>
@@ -24,227 +24,201 @@
 
 
 
-			<div class="row  center-block pt-4">
-				<div class="col-lg-1 col-md-1 p-0 ">
+			<div class="row align-items-center pt-4">
+				<div class="col-lg-1 col-md-1  col-sm-1 col-1 p-0 ">
 					<form th:action="@{/PreviousImages}" method="POST">
-						<input  name="nextImages" type="hidden" th:value=${nextImages}>
-						<input  name="previousImages" type="hidden" th:value=${previousImages}>
-						<input  name="albumId" type="hidden" th:value=${albumId}>
-						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Back"
-							   th:classappend="${previousImages} ? 'btn-visible' : 'btn-hidden'" th:disabled="not ${previousImages}">
+						<input name="nextImages" type="hidden" th:value=${nextImages}>
+						<input name="previousImages" type="hidden" th:value=${previousImages}>
+						<input name="albumId" type="hidden" th:value=${albumId}>
+						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Back" th:classappend="${previousImages} ? 'btn-visible' : 'btn-hidden'" th:disabled="not ${previousImages}">
 					</form>
 				</div>
 
-				<div class="col-lg-10 col-md-10 p-0">
+				<div class="col-lg-10 col-md-10 col-sm-9 col-10 p-0">
+					<h2 class="p-2">Gallery Image</h2>
+					<table class="table gallery-table">
+						<tbody>
+							<tr th:remove="all-but-first">
+								<td th:each="image : ${images}" th:class="${imageStat.even}? 'even'">
+									<div class='table-responsive'>
+										<table class="table  inner-table">
+											<tbody>
+												<tr>
+													<td>
+														<p th:text="${image.title}">Image 1</p>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id},nextImages=${nextImages},previousImages=${previousImages})}">
+															<img class="image img-thumbnail" th:src="${image.filePath}" src="TestImage/casa.jpg">
+														</a>
+													</td>
+												</tr>
 
-					<h2>Images of a album</h2>
-					<div class='table-responsive'>
-						<table class="table gallery-table">
-
-							<tbody >
-								<tr th:remove="all-but-first">
-									<td th:each="image : ${images}" th:class="${imageStat.even}? 'even'">
-										<div class='table-responsive'>
-											<table class="table" >
-												<tbody>
-													<tr>
-														<td th:text="${image.title}">Image 1</td>
-													</tr>
-													<tr>
-														<td>
-															<a
-															   th:href="@{/GetImagesOfAlbum(albumId=${albumId},imageId=${image.id},nextImages=${nextImages},previousImages=${previousImages})}">
-																<img class="image img-thumbnail" th:src="${image.filePath}"
-																	 src="TestImage/casa.jpg">
-															</a>
-														</td>
-													</tr>
-
-												</tbody>
-											</table>
-										</div>
-									</td>
-									<td class="even">
-										<div class='table-responsive'>
-											<table class="table" >
-												<tbody>
-													<tr>
-														<td>Image 2</td>
-													</tr>
-													<tr>
-														<td>
-															<a target="_blank" href="ImageList.html">
-																<img class="image  img-thumbnail"
-																	 src="TestImage/casa.jpg" ></a>
-														</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</td>
-									<td >
-										<div class='table-responsive'>
-											<table class="table" >
-												<tbody>
-													<tr>
-														<td>Image 3</td>
-													</tr>
-													<tr>
-														<td>
-															<a target="_blank" href="ImageList.html">
-																<img class="image img-thumbnail"
-																	 src="TestImage/casa.jpg" ></a>
-														</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</td>
-									<td class="even">
-										<div class='table-responsive'>
-											<table class="table" >
-												<tbody>
-													<tr>
-														<td>Image 4</td>
-													</tr>
-													<tr>
-														<td>
-															<a target="_blank" href="ImageList.html">
-																<img class="image  img-thumbnail"
-																	 src="TestImage/casa.jpg" ></a>
-														</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</td>
-									<td >
-										<div class='table-responsive'>
-											<table class="table" >
-												<tbody>
-													<tr>
-														<td>Image 5</td>
-													</tr>
-													<tr>
-														<td>
-															<a target="_blank" href="ImageList.html">
-																<img class="image img-thumbnail"
-																	 src="TestImage/casa.jpg" ></a>
-														</td>a
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+											</tbody>
+										</table>
+									</div>
+								</td>
+								<td class="even">
+									<div class='table-responsive'>
+										<table class="table  inner-table">
+											<tbody>
+												<tr>
+													<td>
+														<p>Image 2</p>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a target="_blank" href="ImageList.html">
+															<img class="image  img-thumbnail" src="TestImage/casa.jpg"></a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</td>
+								<td>
+									<div class='table-responsive'>
+										<table class="table inner-table">
+											<tbody>
+												<tr>
+													<td>
+														<p>Image 3</p>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a target="_blank" href="ImageList.html">
+															<img class="image img-thumbnail" src="TestImage/casa.jpg"></a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</td>
+								<td class="even">
+									<div class='table-responsive'>
+										<table class="table  inner-table">
+											<tbody>
+												<tr>
+													<td>
+														<p>Image 4</p>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a target="_blank" href="ImageList.html">
+															<img class="image  img-thumbnail" src="TestImage/casa.jpg"></a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</td>
+								<td>
+									<div class='table-responsive'>
+										<table class="table  inner-table">
+											<tbody>
+												<tr>
+													<td>
+														<p>Image 5</p>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a target="_blank" href="ImageList.html">
+															<img class="image img-thumbnail" src="TestImage/casa.jpg"></a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 
-				<div class="col-lg-1 col-md-1 p-0">
+				<div class="col-lg-1 col-md-1  col-sm-1 col-1  p-0">
 					<form th:action="@{/NextImages}" method="POST">
-						<input  name="nextImages" type="hidden" th:value=${nextImages}>
-						<input  name="previousImages" type="hidden" th:value=${previousImages}>
-						<input  name="albumId" type="hidden" th:value=${albumId}>
+						<input name="nextImages" type="hidden" th:value=${nextImages}>
+						<input name="previousImages" type="hidden" th:value=${previousImages}>
+						<input name="albumId" type="hidden" th:value=${albumId}>
 
-						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Next"
-							   th:classappend=" ${nextImages} ? 'btn-visible' : 'btn-hidden'"
-							   th:disabled="not ${nextImages}">
+						<input class="btn btn-primary btn-gallery" type="submit" name="submit" value="Next" th:classappend=" ${nextImages} ? 'btn-visible' : 'btn-hidden'" th:disabled="not ${nextImages}">
 					</form>
 				</div>
 			</div>
 
-			<div class="row pt-4 h4">
+			<div class="row pt-4">
 				<div class="col-lg-12 col-md-12">
-					<p class="h6" th:text="${imageSelected.title}">title image
+					<p th:text="${imageSelected.title}">Title Image
 					</p>
 				</div>
 			</div>
 
-			<div class="row">
-				<div class="col-lg-12 col-md-12">
-					<div class='table-responsive'>
-						<table class="table single-image-table">
-							<tbody th:remove="all-but-first">
-
-								<tr>
-									<td >
-										<img  class="image img-fluid"th:src="${imageSelected.filePath}"
-											 src="TestImage/casa.jpg">
-									</td>
-
-									<td class="comment-column">
-										<div class='table-responsive'>
-											<table class="table" >
-												<tbody>
-													<tr>
-														<td>
-															<div
-															class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
-															<div class="force-overflow">
-																<div class="comment-Body">
-																	<div th:each="comment : ${comments}" class="comments-list" th:class="comments-list">
-
-																		<div class="media">
-																			<div class="pull-right" th:text="${comment.date}">
-																				<small>Date comment 1</small>
-																			</div>
-
-																			<div class="media-body" th:text="${comment.text}">
-																			Wow! this is really great.</div>
-
-																			<div>
-																				<h4 class="media-heading user_name" th:text="${comment.username}">Baltej
-																					Singh</h4>
-																			</div>
-
-
-																		</div>
-
-																	</div>
-
-																</div>
-															</div>
-														</div>
-													</td>
-													</tr>
-													<tr>
-													<td>
-														<form
-															th:classappend="${userLogged} ? 'btn-visible' : 'btn-hidden'"
-															th:action="@{/CreateComment}" method="POST">
-															Please use the form to create a new comment: <input
-																type="text" name="comment" required> <input
-																name="imageId" type="hidden" th:value="${chosenImageId}">
-															<input name="date" type="date" required> <input
-																name="albumId" type="hidden" th:value="${albumId}">
-															<input type="submit" name="submit" value="Submit Comment">
-															<input name="urlNextImages" type="hidden" th:value="${nextImages}">
-															<input name="urlPreviousImages" type="hidden" th:value="${previousImages}">
-														<div class="p-3"
-															th:classappend="${userLogged} ? 'btn-hidden' : 'btn-visible'">
-															<a th:href="@{/OpenRegistrationForm}"
-																class="p-3 btn btn-outline-success">to comment you have to log in</a>
-
-														</div>
-														</form>
-													</td>
-												</tr>
-												</tbody>
-											</table>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+			<div class="row ">
+				<div class="p-3 col-lg-7 col-md-7">
+					<img class="image img-fluid" th:src="${imageSelected.filePath}" src="TestImage/casa.jpg">
 				</div>
+
+				<div class="col-lg-5 col-md-5">
+					<div class="p-3">
+						<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
+							<div class="force-overflow">
+								<div class="comment-Body">
+									<div th:each="comment : ${comments}" class="comments-list" th:class="comments-list">
+
+										<div class="media">
+											<div>
+												<p class="media-heading user_name" th:text="${comment.username}">Baltej
+													Singh</p>
+											</div>
+
+
+											<div class="media-body" th:text="${comment.text}">
+												<p>Wow! this is really great.</p></div>
+
+
+											<div class="pull-right" th:text="${comment.date}">
+												<small>Date comment 1</small>
+											</div>
+
+										</div>
+
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="align-items-center p-3">
+						
+
+							<div class="p-3" th:classappend="${userLogged} ? 'btn-hidden' : 'btn-visible'">
+								<a th:href="@{/OpenRegistrationForm}" class="p-2 btn btn-outline-success">To comment you have to log in</a>
+							</div>
+						<form class=" form-signin" th:classappend="${userLogged} ? 'btn-visible' : 'btn-hidden'" th:action="@{/CreateComment}" method="POST">
+							<p>Please use the form to create a new comment: </p>
+							<label for="inputPassword" class="m-2">Text:</label>
+							<input class="form-control"  type="text" name="comment" required>
+							<label for="inputPassword" class="m-2">Date:</label>
+							<input name="imageId" type="hidden" th:value="${chosenImageId}">
+							<input class="form-control"  name="date" type="date" required>
+							<input name="albumId" type="hidden" th:value="${albumId}">
+							<input name="urlNextImages" type="hidden" th:value="${nextImages}">
+							<input name="urlPreviousImages" type="hidden" th:value="${previousImages}">
+							<div class="m-4">
+							</div>
+							<input type="submit" name="submit" class="p-2 btn btn-outline-primary btn-block" value="Submit Comment">
+
+						</form>
+					</div>
+
+				</div>
+
 			</div>
-
-
-
-
 		</div>
-	</body>
-</html>
+	</body></html>
