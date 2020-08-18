@@ -182,15 +182,10 @@ public class GetImagesOfAlbum extends HttpServlet {
 					}
 
 					CommentDAO cDao = new CommentDAO(connection);
+					//trovo per ogni immagine selezionata la lista dei suoi commenti
 					List<Comment> comments = cDao.findCommentsOfImage(selectedImage.getId());
-					
-					if (!comments.isEmpty()) {
-						for (int i = 0; i < comments.size(); i++) {
-
-							cDao.findUsernameOfComment(comments.get(i));
-
-						}
-					}
+					//setto l'attributo username per ogni commento della lista
+					cDao.findUsernameOfComment(comments);
 
 					String path = "ImageList.html";
 					ServletContext servletContext = getServletContext();

@@ -22,35 +22,44 @@ public class CommentDAO {
 	}
 
 
-	public void  findUsernameOfComment(Comment comment) throws SQLException {
-		
-		String query = "SELECT username FROM project1_pure_html.user  WHERE id = ?";
-		ResultSet result = null;
-		PreparedStatement pstatement = null;
-		try {
-			pstatement = con.prepareStatement(query);
-			pstatement.setInt(1, comment.getIdUser());
-			result = pstatement.executeQuery();
-			while (result.next()) {
-				comment.setUsername(result.getString("username"));
-				
-			}
-		} catch (SQLException e) {
-			throw new SQLException(e);
+	public void  findUsernameOfComment(List<Comment> comments) throws SQLException {
+		if (!comments.isEmpty()) {
+				String query2 = "SELECT  u.username, c.id from user u JOIN comment c ON u.id=c.idUser";
+				//String query = "SELECT username FROM project1_pure_html.user  WHERE id = ?";
+				ResultSet result = null;
+				PreparedStatement pstatement = null;
+				try {
+					pstatement = con.prepareStatement(query2);
+					//pstatement.setInt(1, comments.get(i).getIdUser());
+					result = pstatement.executeQuery();
+					while (result.next()) {
+						
+							for (int i = 0; i < comments.size(); i++) {
+								if(comments.get(i).getId()==result.getInt("id")) {
+									comments.get(i).setUsername(result.getString("username"));
+								}
+								
+							
+						}
+						
+						
+					}
+				} catch (SQLException e) {
+					throw new SQLException(e);
 
-		} finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException("Cannot close result");
+				} finally {
+					try {
+						result.close();
+					} catch (Exception e1) {
+						throw new SQLException("Cannot close result");
+					}
+					try {
+						pstatement.close();
+					} catch (Exception e1) {
+						throw new SQLException("Cannot close statement");
+					}
+				}
 			}
-			try {
-				pstatement.close();
-			} catch (Exception e1) {
-				throw new SQLException("Cannot close statement");
-			}
-		}
-		return;
 	}
 	
 	public void createComment(String text, int imageId, int userId, Date date) throws SQLException {
