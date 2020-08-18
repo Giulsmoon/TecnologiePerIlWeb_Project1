@@ -180,23 +180,42 @@
 												<tbody>
 													<tr>
 														<td>
-															<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
-																<div class="force-overflow">    										
-																	<div class="comment-Body">
-																		<p th:each="comment : ${comments}"
-																		   th:class="${commentStat.even}? 'even'" th:text="${comment.text}">
-																			comment image selected</p>
+															<div
+															class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
+															<div class="force-overflow">
+																<div class="comment-Body">
+																	<div th:each="comment : ${comments}" class="comments-list" th:class="comments-list">
+
+																		<div>
+																			<div class="pull-right" th:text="${comment.date}">
+																				<small>Date comment 1</small>
+																			</div>
+
+																			<div class="media-body" th:text="${comment.text}">
+																			Wow! this is really great.</div>
+																			
+																			<div>
+																				<h4 class="media-heading user_name" th:text="${comment.username}">Baltej
+																					Singh</h4> 
+																			</div>
+
+
+																		</div>
+
 																	</div>
+
 																</div>
-															</div>  
-														</td>	
+															</div>
+														</div>
+													</td>	
 													</tr>
 													<tr>
 														<td>
 															<form th:action="@{/CreateComment}" method="POST">
 																Please use the form to create a new comment: 
 																<input type="text" name="comment" required> 
-																<input name="imageId" type="hidden" th:value="${chosenImageId}"> 
+																<input name="imageId" type="hidden" th:value="${chosenImageId}">
+																<input name="date" type="date" required> 
 																<input name="albumId" type="hidden" th:value="${albumId}">
 																<input type="submit" name="submit" value="Submit Comment">
 															</form>
@@ -220,3 +239,4 @@
 	</body>
 </html>
 
+ 
