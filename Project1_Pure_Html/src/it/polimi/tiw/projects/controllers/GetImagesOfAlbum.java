@@ -89,7 +89,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 		return correct;
 	}
-	
+
 	public String getAlbumTitleFromId(int albumId) {
 		String albumTitle=null;
 		AlbumDAO albumDao = new AlbumDAO(connection);
@@ -123,7 +123,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 		String urlNextImages = req.getParameter("nextImages");
 		String urlPreviousImages = req.getParameter("previousImages");
 		u = (User) s.getAttribute("user");
-		
+
 		if (urlAlbumId != null) {
 			int albumId = 0;
 			try {
@@ -141,12 +141,12 @@ public class GetImagesOfAlbum extends HttpServlet {
 										// usare i bottoni per scorrere la lista di immagini
 				int nextImages = 0;
 				int previousImages = 0;
-				
+
 				int chosenImageId = 0;
 				Image selectedImage = null;
-				
+
 				String albumTitle=null;
-				
+
 				try {
 					images = imgDao.findImagesByAlbum(albumId);
 
@@ -156,7 +156,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 						numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
 					}
 					// Se questi due valori dalla request sono null vuol dire
-					// che sono nel caso in cui la pagina è stata appena aperta
+					// che sono nel caso in cui la pagina ï¿½ stata appena aperta
 					// e quindi setto dei valori di default
 					if (urlNextImages == null || urlPreviousImages == null) {
 						nextImages = numberOfBlocks - 1;
@@ -193,18 +193,12 @@ public class GetImagesOfAlbum extends HttpServlet {
 					}
 
 					CommentDAO cDao = new CommentDAO(connection);
+					//trovo per ogni immagine selezionata la lista dei suoi commenti
 					List<Comment> comments = cDao.findCommentsOfImage(selectedImage.getId());
-					
-					if (!comments.isEmpty()) {
-						for (int i = 0; i < comments.size(); i++) {
-
-							cDao.findUsernameOfComment(comments.get(i));
-
-						}
-					}
-					
+					//setto l'attributo username per ogni commento della lista
+					cDao.findUsernameOfComment(comments);
 					albumTitle=getAlbumTitleFromId(albumId);
-					
+
 					String path = "ImageList.html";
 					ServletContext servletContext = getServletContext();
 					final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
@@ -213,7 +207,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 					}else {
 						ctx.setVariable("userLogged", false);
 					}
-					
+
 					ctx.setVariable("images", imagesToDisplay);
 					ctx.setVariable("albumId", albumId);
 					ctx.setVariable("chosenImageId", chosenImageId);
