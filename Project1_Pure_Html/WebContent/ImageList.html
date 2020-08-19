@@ -17,10 +17,10 @@
 
 		<div class=" container text-center pt-4">
 			<div class="row align-items-center pt-4 h4">
-				<div class="col-lg-2 col-md-2">
+				<div class="col-lg-2 col-md-2 col-sm-2 col-2">
 					<a href="GoToHomePage"th:href="@{/GoToHomePage}" class="btn btn-outline-success p-2">Back</a>
 				</div>
-				<div class="col-lg-8 col-md-8">
+				<div class="col-lg-8 col-md-8 col-sm-8 col-8">
 					<p class="h1 p-1">Album
 						<span class="h1" th:text="${albumTitle}">prova
 						</span>
@@ -28,7 +28,7 @@
 					</p>
 
 				</div>
-				<div class="col-lg-2 col-md-2">
+				<div class="col-lg-2 col-md-2 col-sm-2 col-2">
 					<a th:if="${userLogged}"  th:href="@{/Logout}" class="btn btn-outline-success p-2">Logout</a>
 					<a  th:unless="${userLogged}"  th:href="@{/}" class="btn btn-outline-success p-2">Login</a>
 				</div>
@@ -37,7 +37,7 @@
 
 
 			<div class="row align-items-center pt-4">
-				<div class="col-lg-1 col-md-1  col-sm-1 col-1 p-0 ">
+				<div class="col-lg-1 col-md-1  col-sm-2 col-2 p-0">
 					<form th:action="@{/PreviousImages}" method="POST">
 						<input name="nextImages" type="hidden" th:value=${nextImages}>
 						<input name="previousImages" type="hidden" th:value=${previousImages}>
@@ -46,8 +46,8 @@
 					</form>
 				</div>
 
-				<div class="col-lg-10 col-md-10 col-sm-9 col-10 p-0">
-					<table class="table gallery-table">
+				<div class="col-lg-10 col-md-10 col-sm-8 col-8 p-0">
+					<table class="table-responsive gallery-table">
 						<tbody>
 							<tr th:remove="all-but-first">
 								<td th:each="image : ${images}" th:class="${imageStat.even}? 'even'">
@@ -152,7 +152,7 @@
 					</table>
 				</div>
 
-				<div class="col-lg-1 col-md-1  col-sm-1 col-1  p-0">
+				<div class="col-lg-1 col-md-1 col-sm-2 col-2  p-0 ">
 					<form th:action="@{/NextImages}" method="POST">
 						<input name="nextImages" type="hidden" th:value=${nextImages}>
 						<input name="previousImages" type="hidden" th:value=${previousImages}>
@@ -171,11 +171,11 @@
 			</div>
 
 			<div class="row ">
-				<div class="p-3 col-lg-7 col-md-7">
+				<div class="p-3 col-lg-7 col-md-12 col-sm-12 col-12 ">
 					<img class="image img-fluid" th:src="${imageSelected.filePath}" src="TestImage/casa.jpg">
 				</div>
 
-				<div class="col-lg-5 col-md-5">
+				<div class="col-lg-5 col-md-8 col-sm-12 col-12 mx-auto">
 					<div class="p-3">
 						<div class="scrollbarContainer1 scrollbar-cyan bordered-cyan">
 							<div class="force-overflow">
@@ -209,15 +209,13 @@
 
 
 						<div class="p-3" th:classappend="${userLogged} ? 'btn-hidden' : 'btn-visible'">
-							<a th:href="@{/OpenRegistrationForm}" class="p-2 btn btn-outline-success">To comment you have to log in</a>
+							<a th:href="@{/}" class="p-2 btn btn-outline-success">Log in to add your comment</a>
 						</div>
 						<form class=" form-signin" th:classappend="${userLogged} ? 'btn-visible' : 'btn-hidden'" th:action="@{/CreateComment}" method="POST">
 							<p>Please use the form to create a new comment: </p>
-							<label for="inputPassword" class="m-2">Text:</label>
+							<label for="text" class="m-2">Text:</label>
 							<input class="form-control"  type="text" name="comment" required>
-							<label for="inputPassword" class="m-2">Date:</label>
 							<input name="imageId" type="hidden" th:value="${chosenImageId}">
-							<input class="form-control"  name="date" type="date" required>
 							<input name="albumId" type="hidden" th:value="${albumId}">
 							<input name="urlNextImages" type="hidden" th:value="${nextImages}">
 							<input name="urlPreviousImages" type="hidden" th:value="${previousImages}">

@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,7 +64,7 @@ public class CommentDAO {
 			}
 	}
 	
-	public void createComment(String text, int imageId, int userId, Date date) throws SQLException {
+	public void createComment(String text, int imageId, int userId) throws SQLException {
 		String query = "INSERT into project1_pure_html.comment (text, idImage, idUser, date)   VALUES(?, ?, ?, ?)";
 
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
@@ -70,7 +72,7 @@ public class CommentDAO {
 			pstatement.setString(1, text);
 			pstatement.setInt(2, imageId);
 			pstatement.setInt(3, userId);
-			pstatement.setObject(4, date.toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDate());
+			pstatement.setObject(4, DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now()));
 			pstatement.executeUpdate();
 		}
 	}

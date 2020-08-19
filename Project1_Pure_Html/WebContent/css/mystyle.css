@@ -21,8 +21,8 @@ scrollbar-color: #00bcd4 #F5F5F5;
 
 .scrollbarContainer1 {
 position: relative;
-overflow-y: scroll;
-height: 30vh; 
+overflow-y: auto;
+height: 35vh; 
 width: 100%;
 padding: 10px;
 }
@@ -40,6 +40,11 @@ padding: 10px;
 	margin: 0px;
 	padding: 0px;
 }
+
+.gallery-table{
+		scrollbar-color: #00bcd4 #F5F5F5;
+
+}
 table.gallery-table td{
 	vertical-align: top !important;
 	padding: 5px;
@@ -54,6 +59,10 @@ table.gallery-table td{
 .btn-gallery{
 	
 }
+
+.col-btn-gallery{
+	display: contents;
+}
 div.desc {
 	padding: 15px;
 	text-align: center;
@@ -64,7 +73,6 @@ div.desc {
 }
 
 .comment-column{
-	width: 30vh;
 }
 
 .btn-hidden{
@@ -186,5 +194,9 @@ p, label, input{
 	font-family: "Source Sans Pro", sans-serif;
 	margin-bottom: 0px;
 		margin-top: 0px;
+}
 
+.media-body {
+	margin-left: .4rem;
+	margin-right: .4rem;
 }

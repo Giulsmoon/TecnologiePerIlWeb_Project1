@@ -69,25 +69,17 @@ public class CreateComment extends HttpServlet {
 		String comment = request.getParameter("comment");
 		String imageId = request.getParameter("imageId");
 		String albumId = request.getParameter("albumId");
-		String ds = request.getParameter("date");
 		String urlPreviousImages = request.getParameter("urlPreviousImages");
 		String urlNextImages = request.getParameter("urlNextImages");
 
 		u = (User) s.getAttribute("user");
 
 		if (comment == null || imageId == null || albumId == null || 
-				ds == null|| urlPreviousImages == null || urlNextImages == null) {
+				 urlPreviousImages == null || urlNextImages == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in comment creation");
 			return;
 		}
-		Date date = null;
-		try {
-			date = new SimpleDateFormat("yyyy-MM-dd").parse(ds);
-
-		} catch (ParseException e1) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter in comment creation");
-			return;
-		}
+		
 		int imgId = 0;
 		int userId = 0;
 		int alId = 0;
@@ -102,7 +94,7 @@ public class CreateComment extends HttpServlet {
 		}
 		CommentDAO commentDAO = new CommentDAO(connection);
 		try {
-			commentDAO.createComment(comment, imgId, userId, date);
+			commentDAO.createComment(comment, imgId, userId);
 
 		} catch (SQLException e) {
 
