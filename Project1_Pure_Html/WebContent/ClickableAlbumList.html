@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-	<title>ALbum List</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
-	<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css" th:href="@{/css/mystyle.css}">
-</head>
+	<head>
+		<title>ALbum List</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+		<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css" th:href="@{/css/mystyle.css}">
+	</head>
 
-<body>
-	<div class=" container text-center">
+	<body>
+		<div class=" container text-center">
 
-		<div class="row align-items-center">
-			<div class="col-lg-12 col-md-12">
-				<div class="container p-3 page-title">
-					<div class="title-text text-center">
-						<h1>Album List</h1>
+			<div class="row align-items-center">
+				<div class="col-lg-10 col-md-10">
+					<div class="container p-3 page-title">
+						<div class="title-text text-center">
+							<h1>Album List</h1>
+						</div>
 					</div>
 				</div>
-			</div>
-		</div>
+				<div class="col-lg-2 col-md-2">
+						<a href="Logout" class="btn btn-outline-success p-2">Logout</a>
+					</div>
+				</div>
+			
 		<div class="row align-items-center">
 			<div class="col-lg-12 col-md-12">
 				<table class="table table-album">
@@ -82,7 +86,7 @@
 				</table>
 			</div>
 		</div>
-	</div>
-</body>
+		</div>
+	</body>
 
 </html>

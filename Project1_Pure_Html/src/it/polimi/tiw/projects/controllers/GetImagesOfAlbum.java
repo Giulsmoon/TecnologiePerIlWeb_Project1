@@ -89,6 +89,16 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 		return correct;
 	}
+	
+	public String getAlbumTitleFromId(int albumId) {
+		String albumTitle=null;
+		AlbumDAO albumDao = new AlbumDAO(connection);
+		try {
+		albumTitle=albumDao.findAlbumTitleById(albumId);
+		} catch (SQLException e) {
+		}
+		return albumTitle;
+	}
 
 	public boolean selectedImageInTheAlbum(String urlImageId, List<Image> images) {
 		boolean correct = false;
@@ -132,10 +142,11 @@ public class GetImagesOfAlbum extends HttpServlet {
 				int nextImages = 0;
 				int previousImages = 0;
 				
-				
-
 				int chosenImageId = 0;
 				Image selectedImage = null;
+				
+				String albumTitle=null;
+				
 				try {
 					images = imgDao.findImagesByAlbum(albumId);
 
@@ -191,7 +202,9 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 						}
 					}
-
+					
+					albumTitle=getAlbumTitleFromId(albumId);
+					
 					String path = "ImageList.html";
 					ServletContext servletContext = getServletContext();
 					final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
@@ -208,6 +221,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 					ctx.setVariable("comments", comments);
 					ctx.setVariable("nextImages", nextImages);
 					ctx.setVariable("previousImages", previousImages);
+					ctx.setVariable("albumTitle", albumTitle);
+
 					templateEngine.process(path, ctx, res.getWriter());
 
 				} catch (

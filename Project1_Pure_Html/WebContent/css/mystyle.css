@@ -41,13 +41,14 @@ padding: 10px;
 	padding: 0px;
 }
 table.gallery-table td{
-	vertical-align: middle !important;
+	vertical-align: top !important;
 	padding: 5px;
 }
 
 .gallery-table .image{
 	height: auto;
 	width: 100%;
+	max-width: 200px;
 
 }
 .btn-gallery{
@@ -144,7 +145,11 @@ div.desc {
 table.table-album td{
 	vertical-align: middle !important;
 }
-
+table.table-album img{
+	max-width: 150px;
+	width: 100%;
+	height: auto;
+}
 table.table-album a{
 	font-size: 20px;
 	color: dodgerblue;

@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="ISO-8859-1">
 
-		<title th:text="${albumId}">Images of default album</title>
+		<title><span>Album</span> <span th:text="${albumTitle}">Prova</span></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
 		<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css" th:href="@{/css/mystyle.css}">
@@ -17,8 +17,19 @@
 
 		<div class=" container text-center pt-4">
 			<div class="row align-items-center pt-4 h4">
-				<div class="col-lg-12 col-md-12">
-					<a th:href="@{/GoToHomePage}" href="ClickableAlbumList.html">BackLink</a>
+				<div class="col-lg-2 col-md-2">
+					<a href="GoToHomePage"th:href="@{/GoToHomePage}" class="btn btn-outline-success p-2">Back</a>
+				</div>
+				<div class="col-lg-8 col-md-8">
+					<p class="h1 p-1">Album
+						<span class="h1" th:text="${albumTitle}">prova
+						</span>
+					
+					</p>
+
+				</div>
+				<div class="col-lg-2 col-md-2">
+					<a href="Logout" th:href="@{/Logout}" class="btn btn-outline-success p-2">Logout</a>
 				</div>
 			</div>
 
@@ -35,7 +46,6 @@
 				</div>
 
 				<div class="col-lg-10 col-md-10 col-sm-9 col-10 p-0">
-					<h2 class="p-2">Gallery Image</h2>
 					<table class="table gallery-table">
 						<tbody>
 							<tr th:remove="all-but-first">
@@ -195,11 +205,11 @@
 						</div>
 					</div>
 					<div class="align-items-center p-3">
-						
 
-							<div class="p-3" th:classappend="${userLogged} ? 'btn-hidden' : 'btn-visible'">
-								<a th:href="@{/OpenRegistrationForm}" class="p-2 btn btn-outline-success">To comment you have to log in</a>
-							</div>
+
+						<div class="p-3" th:classappend="${userLogged} ? 'btn-hidden' : 'btn-visible'">
+							<a th:href="@{/OpenRegistrationForm}" class="p-2 btn btn-outline-success">To comment you have to log in</a>
+						</div>
 						<form class=" form-signin" th:classappend="${userLogged} ? 'btn-visible' : 'btn-hidden'" th:action="@{/CreateComment}" method="POST">
 							<p>Please use the form to create a new comment: </p>
 							<label for="inputPassword" class="m-2">Text:</label>
@@ -221,4 +231,5 @@
 
 			</div>
 		</div>
-	</body></html>
+	</body>
+</html>

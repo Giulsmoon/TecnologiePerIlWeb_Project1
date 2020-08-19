@@ -83,6 +83,34 @@ public class AlbumDAO {
 		return album;
 	}
 
-	
+	public String findAlbumTitleById(int albumId) throws SQLException {
+		String albumTitle=null;
+		String query = "SELECT title FROM project1_pure_html.album WHERE id = ?";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		try {
+			pstatement = con.prepareStatement(query);
+			pstatement.setInt(1, albumId);
+			result = pstatement.executeQuery();
+			while (result.next()) {
+				albumTitle=result.getString("title");
+			}
+	} catch (SQLException e) {
+		throw new SQLException(e);
 
+	} finally {
+		try {
+			result.close();
+		} catch (Exception e1) {
+			throw new SQLException("Cannot close result");
+		}
+		try {
+			pstatement.close();
+		} catch (Exception e1) {
+			throw new SQLException("Cannot close statement");
+		}
+	}
+	return albumTitle;
+
+	}
 }
