@@ -20,9 +20,10 @@
 					</div>
 				</div>
 				<div class="col-lg-2 col-md-2">
-						<a href="Logout" class="btn btn-outline-success p-2">Logout</a>
-					</div>
+						<a href="Logout" th:if="${userLogged}"  th:href="@{/Logout}" class="btn btn-outline-success p-2">Logout</a>
+						<a href="OpenRegistrationForm" th:unless="${userLogged}"  th:href="@{/OpenRegistrationForm}" class="btn btn-outline-success p-2">Login</a>
 				</div>
+			</div>
 			
 		<div class="row align-items-center">
 			<div class="col-lg-12 col-md-12">

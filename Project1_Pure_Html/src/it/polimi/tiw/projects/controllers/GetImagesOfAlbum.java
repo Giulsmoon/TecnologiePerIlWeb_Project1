@@ -117,12 +117,12 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		User u = null;
-		HttpSession s = req.getSession();
+		HttpSession session = req.getSession();
 		String urlAlbumId = req.getParameter("albumId");
 		String urlImageId = req.getParameter("imageId");
 		String urlNextImages = req.getParameter("nextImages");
 		String urlPreviousImages = req.getParameter("previousImages");
-		u = (User) s.getAttribute("user");
+		u = (User) session.getAttribute("user");
 
 		if (urlAlbumId != null) {
 			int albumId = 0;
@@ -150,21 +150,24 @@ public class GetImagesOfAlbum extends HttpServlet {
 				try {
 					images = imgDao.findImagesByAlbum(albumId);
 
+					//trovo quanti blocchi da 5 immagini contenga l'album selezionato
 					if (images.size() % 5 == 0) {
 						numberOfBlocks = Math.floorDiv(images.size(), 5);
 					} else {
 						numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
 					}
 					// Se questi due valori dalla request sono null vuol dire
-					// che sono nel caso in cui la pagina ï¿½ stata appena aperta
+					// che sono nel caso in cui la pagina è stata appena aperta
 					// e quindi setto dei valori di default
 					if (urlNextImages == null || urlPreviousImages == null) {
-						nextImages = numberOfBlocks - 1;
-						previousImages = 0;
+						nextImages = numberOfBlocks - 1; // ci sono dei blocchi da 5 immagini successivi a quello visualizzato
+						previousImages = 0; // non ci sono blocchi da 5 immagini precedenti a quello aperto
 					} else {
 						int nextImagesFromRequest = 0;
 						int previousImagesFromRequest = 0;
 						try {
+							//faccio il parser dei valori ottenuti dalla request della servlet di uno dei due bottoni
+							//previous e next e controllo che siano coerenti.
 							nextImagesFromRequest = Integer.parseInt(urlNextImages);
 							previousImagesFromRequest = Integer.parseInt(urlPreviousImages);
 						} catch (NumberFormatException e) {
@@ -186,22 +189,29 @@ public class GetImagesOfAlbum extends HttpServlet {
 					// image selection (default or with id)
 					if (urlImageId == null || urlImageId != null && !selectedImageInTheAlbum(urlImageId, imagesToDisplay)) {
 						chosenImageId = imagesToDisplay.get(0).getId();
-						selectedImage = imagesToDisplay.get(0); // Get the first as "default"
+						selectedImage = imagesToDisplay.get(0); // Get the first of the list as "default"
 					} else {
 						chosenImageId = Integer.parseInt(urlImageId);
 						selectedImage = imgDao.findImagesById(chosenImageId);
 					}
 
 					CommentDAO cDao = new CommentDAO(connection);
+					
 					//trovo per ogni immagine selezionata la lista dei suoi commenti
 					List<Comment> comments = cDao.findCommentsOfImage(selectedImage.getId());
+					
 					//setto l'attributo username per ogni commento della lista
 					cDao.findUsernameOfComment(comments);
+					
 					albumTitle=getAlbumTitleFromId(albumId);
 
 					String path = "ImageList.html";
 					ServletContext servletContext = getServletContext();
 					final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
+					
+					//controllo che l'utente sia loggato in modo tale da mostrare il bottone di logout e la form per commentare
+					//le immagini se fosse loggato altrimenti si mostrerebbe il bottone login e un rimando alla pagina per 
+					//registrarsi così da poter commentare.
 					if(u!=null) {
 						ctx.setVariable("userLogged", true);
 					}else {

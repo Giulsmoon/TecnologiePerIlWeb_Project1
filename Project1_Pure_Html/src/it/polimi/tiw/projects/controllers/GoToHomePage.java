@@ -13,6 +13,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import java.util.List;
 import it.polimi.tiw.projects.beans.Album;
+import it.polimi.tiw.projects.beans.User;
 import it.polimi.tiw.projects.dao.AlbumDAO;
 
 //@WebServlet(urlPatterns = {"/GetTopics", "/"})
@@ -50,13 +51,25 @@ public class GoToHomePage extends HttpServlet {
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		User u = null;
+		HttpSession session = req.getSession();
 		AlbumDAO aDAO = new AlbumDAO(connection);
 		List<Album> albums;
+		u = (User) session.getAttribute("user");
 		try {
 			albums = aDAO.findAllAlbums();
 			String path = "ClickableAlbumList.html";
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
+			
+			//controllo che l'utente sia loggato, così da mostrare il bottone logout se lo fosse oppure il bottone 
+			//login se non fosse loggato
+			if(u!=null) {
+				ctx.setVariable("userLogged", true);
+			}else {
+				ctx.setVariable("userLogged", false);
+			}
+			
 			ctx.setVariable("albums", albums);
 			templateEngine.process(path, ctx, res.getWriter());
 		} catch (

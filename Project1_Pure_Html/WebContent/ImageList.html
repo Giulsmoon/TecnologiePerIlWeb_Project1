@@ -29,7 +29,8 @@
 
 				</div>
 				<div class="col-lg-2 col-md-2">
-					<a href="Logout" th:href="@{/Logout}" class="btn btn-outline-success p-2">Logout</a>
+					<a href="Logout" th:if="${userLogged}"  th:href="@{/Logout}" class="btn btn-outline-success p-2">Logout</a>
+					<a href="OpenRegistrationForm" th:unless="${userLogged}"  th:href="@{/OpenRegistrationForm}" class="btn btn-outline-success p-2">Login</a>
 				</div>
 			</div>
 
