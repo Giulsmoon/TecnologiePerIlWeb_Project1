@@ -134,12 +134,16 @@ div.desc {
 }
 
 .user_name{
-    font-size:14px;
+    font-size:18px;
     font-weight: bold;
+	letter-spacing: 0px;
 }
 
 .comments-list .media{
-    border-bottom: 1px dotted #ccc;
+    border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: #ccc;
+	margin-bottom: 20px;
 }
 
 table.table-album td{
