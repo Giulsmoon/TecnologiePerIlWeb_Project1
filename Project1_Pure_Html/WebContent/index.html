@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
+	<head>
 	<meta charset="ISO-8859-1">
 
 	<title>Gallery Image</title>
@@ -11,50 +11,51 @@
 </head>
 
 <body>
-	<div class="container p-3 page-title">
-		<div class="title-text text-center">
-			<h1>Welcome to Gallery Image</h1>
+
+	<div class="container text-center ">
+		<div class="row align-items-center py-2">
+			<div class="col-lg-12 ">
+				<div class="title-text">
+					<h1>Welcome to Gallery Image</h1>
+				</div>
+			</div>
 		</div>
-	</div>
-
-	<div class="container p-3 text-center">
-
-		<div class="row align-items-center">
+		<div class="row align-items-center  py-2">
 			<div class="col-lg-6 col-md-6">
-				<form class="form-signin" action="CheckLogin" method="POST">
+				<form class="form-signin text-left border rounded-lg shadow-sm " action="CheckLogin" method="POST">
 
-					<h1 class="h2 mb-3 font-weight-normal">Please sign in</h1>
+					<p class="h2 mb-3 font-weight-normal">Please sign in</p>
 
 					<label for="username" class="m-2">Username:</label>
-					<input type="text" name="username" id="username" class="form-control" placeholder="username" required="" autofocus="">
+					<input type="text" name="username" id="username" class="form-control" placeholder="Username" required="" autofocus="">
 
 					<label for="inputPassword" class="m-2">Password:</label>
 					<input type="password" name="pwd" id="inputPassword" class="form-control" placeholder="Password" required="">
 					<div class="m-4">
 					</div>
-					<button type="submit" class="p-2 btn btn-outline-primary btn-block" value="login"> Log in </button>
+					<button type="submit" class="p-2 btn btn-outline-primary btn-block shadow-sm" value="login"> Log in </button>
 				</form>
 
-				<div class="p-3" th:classappend=" not ${RegistrationForm} ? 'btn-visible' : 'btn-hidden'" th:disabled="${RegistrationForm}">
-					<a href=" OpenRegistrationForm" th:href="@{/OpenRegistrationForm}" class="p-3 btn btn-outline-success">Create New Account</a>
+				<div class="pt-3" th:classappend=" not ${RegistrationForm} ? 'visible' : 'invisible'" th:disabled="${RegistrationForm}">
+					<a href=" OpenRegistrationForm" th:href="@{/OpenRegistrationForm}" class="p-3 btn btn-outline-success shadow-sm">Create New Account</a>
 
 				</div>
 			</div>
 
-			<div class=" p-3 col-lg-6 col-md-6 ">
-				<a href="CheckGuest" class="btn btn-outline-success p-4">Continue as Guest</a>
+			<div class="py-3 col-lg-6 col-md-6 ">
+				<a href="CheckGuest" class="btn btn-outline-success p-4 shadow-sm">Continue as Guest</a>
 			</div>
 		</div>
 
 
 
-		<div class="row btn-hidden" th:class=" ${RegistrationForm} ? 'row btn-visible' : 'row btn-hidden'">
+		<div class="row align-items-center " th:class=" ${RegistrationForm} ? 'row visible' : 'row invisible'">
 			<div class="col-lg-6 col-md-6">
-				<form class="form-signin" th:action="@{/Registration}" method="POST">
-					<h1 class="h2 mb-3 font-weight-normal">Register Form</h1>
+				<form class="form-signin text-left border rounded-lg shadow-sm " th:action="@{/Registration}" method="POST">
+					<p class="h2 mb-3 font-weight-normal">Register Form</p>
 
 					<div class="form-group">
-						<label for="username" class="m-2">Insert your Username:</label> <input type="text" class="form-control" th:class=" ${checkUsername} ? 'form-control is-invalid' : 'form-control'" name="username" required aria-describedby="usernameHelp" placeholder=" Insert username">
+						<label for="username" class="m-2">Username:</label> <input type="text" class="form-control" th:class=" ${checkUsername} ? 'form-control is-invalid' : 'form-control'" name="username" required aria-describedby="usernameHelp" placeholder=" Insert username">
 						<div class="invalid-feedback">Already existing username, insert another one.</div>
 					</div>
 					<div class="form-group">
@@ -63,12 +64,12 @@
 						<div class="invalid-feedback">Please reinsert password.</div>
 					</div>
 					<div class="form-group">
-						<label for="passwordReinserted" class="m-2">Reinsert the Password:</label>
+						<label for="passwordReinserted" class="m-2">Confirm Password:</label>
 						<input type="password" class="form-control" th:class=" ${WrongPasswords} ? 'form-control is-invalid' : 'form-control'" placeholder="Password" name="passwordReinserted" required>
 						<div class="invalid-feedback">Please reinsert password.</div>
 					</div>
 
-					<button type="submit" name="submit" value="Submit Registration" class="p-2 btn btn-outline-primary btn-block">Submit</button>
+					<button type="submit" name="submit" value="Submit Registration" class="p-2 btn btn-outline-primary btn-block shadow-sm">Submit</button>
 				</form>
 
 			</div>
@@ -77,6 +78,4 @@
 		</div>
 	</div>
 
-</body>
-
-</html>
+</body></html>
