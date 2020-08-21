@@ -55,8 +55,18 @@ table.gallery-table td{
 	height: auto;
 	width: 100%;
 	max-width: 200px;
+	min-width: 12vh;
 
 }
+
+.gallery-table p {
+	max-width: 17vh;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow:ellipsis ;
+	
+}
+
 .btn-gallery{
 	
 }

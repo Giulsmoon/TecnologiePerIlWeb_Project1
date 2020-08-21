@@ -26,7 +26,18 @@
     <url-pattern>/Logout</url-pattern> 
     <url-pattern>/CreateComment</url-pattern> 
  </filter-mapping> 
-  
+  <filter> 
+      <filter-name>GuestCheck</filter-name>
+      <filter-class>it.polimi.tiw.projects.filters.GuestCheck</filter-class> 
+ </filter> 
+ <filter-mapping> 
+    <filter-name>GuestCheck</filter-name> 
+    <url-pattern>/CheckLogin</url-pattern> 
+    <url-pattern>/OpenRegistrationForm</url-pattern> 
+    <url-pattern>/CheckGuest</url-pattern> 
+    <url-pattern>/Registration</url-pattern> 
+ </filter-mapping> 
+ 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

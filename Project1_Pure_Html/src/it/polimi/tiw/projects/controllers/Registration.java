@@ -75,8 +75,6 @@ public class Registration extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String passwordReinserted = request.getParameter("passwordReinserted");
-		System.out.println(password);
-		System.out.println(passwordReinserted);
 		if (username == null || password == null || passwordReinserted == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in registration creation");
 			return;
@@ -111,13 +109,10 @@ public class Registration extends HttpServlet {
 					ctx.setVariable("RegistrationForm", true); //deve rimostrare la form per la registrazione
 					
 					if(!password.equals(passwordReinserted)) {
-						System.out.println("password sbagliate");
-						System.out.println(password);
-						System.out.println(passwordReinserted);
+
 						ctx.setVariable("WrongPasswords", true); //le due password inserite sono sbagliate
 					}
 					if(!registrationDAO.controlRegistrationOfUser(username)) {	
-						System.out.println("username già esistente");
 						ctx.setVariable("checkUsername", true); // lo username inserito è già esistente nel database
 					}
 					templateEngine.process(path, ctx, response.getWriter());

@@ -58,7 +58,7 @@ public class GoToHomePage extends HttpServlet {
 		u = (User) session.getAttribute("user");
 		try {
 			albums = aDAO.findAllAlbums();
-			String path = "ClickableAlbumList.html";
+			String path = "AlbumList.html";
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());
 			
