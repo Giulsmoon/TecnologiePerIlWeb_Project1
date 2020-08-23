@@ -3,7 +3,7 @@
   <display-name>Project1_Ria</display-name>
   <context-param>
     <param-name>dbUrl</param-name>
-    <param-value>jdbc:mysql://localhost:3306/project1_pure_html</param-value>
+    <param-value>jdbc:mysql://localhost:3306/project1_ria</param-value>
   </context-param>
   <context-param>
     <param-name>dbUser</param-name>
@@ -19,24 +19,22 @@
   </context-param>
   <filter> 
       <filter-name>LoggedUser</filter-name>
-      <filter-class>it.polimi.tiw.projects.filters.LoggedUser</filter-class> 
+      <filter-class>it.polimi.tiw.missions.filters.LoggedUser</filter-class> 
  </filter> 
- <filter-mapping> 
-    <filter-name>LoggedUser</filter-name> 
-    <url-pattern>/Logout</url-pattern> 
-    <url-pattern>/CreateComment</url-pattern> 
- </filter-mapping> 
+  <filter> 
+      <filter-name>NoCacher</filter-name>
+      <filter-class>it.polimi.tiw.missions.filters.NoCacher</filter-class> 
+ </filter> 
   <filter> 
       <filter-name>GuestCheck</filter-name>
-      <filter-class>it.polimi.tiw.projects.filters.GuestCheck</filter-class> 
- </filter> 
- <filter-mapping> 
-    <filter-name>GuestCheck</filter-name> 
-    <url-pattern>/CheckLogin</url-pattern> 
-    <url-pattern>/OpenRegistrationForm</url-pattern> 
-    <url-pattern>/CheckGuest</url-pattern> 
-    <url-pattern>/Registration</url-pattern> 
+      <filter-class>it.polimi.tiw.missions.filters.GuestCheck</filter-class> 
+ </filter>
+  
+  <filter-mapping> 
+    <filter-name>NoCacher</filter-name> 
+    <url-pattern>/HomeCS.html</url-pattern> 
  </filter-mapping> 
+ 
  
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
