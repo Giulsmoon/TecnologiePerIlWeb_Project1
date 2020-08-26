@@ -1,9 +1,12 @@
 package it.polimi.tiw.missions.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
 	private int id;
 	private String username;
-	private int[] prefAlbumOrder=null;
+	private int[] prefAlbumOrder;
 
 	public int getId() {
 		return id;

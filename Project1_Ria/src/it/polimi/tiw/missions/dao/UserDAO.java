@@ -7,7 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import it.polimi.tiw.missions.beans.User;
+
 
 public class UserDAO {
 	private Connection con;
@@ -33,6 +37,23 @@ public class UserDAO {
 				}
 			}
 		}
+	}
+	
+	public User checkUserAlbumPreference(User user)throws SQLException {
+		
+		String query = "SELECT  albumOrder FROM preference as p  WHERE p.idUser= ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, user.getId());
+			
+			try (ResultSet result = pstatement.executeQuery();) {
+				     
+				
+				Gson gson = new GsonBuilder().create();
+				int[] order = gson.fromJson(result.getString("albumOrder"), int[].class);
+				user.setPrefAlbumOrder(order);
+			}
+		}
+		return user;
 	}
 	
 	public List<User> findAllUsers() throws SQLException {

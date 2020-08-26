@@ -23,77 +23,71 @@
 	    }
 	  }
 
-	  function MissionsList(_alert, _listcontainer, _listcontainerbody) {
+	  function AlbumsList(_alert, _albumsRow, _albumsBody) {
 	    this.alert = _alert;
-	    this.listcontainer = _listcontainer;
-	    this.listcontainerbody = _listcontainerbody;
+	    this.albumsRow = _albumsRow;
+	    this.albumsBody = _albumsBody;
 
 	    this.reset = function() {
-	      this.listcontainer.style.visibility = "hidden";
+	      this.albumsRow.style.visibility = "hidden";
 	    }
 
 	    this.show = function(next) {
-	      var self = this;
-	      makeCall("GET", "GetMissionsData", null,
+	      var that = this;
+	      makeCall("GET", "GetAlbumList", null,
 	        function(req) {
 	          if (req.readyState == 4) {
 	            var message = req.responseText;
 	            if (req.status == 200) {
-	              var missionsToShow = JSON.parse(req.responseText);
-	              if (missionsToShow.length == 0) {
-	                self.alert.textContent = "No missions yet!";
+	              var albumsToShow = JSON.parse(req.responseText);
+	              if (albumsToShow.length == 0) {
+	                that.alert.textContent = "No albums available!";
 	                return;
 	              }
-	              self.update(missionsToShow); // self visible by closure
+	              that.update(albumsToShow); // that visible by closure
 	              if (next) next(); // show the default element of the list if present
 	            }
 	          } else {
-	            self.alert.textContent = message;
+	            that.alert.textContent = message;
 	          }
 	        }
 	      );
 	    };
 
 
-	    this.update = function(arrayMissions) {
-	      var elem, i, row, destcell, datecell, linkcell, anchor;
-	      this.listcontainerbody.innerHTML = ""; // empty the table body
+	    this.update = function(arrayAlbums) {
+	      var elem, i, row, imageCell, imageTag, titleCell, linkTitle, dateCell, dateBody, titleAnchor;
+	      this.albumsBody.innerHTML = ""; // empty the table body
 	      // build updated list
-	      var self = this;
-	      arrayMissions.forEach(function(mission) { // self visible here, not this
+	      var that = this;
+	      arrayAlbums.forEach(function(album) { // self visible here, not this
 	        row = document.createElement("tr");
-	        destcell = document.createElement("td");
-	        destcell.textContent = mission.destination;
-	        row.appendChild(destcell);
-	        datecell = document.createElement("td");
-	        datecell.textContent = mission.startDate;
-	        row.appendChild(datecell);
-	        linkcell = document.createElement("td");
-	        anchor = document.createElement("a");
-	        linkcell.appendChild(anchor);
-	        linkText = document.createTextNode("Show");
-	        anchor.appendChild(linkText);
-	        //anchor.missionid = mission.id; // make list item clickable
-	        anchor.setAttribute('missionid', mission.id); // set a custom HTML attribute
+	        imageCell = document.createElement("td");
+			imageTag = document.createElement("img");
+			imageTag.currentSrc = album.iconPath;
+			imageTag.classList.add("img-thumbnail");
+			titleCell = document.createElement("td");
+			titleAnchor = document.createElement("a");
+			linkTitle = document.createTextNode(album.title);
+			titleAnchor.appendChild(linkTitle);
+			
+	        anchor.setAttribute('albumId', album.id); 
 	        anchor.addEventListener("click", (e) => {
-	          // dependency via module parameter
-	          missionDetails.show(e.target.getAttribute("missionid")); // the list must know the details container
+	          
+	          imageList.show(e.target.getAttribute("albumId")); 
 	        }, false);
 	        anchor.href = "#";
-	        row.appendChild(linkcell);
-	        self.listcontainerbody.appendChild(row);
+			dateCell = document.createElement("td");
+			dateBody = document.createElement("p");
+			dateBody.textContent = album.creationDate;
+	        that.albumsBody.appendChild(row);
+			
 	      });
-	      this.listcontainer.style.visibility = "visible";
+	      this.albumsRow.style.visibility = "visible";
 
 	    }
 
-	    this.autoclick = function(missionId) {
-	      var e = new Event("click");
-	      var selector = "a[missionid='" + missionId + "']";
-	      var anchorToClick =
-	        (missionId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
-	      if (anchorToClick) anchorToClick.dispatchEvent(e);
-	    }
+	    
 
 	  }
 
@@ -308,10 +302,10 @@
 	        document.getElementById("id_username"));
 	      personalMessage.show();
 
-	      missionsList = new MissionsList(
+	      albumsList = new AlbumsList(
 	        alertContainer,
-	        document.getElementById("id_listcontainer"),
-	        document.getElementById("id_listcontainerbody"));
+	        document.getElementById("id_albumsRow"),
+	        document.getElementById("id_albumsBody"));
 
 	      missionDetails = new MissionDetails({ // many parameters, wrap them in an
 	        // object
@@ -343,12 +337,12 @@
 	    };
 
 
-	    this.refresh = function(currentMission) {
+	    this.refresh = function(currentAlbum) {
 	      alertContainer.textContent = "";
 	      missionsList.reset();
 	      missionDetails.reset();
-	      missionsList.show(function() {
-	        missionsList.autoclick(currentMission);
+	      imageList.show(function() {
+	        imageList.autoclick(currentAlbum);
 	      }); // closure preserves visibility of this
 	      wizard.reset();
 	    };
