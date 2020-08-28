@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import it.polimi.tiw.missions.beans.User;
 import it.polimi.tiw.missions.dao.CommentDAO;
 
 @WebServlet("/CreateComment")
+@MultipartConfig
 public class CreateComment extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;

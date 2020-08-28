@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import it.polimi.tiw.missions.dao.RegistrationDAO;
  * Servlet implementation class Registration
  */
 @WebServlet("/Registration")
+@MultipartConfig
 public class Registration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
