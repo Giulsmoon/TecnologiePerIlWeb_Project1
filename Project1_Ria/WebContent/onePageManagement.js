@@ -1,12 +1,12 @@
 (function() { // avoid variables ending up in the global scope
 
 	// page components
-	var AlbumsList, ImageList, NextButton, PreviousButton;
-		pageOrchestrator = new PageOrchestrator(); // main controller
+	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton;
+	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
-			pageOrchestrator.start(); // initialize the components
-			pageOrchestrator.refresh();
+		pageOrchestrator.start(); // initialize the components
+		pageOrchestrator.refresh();
 	}, false);
 
 
@@ -54,17 +54,17 @@
 			// build updated list
 			var that = this;
 			arrayAlbums.forEach(function(album) {
-				
+
 				row = document.createElement("tr");
-				
+
 				imageCell = document.createElement("td");
 				imageTag = document.createElement("img");
 				//imageTag.currentSrc = album.iconPath;
-				imageTag.setAttribute( 'src', album.iconPath);
+				imageTag.setAttribute('src', album.iconPath);
 				imageTag.classList.add("img-thumbnail");
 				imageCell.appendChild(imageTag);
 				row.appendChild(imageCell);
-				
+
 				titleCell = document.createElement("td");
 				titleAnchor = document.createElement("a");
 				linkTitle = document.createTextNode(album.title);
@@ -78,13 +78,13 @@
 					imageList.show(e.target.getAttribute("albumId"));
 				}, false);
 				titleAnchor.href = "#";
-				
+
 				dateCell = document.createElement("td");
 				dateBody = document.createElement("p");
 				dateBody = document.createTextNode(album.date);
 				dateCell.appendChild(dateBody);
 				row.appendChild(dateCell);
-				
+
 				that.albumsBody.appendChild(row);
 
 			});
@@ -134,7 +134,7 @@
 			// build updated list
 			var that = this;
 			row = document.createElement("tr");
-			var i = currentBlock *numToShow;
+			var i = currentBlock * numToShow;
 			var end = i + numToShow;
 
 			for (; i < end; i++) {
@@ -143,15 +143,15 @@
 				imageThumbnail = document.createElement("td");
 				titleBody = document.createElement("p");
 				titleBody.textContent = image.title;
-				imageThumbnail.appendChild(titleBody);				
+				imageThumbnail.appendChild(titleBody);
 				imageAnchor = document.createElement("a");
-				imageTag = document.createElement("img");				
-				imageTag.setAttribute( 'src', image.filePath);
+				imageTag = document.createElement("img");
+				imageTag.setAttribute('src', image.filePath);
 				imageTag.classList.add("image");
 				imageTag.classList.add("img-thumbnail");
 				imageAnchor.appendChild(imageTag);
 				imageThumbnail.appendChild(imageAnchor);
-				
+
 				imageAnchor.setAttribute('imageId', image.id);
 				imageAnchor.addEventListener("click", (e) => {
 
@@ -160,7 +160,7 @@
 				imageAnchor.href = "#";
 				row.appendChild(imageThumbnail);
 
-				
+
 			}
 			that.galleryBody.appendChild(row);
 
@@ -180,12 +180,13 @@
 		this.commentBody = _commentBody;
 
 		this.reset = function() {
-			this.galleryRow.style.visibility = "hidden";
+
+
 		}
 
 		this.show = function(imageId) {
 			var that = this;
-			makeCall("GET", "GetImageAndComments", null,
+			makeCall("GET", "GetImageAndComments?imageId=" + imageId, null,
 				function(req) {
 					if (req.readyState == 4) {
 						var message = req.responseText;
@@ -206,15 +207,15 @@
 
 
 		this.update = function(imageAndComments) {
-			var row1, imageCell, imageDateCell, imageTag, imageDescription, commentCell1, commentUsername, commentCell2, commentText, commentCell3, commentDate;
-			
+			var row1, commentRow, imageCell, imageDateCell, imageTag, imageDescription, commentCell1, commentUsername, commentCell2, commentText, commentCell3, commentDate;
+
 			this.imageBody.innerHTML = ""; // empty the table body
 			this.commentBody.innerHTML = ""; // empty the table body
 			this.descriptionBody.innerHTML = ""; // empty the table body
 			// build updated list
 			var that = this;
 			imageAndComments.forEach(function(elem) {
-				
+
 				//image info : title + date
 				imageCell = document.createElement("p");
 				imageCell = document.createTextNode(elem.image.title);
@@ -222,37 +223,39 @@
 				imageDateCell = document.createElement("p");
 				imageDateCell = document.createTextNode(elem.image.date);
 				that.imageBody.appendChild(imageDateCell);
-				
+
 				//image scr + description
-				imageTag = document.createElement("img");				
-				imageTag.setAttribute( 'src', elem.image.filePath);
+				imageTag = document.createElement("img");
+				imageTag.setAttribute('src', elem.image.filePath);
 				that.descriptionBody.appendChild(imageTag);
 				imageDescription = document.createElement("p");
 				imageDescription = document.createTextNode(elem.image.description);
 				that.imageBody.appendChild(imageDescription);
-				
-				
-				//comments of the image selected
-				commentCell1 = document.createElement("div");
-				commentUsername = document.createElement("p");
-				commentUsername = document.createTextNode(elem.comment.username);
-				commentCell1.appendChild(commentUsername);
-				that.commentBody.appendChild(commentCell1);
-				
-				commentCell2 = document.createElement("div");
-				commentText = document.createElement("p");
-				commentText = document.createTextNode(elem.comment.text);
-				commentCell2.appendChild(commentText);
-				that.commentBody.appendChild(commentCell2);
-				
-				commentCell3 = document.createElement("div");
-				commentDate = document.createElement("p");
-				commentDate = document.createTextNode(elem.comment.date);
-				commentCell3.appendChild(commentDate);
-				that.commentBody.appendChild(commentCell3);
-			
+
+				elem.comments.forEach(function(comment) {
+					commentRow = document.createElement("div");
+					//comments of the image selected
+					commentCell1 = document.createElement("div");
+					commentUsername = document.createElement("p");
+					commentUsername = document.createTextNode(comment.username);
+					commentCell1.appendChild(commentUsername);
+					commentRow.appendChild(commentCell1);
+
+					commentCell2 = document.createElement("div");
+					commentText = document.createElement("p");
+					commentText = document.createTextNode(comment.text);
+					commentCell2.appendChild(commentText);
+					commentRow.appendChild(commentCell2);
+
+					commentCell3 = document.createElement("div");
+					commentDate = document.createElement("p");
+					commentDate = document.createTextNode(comment.date);
+					commentCell3.appendChild(commentDate);
+					commentRow.appendChild(commentCell3);
+
+				});
+				that.commentBody.appendChild(commentRow);
 			});
-			
 
 		}
 
@@ -263,11 +266,13 @@
 	function NextButton() {
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_nextButton").addEventListener('click', (e) => {
-				
+
 				//COSE
 
+			});
 		}
 	}
+
 	function PreviousButton() {
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_previousButton").addEventListener('click', (e) => {
@@ -283,7 +288,7 @@
 	function PageOrchestrator() {
 		var alertContainer = document.getElementById("id_alert");
 		this.start = function() {
-			
+
 
 			albumsList = new AlbumsList(
 				alertContainer,
@@ -295,7 +300,12 @@
 				document.getElementById("id_galleryRow"),
 				document.getElementById("id_galleryBody"));
 
-			
+			imageDetails = new ImageDetails(
+				alertContainer,
+				document.getElementById("id_imageRow"),
+				document.getElementById("id_imageBody"),
+				document.getElementById("id_descriptionBody"),
+				document.getElementById("id_commentBody"));
 
 			document.querySelector("a[href='Logout']").addEventListener('click', () => {
 				window.sessionStorage.removeItem('username');
@@ -307,7 +317,7 @@
 			alertContainer.textContent = "";
 			albumsList.reset();
 			imageList.reset();
-
+			imageDetails.reset();
 			albumsList.show();
 			NextButton();
 			PreviousButton();
