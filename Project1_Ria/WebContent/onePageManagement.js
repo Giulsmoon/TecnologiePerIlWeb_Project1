@@ -54,7 +54,7 @@
 			// build updated list
 			var that = this;
 			arrayAlbums.forEach(function(album) {
-				console.log(album); 
+				
 				row = document.createElement("tr");
 				
 				imageCell = document.createElement("td");
@@ -172,14 +172,99 @@
 
 	}
 
+	function ImageDetails(_alert, _imageRow, _imageBody, _descriptionBody, _commentBody) {
+		this.alert = _alert;
+		this.imageRow = _imageRow;
+		this.imageBody = _imageBody;
+		this.descriptionBody = _descriptionBody;
+		this.commentBody = _commentBody;
+
+		this.reset = function() {
+			this.galleryRow.style.visibility = "hidden";
+		}
+
+		this.show = function(imageId) {
+			var that = this;
+			makeCall("GET", "GetImageAndComments", null,
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var imageAndComments = JSON.parse(req.responseText);
+							if (imageAndComments.length == 0) {
+								that.alert.textContent = "No images of this album available!";
+								return;
+							}
+							that.update(imageAndComments); // that visible by closure
+						}
+					} else {
+						that.alert.textContent = message;
+					}
+				}
+			);
+		};
+
+
+		this.update = function(imageAndComments) {
+			var row1, imageCell, imageDateCell, imageTag, imageDescription, commentCell1, commentUsername, commentCell2, commentText, commentCell3, commentDate;
+			
+			this.imageBody.innerHTML = ""; // empty the table body
+			this.commentBody.innerHTML = ""; // empty the table body
+			this.descriptionBody.innerHTML = ""; // empty the table body
+			// build updated list
+			var that = this;
+			imageAndComments.forEach(function(elem) {
+				
+				//image info : title + date
+				imageCell = document.createElement("p");
+				imageCell = document.createTextNode(elem.image.title);
+				that.imageBody.appendChild(imageBody);
+				imageDateCell = document.createElement("p");
+				imageDateCell = document.createTextNode(elem.image.date);
+				that.imageBody.appendChild(imageDateCell);
+				
+				//image scr + description
+				imageTag = document.createElement("img");				
+				imageTag.setAttribute( 'src', elem.image.filePath);
+				that.descriptionBody.appendChild(imageTag);
+				imageDescription = document.createElement("p");
+				imageDescription = document.createTextNode(elem.image.description);
+				that.imageBody.appendChild(imageDescription);
+				
+				
+				//comments of the image selected
+				commentCell1 = document.createElement("div");
+				commentUsername = document.createElement("p");
+				commentUsername = document.createTextNode(elem.comment.username);
+				commentCell1.appendChild(commentUsername);
+				that.commentBody.appendChild(commentCell1);
+				
+				commentCell2 = document.createElement("div");
+				commentText = document.createElement("p");
+				commentText = document.createTextNode(elem.comment.text);
+				commentCell2.appendChild(commentText);
+				that.commentBody.appendChild(commentCell2);
+				
+				commentCell3 = document.createElement("div");
+				commentDate = document.createElement("p");
+				commentDate = document.createTextNode(elem.comment.date);
+				commentCell3.appendChild(commentDate);
+				that.commentBody.appendChild(commentCell3);
+			
+			});
+			
+
+		}
+
+
+
+	}
 
 	function NextButton() {
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_nextButton").addEventListener('click', (e) => {
 				
 				//COSE
-				console.log("GIULIA PUZza")
-			});
 
 		}
 	}
