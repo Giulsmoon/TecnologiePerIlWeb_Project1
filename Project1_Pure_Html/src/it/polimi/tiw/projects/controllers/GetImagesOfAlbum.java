@@ -192,7 +192,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 						selectedImage = imagesToDisplay.get(0); // Get the first of the list as "default"
 					} else {
 						chosenImageId = Integer.parseInt(urlImageId);
-						selectedImage = imgDao.findImagesById(chosenImageId);
+						selectedImage = imgDao.findImageById(chosenImageId);
 					}
 
 					CommentDAO cDao = new CommentDAO(connection);
