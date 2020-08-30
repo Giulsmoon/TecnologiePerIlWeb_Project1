@@ -1,7 +1,7 @@
 (function() { // avoid variables ending up in the global scope
 
 	// page components
-	var AlbumsList, ImageList,
+	var AlbumsList, ImageList, NextButton, PreviousButton;
 		pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -79,7 +79,7 @@
 				titleAnchor.setAttribute('albumId', album.id);
 				titleAnchor.addEventListener("click", (e) => {
 
-					ImageList.show(e.target.getAttribute("albumId"));
+					imageList.show(e.target.getAttribute("albumId"));
 				}, false);
 				titleAnchor.href = "#";
 				
@@ -110,9 +110,9 @@
 			this.galleryRow.style.visibility = "hidden";
 		}
 
-		this.show = function(next) {
+		this.show = function(albumId) {
 			var that = this;
-			makeCall("GET", "GetImagesOfAlbum", null,
+			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null,
 				function(req) {
 					if (req.readyState == 4) {
 						var message = req.responseText;
@@ -123,7 +123,6 @@
 								return;
 							}
 							that.update(imagesToShow, 0, 5); // that visible by closure
-							if (next) next(); // show the default element of the list if present
 						}
 					} else {
 						that.alert.textContent = message;
@@ -135,7 +134,7 @@
 
 		this.update = function(arrayImages, currentBlock, numToShow) {
 			var row, imageThumbnail, titleBody, imageAnchor, imageTag;
-			this.albumsBody.innerHTML = ""; // empty the table body
+			this.galleryBody.innerHTML = ""; // empty the table body
 			// build updated list
 			var that = this;
 			row = document.createElement("tr");
@@ -148,13 +147,15 @@
 				imageThumbnail = document.createElement("td");
 				titleBody = document.createElement("p");
 				titleBody.textContent = image.title;
+				imageThumbnail.appendChild(titleBody);				
 				imageAnchor = document.createElement("a");
-				imageTag = document.createElement("img");
-				imageTag.currentSrc = image.filePath;
+				imageTag = document.createElement("img");				
+				imageTag.setAttribute( 'src', image.filePath);
 				imageTag.classList.add("image");
 				imageTag.classList.add("img-thumbnail");
 				imageAnchor.appendChild(imageTag);
-
+				imageThumbnail.appendChild(imageAnchor);
+				
 				imageAnchor.setAttribute('imageId', image.id);
 				imageAnchor.addEventListener("click", (e) => {
 
@@ -178,19 +179,18 @@
 
 	function NextButton() {
 		this.registerEvents = function(orchestrator) {
-			nextForm: document.getElementById("id_nextForm"),
-			this.nextForm.querySelector("input[type='button'].next").addEventListener('click', (e) => {
-				var form = e.target.closest("form");
-
+			document.getElementById("id_nextButton").addEventListener('click', (e) => {
+				
+				//COSE
+				console.log("GIULIA PUZza")
 			});
 
 		}
 	}
 	function PreviousButton() {
 		this.registerEvents = function(orchestrator) {
-			previousForm: document.getElementById("id_previousForm"),
-			this.previousForm.querySelector("input[type='button'].previous").addEventListener('click', (e) => {
-				var form = e.target.closest("form");
+			document.getElementById("id_previousButton").addEventListener('click', (e) => {
+				//COSE
 
 			});
 
@@ -211,8 +211,8 @@
 
 			imageList = new ImageList(
 				alertContainer,
-				document.getElementById("id_imageRow"),
-				document.getElementById("id_imageBody"));
+				document.getElementById("id_galleryRow"),
+				document.getElementById("id_galleryBody"));
 
 			
 
@@ -225,12 +225,11 @@
 		this.refresh = function(currentAlbum) {
 			alertContainer.textContent = "";
 			albumsList.reset();
+			imageList.reset();
+
 			albumsList.show();
-			
-			//imageList.show(function() {
-				//imageList.autoclick(currentAlbum);
-			//}); // closure preserves visibility of this
-			
+			NextButton();
+			PreviousButton();
 		};
 	}
 })();

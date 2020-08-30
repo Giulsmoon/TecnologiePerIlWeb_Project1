@@ -12,7 +12,6 @@ import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.missions.beans.User;
 
-
 public class UserDAO {
 	private Connection con;
 
@@ -33,32 +32,30 @@ public class UserDAO {
 					User user = new User();
 					user.setId(result.getInt("id"));
 					user.setUsername(result.getString("username"));
-					user.setOrderOFAlbum(result.getString("albumOrder"));
 					return user;
 				}
 			}
 		}
 	}
-	
-	public User checkUserAlbumPreference(User user)throws SQLException {
-		
-		String query = "SELECT  albumOrder FROM preference as p  WHERE p.idUser= ?";
+
+	public User checkUserAlbumPreference(User user) throws SQLException {
+
+		String query = "SELECT  p.albumOrder FROM preference as p  WHERE p.idUser= ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setInt(1, user.getId());
-			
+
 			try (ResultSet result = pstatement.executeQuery();) {
-				     
-				
-				Gson gson = new GsonBuilder().create();
-				System.out.println(result.getString("albumOrder"));
-				int[] order = gson.fromJson(result.getString("albumOrder"), int[].class);
-				System.out.println(order);
-				user.setPrefAlbumOrder(order);
+				while (result.next()) {
+					Gson gson = new GsonBuilder().create();
+					
+					int[] order = gson.fromJson(result.getString("albumOrder"), int[].class);
+					user.setPrefAlbumOrder(order);
+				}
 			}
 		}
 		return user;
 	}
-	
+
 	public List<User> findAllUsers() throws SQLException {
 		List<User> users = new ArrayList<User>();
 		String query = "SELECT * FROM project1_pure_html.user  ";
@@ -71,7 +68,7 @@ public class UserDAO {
 				User u = new User();
 				u.setId(result.getInt("id"));
 				u.setUsername(result.getString("username"));
-				
+
 				users.add(u);
 			}
 		} catch (SQLException e) {

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
 
 import it.polimi.tiw.missions.beans.Album;
@@ -40,11 +41,24 @@ public class GetAlbumList extends HttpServlet {
 	
 	public List<Album> sortAlbumByUserPreference(int[] userPreference, List<Album> albums){
 		Album albumSupport = null;
-		
+
+	
 		for(int i=0; i<albums.size();i++) {
+			int position=0;
+			int j=0;	
+			for (Album album : albums) {
+				if(album.getId()==userPreference[i])
+				{
+					position=j;
+					break;
+				}
+				else {
+					j++;
+				}
+			}
 			albumSupport= albums.get(i);
-			albums.set(i, albums.get(userPreference[i]));
-			albums.set(userPreference[i], albumSupport);
+			albums.set(i, albums.get(position));
+			albums.set(position, albumSupport);
 			
 		}
 		return albums;
@@ -60,28 +74,15 @@ public class GetAlbumList extends HttpServlet {
 		
 		List<Album> albums = new ArrayList<Album>();
 		List<Album> orderedAlbumsById = new ArrayList<Album>();
-		try {
-			
-			System.out.println("entrato nel try");
-			System.out.println(user);
-			if(user!=null) {
-				System.out.println(user.getOrderOFAlbum());
-			}
-			
-			if(user!=null && user.getOrderOFAlbum()!=null) {
-				System.out.println("entrato nell'if");
-				Gson gson = new GsonBuilder().create();
-				int[] order = gson.fromJson(user.getOrderOFAlbum(), int[].class);
-				System.out.println(order);
-				user.setPrefAlbumOrder(order);
+		try {	
+			user=userDAO.checkUserAlbumPreference(user);
+			if(user!=null && user.getPrefAlbumOrder()!=null) {
 				
-				//orderedAlbumsById = albumDAO.findAlbumsOrderedById();
-				//albums = sortAlbumByUserPreference(user.getPrefAlbumOrder(), orderedAlbumsById);
-				//System.out.println(albums);
+				orderedAlbumsById = albumDAO.findAlbumsOrderedById();
+				albums = sortAlbumByUserPreference(user.getPrefAlbumOrder(), orderedAlbumsById);
 			}else {
-				System.out.println("entrato nell'else");
+				
 				albums = albumDAO.findAlbumsOrderedByDate();
-				System.out.println(albums);
 			}
 			
 		} catch (SQLException e) {

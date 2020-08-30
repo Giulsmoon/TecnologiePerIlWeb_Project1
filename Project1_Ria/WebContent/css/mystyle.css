@@ -142,7 +142,7 @@ table.table-album td{
 	vertical-align: middle !important;
 }
 table.table-album img{
-	max-width: 150px;
+	max-width: 50px;
 	width: 100%;
 	height: auto;
 }
