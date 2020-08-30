@@ -6,6 +6,7 @@ import java.util.List;
 public class User {
 	private int id;
 	private String username;
+	private String orderOFAlbum;
 	private int[] prefAlbumOrder;
 
 	public int getId() {
@@ -13,10 +14,14 @@ public class User {
 	}
 
 
+	public String getOrderOFAlbum() {
+		return orderOFAlbum;
+	}
+
 	public String getUsername() {
 		return username;
 	}
-
+	
 	public void setId(int i) {
 		id = i;
 	}
@@ -27,6 +32,9 @@ public class User {
 		username = un;
 	}
 
+	public void setOrderOFAlbum(String order) {
+		orderOFAlbum = order;
+	}
 
 	public int[] getPrefAlbumOrder() {
 		return prefAlbumOrder;

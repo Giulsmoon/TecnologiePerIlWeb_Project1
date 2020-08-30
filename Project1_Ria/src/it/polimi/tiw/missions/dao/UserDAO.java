@@ -21,7 +21,7 @@ public class UserDAO {
 	}
 
 	public User checkCredentials(String usrn, String pwd) throws SQLException {
-		String query = "SELECT  id, username FROM user  WHERE username = ? AND password =?";
+		String query = "SELECT  u.id, u.username, p.albumOrder FROM user u JOIN preference p ON u.id=p.idUser WHERE u.username = ? AND u.password =?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, usrn);
 			pstatement.setString(2, pwd);
@@ -33,6 +33,7 @@ public class UserDAO {
 					User user = new User();
 					user.setId(result.getInt("id"));
 					user.setUsername(result.getString("username"));
+					user.setOrderOFAlbum(result.getString("albumOrder"));
 					return user;
 				}
 			}
@@ -49,7 +50,9 @@ public class UserDAO {
 				     
 				
 				Gson gson = new GsonBuilder().create();
+				System.out.println(result.getString("albumOrder"));
 				int[] order = gson.fromJson(result.getString("albumOrder"), int[].class);
+				System.out.println(order);
 				user.setPrefAlbumOrder(order);
 			}
 		}

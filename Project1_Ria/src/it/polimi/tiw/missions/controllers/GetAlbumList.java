@@ -62,12 +62,26 @@ public class GetAlbumList extends HttpServlet {
 		List<Album> orderedAlbumsById = new ArrayList<Album>();
 		try {
 			
+			System.out.println("entrato nel try");
+			System.out.println(user);
+			if(user!=null) {
+				System.out.println(user.getOrderOFAlbum());
+			}
 			
-			if(user!=null && userDAO.checkUserAlbumPreference(user).getPrefAlbumOrder()!=null) {
-				orderedAlbumsById = albumDAO.findAlbumsOrderedById();
-				albums = sortAlbumByUserPreference(user.getPrefAlbumOrder(), orderedAlbumsById);
+			if(user!=null && user.getOrderOFAlbum()!=null) {
+				System.out.println("entrato nell'if");
+				Gson gson = new GsonBuilder().create();
+				int[] order = gson.fromJson(user.getOrderOFAlbum(), int[].class);
+				System.out.println(order);
+				user.setPrefAlbumOrder(order);
+				
+				//orderedAlbumsById = albumDAO.findAlbumsOrderedById();
+				//albums = sortAlbumByUserPreference(user.getPrefAlbumOrder(), orderedAlbumsById);
+				//System.out.println(albums);
 			}else {
+				System.out.println("entrato nell'else");
 				albums = albumDAO.findAlbumsOrderedByDate();
+				System.out.println(albums);
 			}
 			
 		} catch (SQLException e) {

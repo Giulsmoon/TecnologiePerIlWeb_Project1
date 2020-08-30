@@ -3,12 +3,16 @@
 	<head>
 		<meta charset="ISO-8859-1">
 		<title>Home</title>
-		<link rel="stylesheet" type="text/css" media="all" href="CSS/mystyle.css" />
+		<link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css">
 
 	</head>
 	<body>
+	<div align="right">
+		<a href="Logout">Logout</a>
+	</div>
 		<div class=" container text-center ">
-
+			<div id="id_alert" class="alertmessage"></div>	
 			<div class="row align-items-center  py-3 ">
 				<div class="col-lg-8 col-md-8 col-sm-8 col-8  offset-lg-2 col-md-10 p-0">
 					<div class="title-text">
@@ -42,6 +46,42 @@
 				</table>
 			</div>
 		</div>
+			
+			<div class="row align-items-center py-2 border-top ">
+				<div class="col-lg-1 col-md-1  col-sm-2 col-2 p-0">
+					<form th:action="@{/PreviousImages}" method="POST">
+						<input name="nextImages" type="hidden" th:value=${nextImages}>
+						<input name="previousImages" type="hidden" th:value=${previousImages}>
+						<input name="albumId" type="hidden" th:value=${albumId}>
+						<input class="btn btn-outline-primary btn-gallery shadow-sm " type="submit" name="submit" value="Back" th:classappend="${previousImages} ? 'visible' : 'invisible'" th:disabled="not ${previousImages}">
+					</form>
+				</div>
+
+				<div id="id_imageRow" class="col-lg-10 col-md-10 col-sm-8 col-8 p-0">
+					<table class="table-responsive gallery-table">
+						<tbody id="id_imageBody">
+						</tbody>
+					</table>
+				</div>
+
+				<div class="col-lg-1 col-md-1 col-sm-2 col-2  p-0 ">
+					<form th:action="@{/NextImages}" method="POST">
+						<input name="nextImages" type="hidden" th:value=${nextImages}>
+						<input name="previousImages" type="hidden" th:value=${previousImages}>
+						<input name="albumId" type="hidden" th:value=${albumId}>
+
+						<input class="btn btn-outline-primary btn-gallery shadow-sm " type="submit" name="submit" value="Next" th:classappend=" ${nextImages} ? 'visible' : 'invisible'" th:disabled="not ${nextImages}">
+					</form>
+				</div>
+			</div>
+		
+		
+		
+		
+		
+		
+		
+		
 		<script src="utils.js" charset="utf-8" defer></script>
 		<script src="onePageManagement.js" charset="utf-8" defer></script>
 		<script src="sort.js" charset="utf-8" defer></script>	

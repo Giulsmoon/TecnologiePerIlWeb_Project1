@@ -23,6 +23,7 @@ public class AlbumDAO {
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
+			System.out.println("query album ordered by date");
 			pstatement = con.prepareStatement(query);
 			result = pstatement.executeQuery();
 			while (result.next()) {
@@ -57,6 +58,7 @@ public class AlbumDAO {
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
+			System.out.println("query album ordered by id");
 			pstatement = con.prepareStatement(query);
 			result = pstatement.executeQuery();
 			while (result.next()) {
