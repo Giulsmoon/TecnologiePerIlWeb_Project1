@@ -13,18 +13,18 @@ public class RegistrationDAO {
 	}
 
 	public void createRegistrationOfUser(String username, String password) throws SQLException {
-		String query = "INSERT into project1_pure_html.user (username, password)   VALUES(?, ?)";
+		String query = "INSERT into user (username, password)   VALUES(?, ?)";
 
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 
 			pstatement.setString(1, username);
-			pstatement.setString(2, password);
+			pstatement.setString(2, password);	
 			pstatement.executeUpdate();
 		}
 	}
 
 	public boolean controlRegistrationOfUser(String name) throws SQLException {
-		String query = "SELECT * FROM project1_pure_html.user WHERE username= ?";
+		String query = "SELECT * FROM user WHERE username= ?";
 		
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, name);

@@ -19,7 +19,7 @@ public class AlbumDAO {
 
 	public List<Album> findAllAlbums() throws SQLException {
 		List<Album> albums = new ArrayList<Album>();
-		String query = "SELECT * FROM project1_pure_html.album ORDER BY creationDate DESC";
+		String query = "SELECT * album ORDER BY creationDate DESC";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
@@ -53,7 +53,7 @@ public class AlbumDAO {
 
 	public Album findAlbumById(int albumId) throws SQLException {
 		Album album = new Album();
-		String query = "SELECT * FROM project1_pure_html.album WHERE id = ?";
+		String query = "SELECT * FROM album WHERE id = ?";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
@@ -85,7 +85,7 @@ public class AlbumDAO {
 
 	public String findAlbumTitleById(int albumId) throws SQLException {
 		String albumTitle=null;
-		String query = "SELECT title FROM project1_pure_html.album WHERE id = ?";
+		String query = "SELECT title FROM album WHERE id = ?";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {

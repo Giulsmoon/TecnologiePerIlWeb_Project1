@@ -19,7 +19,7 @@ public class ImageDAO {
 
 	public List<Image> findImagesByAlbum(int albumId) throws SQLException {
 		List<Image> images = new ArrayList<Image>();
-		String query = "SELECT i.id, i.title, i.description, i.date, i.filePath FROM project1_pure_html.image as i,project1_pure_html.albumimage as ai  WHERE i.id= ai.idImage and ai.idAlbum = ? ORDER BY i.date DESC ";
+		String query = "SELECT i.id, i.title, i.description, i.date, i.filePath FROM image as i, albumimage as ai  WHERE i.id= ai.idImage and ai.idAlbum = ? ORDER BY i.date DESC ";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
@@ -60,7 +60,7 @@ public class ImageDAO {
 	
 	public Image findImageById(int imageId) throws SQLException {
 		Image image = new Image();
-		String query = "SELECT * FROM project1_pure_html.image WHERE id = ?";
+		String query = "SELECT * FROM image WHERE id = ?";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
@@ -93,7 +93,7 @@ public class ImageDAO {
 	}
 	
 	public Image findDefaultImage(int albumId) throws SQLException {
-		String query = "SELECT * FROM project1_pure_html.image as i, project1_pure_html.albumimage as ai WHERE i.id=ai.idImage and ai.idALbum= ? ORDER BY i.date DESC LIMIT 1";
+		String query = "SELECT * FROM image as i, albumimage as ai WHERE i.id=ai.idImage and ai.idALbum= ? ORDER BY i.date DESC LIMIT 1";
 		Image image = new Image();
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setInt(1, albumId);
