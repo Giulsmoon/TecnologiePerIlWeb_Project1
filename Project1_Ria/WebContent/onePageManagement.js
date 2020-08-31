@@ -76,6 +76,7 @@
 				titleAnchor.addEventListener("click", (e) => {
 
 					imageList.show(e.target.getAttribute("albumId"));
+					imageDetails.reset();
 				}, false);
 				titleAnchor.href = "#";
 
@@ -221,16 +222,19 @@
 		}
 	}
 
-	function ImageDetails(_alert, _imageRow, _imageBody, _descriptionBody, _commentBody) {
+	function ImageDetails(_alert, _titleRow, _titleBody, _descriptionBody, _commentBody, _imageAndCommentsRow, _imageContainer) {
 		this.alert = _alert;
-		this.imageRow = _imageRow;
-		this.imageBody = _imageBody;
+		this.titleRow = _titleRow;
+		this.titleBody = _titleBody;
 		this.descriptionBody = _descriptionBody;
 		this.commentBody = _commentBody;
+		this.imageAndCommentsRow = _imageAndCommentsRow;
+		this.imageContainer = _imageContainer;
 
 		this.reset = function() {
 
-
+			this.imageContainer.classList.remove("visible");
+			this.imageContainer.classList.add("invisible");
 		}
 
 		this.show = function(imageId) {
@@ -258,9 +262,11 @@
 
 
 		this.update = function(imageAndComments) {
-			var row1, commentRow, imageCell, imageDateCell, imageTag, imageDescription, commentCell1, commentUsername, commentCell2, commentText, commentCell3, commentDate;
+			var row1, commentRow, imageP, dateP, descriptionP, imageCell, imageDateCell, imageTag,
+				imageDescription, commentCell1, commentUsername, commentCell2, commentP1,
+				commentText, commentMedia, commentCell3, commentDate;
 
-			this.imageBody.innerHTML = ""; // empty the table body
+			this.titleBody.innerHTML = ""; // empty the table body
 			this.commentBody.innerHTML = ""; // empty the table body
 			this.descriptionBody.innerHTML = ""; // empty the table body
 			// build updated list
@@ -270,44 +276,64 @@
 
 
 			//image info : title + date
-			imageCell = document.createElement("p");
+			imageP = document.createElement("p");
+			imageP.className = "h1 pt-3 border-top";
 			imageCell = document.createTextNode(image.title);
-			that.imageBody.appendChild(imageCell);
-			imageDateCell = document.createElement("p");
+			imageP.appendChild(imageCell);
+			that.titleBody.appendChild(imageP);
+			dateP = document.createElement("p");
+			dateP.className = "h6";
 			imageDateCell = document.createTextNode(image.date);
-			that.imageBody.appendChild(imageDateCell);
+			dateP.appendChild(imageDateCell);
+			that.titleBody.appendChild(dateP);
 
 			//image scr + description
 			imageTag = document.createElement("img");
 			imageTag.setAttribute('src', image.filePath);
+			imageTag.className = "shadow rounded-lg mb-4 image img-fluid";
 			that.descriptionBody.appendChild(imageTag);
-			imageDescription = document.createElement("p");
+			descriptionP = document.createElement("p");
+			descriptionP.className = "shadow border border-success rounded-pill p-2 text-break";
 			imageDescription = document.createTextNode(image.description);
-			that.imageBody.appendChild(imageDescription);
+			descriptionP.appendChild(imageDescription);
+			that.descriptionBody.appendChild(descriptionP);
 
 			comments.forEach(function(comment) {
 				commentRow = document.createElement("div");
+				commentRow.className = "comments-list";
+				commentMedia = document.createElement("div");
+				commentMedia.className = "media";
+
+
 				//comments of the image selected
 				commentCell1 = document.createElement("div");
-				commentUsername = document.createElement("p");
+				commentP1 = document.createElement("p");
+				commentP1.className = "media-heading user_name";
 				commentUsername = document.createTextNode(comment.username);
-				commentCell1.appendChild(commentUsername);
-				commentRow.appendChild(commentCell1);
+				commentP1.appendChild(commentUsername);
+				commentCell1.appendChild(commentP1);
+				commentMedia.appendChild(commentCell1);
 
 				commentCell2 = document.createElement("div");
-				commentText = document.createElement("p");
+				commentCell2.className = "media-body";
 				commentText = document.createTextNode(comment.text);
 				commentCell2.appendChild(commentText);
-				commentRow.appendChild(commentCell2);
+				commentMedia.appendChild(commentCell2);
 
 				commentCell3 = document.createElement("div");
-				commentDate = document.createElement("p");
+				commentCell3.className = "pull-right";
 				commentDate = document.createTextNode(comment.date);
 				commentCell3.appendChild(commentDate);
-				commentRow.appendChild(commentCell3);
+				commentMedia.appendChild(commentCell3);
 
+
+				commentRow.appendChild(commentMedia);
+				that.commentBody.appendChild(commentRow);
 			});
-			that.commentBody.appendChild(commentRow);
+			this.imageContainer.classList.remove("invisible");
+			this.imageContainer.classList.add("visible");
+
+
 
 
 		}
@@ -336,10 +362,12 @@
 
 			imageDetails = new ImageDetails(
 				alertContainer,
-				document.getElementById("id_imageRow"),
-				document.getElementById("id_imageBody"),
+				document.getElementById("id_titleRow"),
+				document.getElementById("id_titleBody"),
 				document.getElementById("id_descriptionBody"),
-				document.getElementById("id_commentBody"));
+				document.getElementById("id_commentBody"),
+				document.getElementById("id_imageAndCommentsRow"),
+				document.getElementById("id_imageContainer"));
 
 			nextButton = new NextButton();
 			previousButton = new PreviousButton();
@@ -357,7 +385,6 @@
 			alertContainer.textContent = "";
 			albumsList.reset();
 			imageList.reset();
-			imageDetails.reset();
 			albumsList.show();
 
 		};

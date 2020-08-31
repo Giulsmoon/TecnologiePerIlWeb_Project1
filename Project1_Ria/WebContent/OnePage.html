@@ -2,10 +2,12 @@
 <html>
 
 <head>
-	<meta charset="ISO-8859-1">
-	<title>Home</title>
-	<link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" media="all" href="css/mystyle.css">
+<meta charset="ISO-8859-1">
+<title>Home</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="all"
+	href="css/mystyle.css">
 
 </head>
 
@@ -13,92 +15,85 @@
 	<div class=" container text-center ">
 		<div id="id_alert" class="alertmessage"></div>
 		<div class="row align-items-center  py-3 ">
-			<div class="col-lg-8 col-md-8 col-sm-8 col-8  offset-lg-2 col-md-10 p-0">
+			<div
+				class="col-lg-8 col-md-8 col-sm-8 col-8  offset-lg-2 col-md-10 p-0">
 				<div class="title-text">
 					<h1>Album List</h1>
 				</div>
 			</div>
 			<div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right p-0">
 				<a href="Logout" class="btn btn-outline-success p-2 shadow-sm">
-					Logout
-				</a>
-				<a href="Login" class="btn btn-outline-success p-2 shadow-sm">
-					Log in
-				</a>
+					Logout </a> <a href="Login"
+					class="btn btn-outline-success p-2 shadow-sm"> Log in </a>
 			</div>
 		</div>
-	</div>
 
-	<div id="id_albumsRow" class="row align-items-center">
-		<div class="col-lg-12 col-md-12">
-			<table class="table table-album">
-				<thead>
+		<div id="id_albumsRow" class="row align-items-center">
+			<div class="col-lg-12 col-md-12">
+				<table class="table table-album">
+					<thead>
 
-					<tr>
-						<th>Icon</th>
-						<th>Title</th>
-						<th>Creation Date</th>
-					</tr>
-				</thead>
-				<tbody id="id_albumsBody">
-				</tbody>
-			</table>
-		</div>
-	</div>
-
-	<div class="row align-items-center py-2 border-top ">
-		<div class="col-lg-1 col-md-1  col-sm-2 col-2 p-0">
-			<button id="id_previousButton" class="btn btn-outline-primary btn-gallery shadow-sm "> back
-			</button>
+						<tr>
+							<th>Icon</th>
+							<th>Title</th>
+							<th>Creation Date</th>
+						</tr>
+					</thead>
+					<tbody id="id_albumsBody">
+					</tbody>
+				</table>
+			</div>
 		</div>
 
-		<div id="id_galleryRow" class="col-lg-10 col-md-10 col-sm-8 col-8 p-0">
-			<table class="table-responsive gallery-table">
-				<tbody id="id_galleryBody">
-				</tbody>
-			</table>
-		</div>
+		<div class="row align-items-center py-2 border-top ">
+			<div class="col-lg-1 col-md-1  col-sm-2 col-2 p-0">
+				<button id="id_previousButton"
+					class="btn btn-outline-primary btn-gallery shadow-sm ">
+					back</button>
+			</div>
 
-		<div class="col-lg-1 col-md-1 col-sm-2 col-2  p-0 ">
-				<button id="id_nextButton" class="btn btn-outline-primary btn-gallery shadow-sm "> next
-			</button>
-		</div>
-	</div>
-	
-	<div id="id_imageRow" class="row py-2">
-		<div id="id_imageBody" class="col-lg-12 col-md-12">
-			
-		</div>
-	</div>
+			<div id="id_galleryRow"
+				class="col-lg-10 col-md-10 col-sm-8 col-8 p-0">
+				<table class="table-responsive gallery-table">
+					<tbody id="id_galleryBody">
+					</tbody>
+				</table>
+			</div>
 
-	<div class="row ">
-
-		<div id="id_descriptionBody" class="p-3 col-lg-7 col-md-12 col-sm-12 col-12 ">
-		
+			<div class="col-lg-1 col-md-1 col-sm-2 col-2  p-0 ">
+				<button id="id_nextButton"
+					class="btn btn-outline-primary btn-gallery shadow-sm ">
+					next</button>
+			</div>
 		</div>
+		<div id="id_imageContainer">
+			<div id="id_titleRow" class="row py-2">
+				<div id="id_titleBody" class="col-lg-12 col-md-12"></div>
+			</div>
 
-		<div class="col-lg-5 col-md-8 col-sm-12 col-12 mx-auto">
-			<div class="border rounded-lg shadow m-3 p-2">
-				<div class=" scrollbarContainer1 scrollbar-cyan bordered-cyan">
-					<div class="force-overflow">
-						<div class="comment-Body text-break">
-							<div >
-								<div id="id_commentBody" class="media">
-									
+			<div id="id_imageAndCommentsRow" class="row ">
+
+				<div id="id_descriptionBody"
+					class="p-3 col-lg-7 col-md-12 col-sm-12 col-12 "></div>
+
+				<div class="col-lg-5 col-md-8 col-sm-12 col-12 mx-auto">
+					<div class="border rounded-lg shadow m-3 p-2">
+						<div class=" scrollbarContainer1 scrollbar-cyan bordered-cyan">
+							<div class="force-overflow">
+								<div id="id_commentBody" class="comment-Body text-break">
+								
 
 								</div>
 							</div>
-
 						</div>
 					</div>
+
+
 				</div>
+
 			</div>
-
-
 		</div>
-
 	</div>
-
 
 
 
