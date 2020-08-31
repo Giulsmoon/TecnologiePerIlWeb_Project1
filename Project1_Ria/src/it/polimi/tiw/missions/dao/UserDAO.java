@@ -20,7 +20,7 @@ public class UserDAO {
 	}
 
 	public User checkCredentials(String usrn, String pwd) throws SQLException {
-		String query = "SELECT  u.id, u.username, p.albumOrder FROM user u JOIN preference p ON u.id=p.idUser WHERE u.username = ? AND u.password =?";
+		String query = "SELECT  u.id, u.username FROM user u WHERE u.username = ? AND BINARY u.password = BINARY ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, usrn);
 			pstatement.setString(2, pwd);
@@ -58,7 +58,7 @@ public class UserDAO {
 
 	public List<User> findAllUsers() throws SQLException {
 		List<User> users = new ArrayList<User>();
-		String query = "SELECT * FROM project1_pure_html.user  ";
+		String query = "SELECT * FROM user  ";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {

@@ -60,7 +60,7 @@ public class CommentDAO {
 	}
 	
 	public void createComment(String text, int imageId, int userId) throws SQLException {
-		String query = "INSERT into project1_pure_html.comment (text, idImage, idUser, date)   VALUES(?, ?, ?, ?)";
+		String query = "INSERT into comment (text, idImage, idUser, date)   VALUES(?, ?, ?, ?)";
 
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 
@@ -74,7 +74,7 @@ public class CommentDAO {
 
 	public List<Comment> findCommentsOfImage(int imageId) throws SQLException {
 		List<Comment> comments = new ArrayList<Comment>();
-		String query = "SELECT * FROM project1_pure_html.comment  WHERE idImage= ?";
+		String query = "SELECT * FROM comment  WHERE idImage= ?";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {
