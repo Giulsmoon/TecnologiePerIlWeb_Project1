@@ -76,6 +76,8 @@
 				titleAnchor.addEventListener("click", (e) => {
 
 					imageList.show(e.target.getAttribute("albumId"));
+					imageList.resetButtonsNextAndPrevious();
+					imageList.resetImages();
 					imageDetails.reset();
 				}, false);
 				titleAnchor.href = "#";
@@ -98,10 +100,12 @@
 	}
 
 
-	function ImageList(_alert, _galleryRow, _galleryBody) {
+	function ImageList(_alert, _galleryRow, _galleryBody, _previousButton, _nextButton) {
 		this.alert = _alert;
 		this.galleryRow = _galleryRow;
 		this.galleryBody = _galleryBody;
+		this.previousButton = _previousButton;
+		this.nextButton = _nextButton;
 		this.images = null;
 		this.currentBlock = 0;
 		this.numToShow = 5;
@@ -109,6 +113,20 @@
 		this.reset = function() {
 			this.galleryRow.style.visibility = "hidden";
 		}
+
+		this.resetImages = function() {
+			this.images = null;
+			this.currentBlock = 0;
+			this.numToShow = 5;
+		}
+
+		this.resetButtonsNextAndPrevious = function() {
+			this.previousButton.classList.remove("visible");
+			this.previousButton.classList.add("invisible");
+			this.nextButton.classList.remove("visible");
+			this.nextButton.classList.add("invisible");
+		}
+
 
 		this.show = function(albumId) {
 			var that = this;
@@ -140,8 +158,7 @@
 			var that = this;
 			row = document.createElement("tr");
 
-			console.log(i);
-			console.log(end);
+
 			if (arrayImages) {
 				that.images = arrayImages;
 			}
@@ -150,6 +167,27 @@
 			var end = i + that.numToShow;
 			if (end > that.images.length) {
 				end = that.images.length;
+			}
+
+
+			if (end < that.images.length && that.currentBlock > 0) {
+				that.nextButton.classList.remove("invisible");
+				that.nextButton.classList.add("visible");
+				that.previousButton.classList.remove("invisible");
+				that.previousButton.classList.add("visible");
+			} else {
+				if (end >= that.images.length && that.currentBlock > 0) {
+					that.nextButton.classList.remove("visible");
+					that.nextButton.classList.add("invisible");
+					that.previousButton.classList.remove("invisible");
+					that.previousButton.classList.add("visible");
+				}
+				if (end < that.images.length && that.currentBlock === 0) {
+					that.nextButton.classList.remove("invisible");
+					that.nextButton.classList.add("visible");
+					that.previousButton.classList.remove("visible");
+					that.previousButton.classList.add("invisible");
+				}
 			}
 
 
@@ -171,6 +209,7 @@
 
 				imageAnchor.setAttribute('imageId', image.id);
 				imageAnchor.addEventListener("click", (e) => {
+
 					imageDetails.show(e.currentTarget.getAttribute("imageId"));
 				}, false);
 				imageAnchor.href = "#";
@@ -185,15 +224,19 @@
 
 		this.next = function() {
 
-			if (((this.currentBlock * this.numToShow) + this.numToShow) < this.images.length) {
-				this.currentBlock++;
-				this.update(null);
+			if (this.images) {
+				if (((this.currentBlock * this.numToShow) + this.numToShow) < this.images.length) {
+					this.currentBlock++;
+					this.update(null);
 
+				}
 			}
+
 		}
 
 		this.previous = function() {
-			if (this.currentBlock > 0) {
+
+			if (this.images && this.currentBlock > 0) {
 				this.currentBlock--;
 				this.update(null);
 
@@ -222,20 +265,31 @@
 		}
 	}
 
-	function ImageDetails(_alert, _titleRow, _titleBody, _descriptionBody, _commentBody, _imageAndCommentsRow, _imageContainer) {
+	function ImageDetails(_alert, _titleRow, _titleBody, _descriptionBody, _commentRow,
+		_commentBody, _imageAndCommentsRow, _imageContainer) {
 		this.alert = _alert;
 		this.titleRow = _titleRow;
 		this.titleBody = _titleBody;
 		this.descriptionBody = _descriptionBody;
+		this.commentRow = _commentRow;
 		this.commentBody = _commentBody;
 		this.imageAndCommentsRow = _imageAndCommentsRow;
 		this.imageContainer = _imageContainer;
+
 
 		this.reset = function() {
 
 			this.imageContainer.classList.remove("visible");
 			this.imageContainer.classList.add("invisible");
+			this.commentBody.innerHTML = "";
+			this.commentRow.classList.remove("visible");
+			this.commentRow.classList.add("invisible");
+			this.descriptionBody.innerHTML = "";
+			this.titleBody.innerHTML = "";
+
+
 		}
+
 
 		this.show = function(imageId) {
 			var that = this;
@@ -266,13 +320,25 @@
 				imageDescription, commentCell1, commentUsername, commentCell2, commentP1,
 				commentText, commentMedia, commentCell3, commentDate;
 
-			this.titleBody.innerHTML = ""; // empty the table body
-			this.commentBody.innerHTML = ""; // empty the table body
-			this.descriptionBody.innerHTML = ""; // empty the table body
+			this.titleBody.innerHTML = "";
+			this.commentBody.innerHTML = "";
+			this.descriptionBody.innerHTML = "";
 			// build updated list
 			var that = this;
 			var image = imageAndComments.image;
 			var comments = imageAndComments.comments;
+
+
+			this.imageContainer.classList.remove("invisible");
+			this.imageContainer.classList.add("visible");
+			if (comments.length > 0) {
+				that.commentRow.classList.remove("invisible");
+				that.commentRow.classList.add("visible");
+			} else {
+				this.commentRow.classList.remove("visible");
+				this.commentRow.classList.add("invisible");
+
+			}
 
 
 			//image info : title + date
@@ -293,10 +359,17 @@
 			imageTag.className = "shadow rounded-lg mb-4 image img-fluid";
 			that.descriptionBody.appendChild(imageTag);
 			descriptionP = document.createElement("p");
-			descriptionP.className = "shadow border border-success rounded-pill p-2 text-break";
-			imageDescription = document.createTextNode(image.description);
-			descriptionP.appendChild(imageDescription);
+			if (image.description) {
+				descriptionP.className = "shadow border border-success rounded-pill p-2 text-break visible";
+				imageDescription = document.createTextNode(image.description);
+				descriptionP.appendChild(imageDescription);
+			} else {
+				descriptionP.classList.remove("visible");
+				descriptionP.classList.add("invisible");
+			}
+
 			that.descriptionBody.appendChild(descriptionP);
+
 
 			comments.forEach(function(comment) {
 				commentRow = document.createElement("div");
@@ -330,9 +403,6 @@
 				commentRow.appendChild(commentMedia);
 				that.commentBody.appendChild(commentRow);
 			});
-			this.imageContainer.classList.remove("invisible");
-			this.imageContainer.classList.add("visible");
-
 
 
 
@@ -358,13 +428,16 @@
 			imageList = new ImageList(
 				alertContainer,
 				document.getElementById("id_galleryRow"),
-				document.getElementById("id_galleryBody"));
+				document.getElementById("id_galleryBody"),
+				document.getElementById("id_previousButton"),
+				document.getElementById("id_nextButton"));
 
 			imageDetails = new ImageDetails(
 				alertContainer,
 				document.getElementById("id_titleRow"),
 				document.getElementById("id_titleBody"),
 				document.getElementById("id_descriptionBody"),
+				document.getElementById("id_commentRow"),
 				document.getElementById("id_commentBody"),
 				document.getElementById("id_imageAndCommentsRow"),
 				document.getElementById("id_imageContainer"));
@@ -389,6 +462,10 @@
 
 		};
 
+		this.resetImageContainer = function() {
+
+			imageDetails.reset();
+		};
 
 		this.moveImagesNext = function() {
 
