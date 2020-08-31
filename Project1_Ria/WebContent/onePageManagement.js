@@ -101,6 +101,9 @@
 		this.alert = _alert;
 		this.galleryRow = _galleryRow;
 		this.galleryBody = _galleryBody;
+		this.images = null;
+		this.currentBlock = 0;
+		this.numToShow = 5;
 
 		this.reset = function() {
 			this.galleryRow.style.visibility = "hidden";
@@ -108,6 +111,7 @@
 
 		this.show = function(albumId) {
 			var that = this;
+
 			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null,
 				function(req) {
 					if (req.readyState == 4) {
@@ -118,7 +122,7 @@
 								that.alert.textContent = "No images of this album available!";
 								return;
 							}
-							that.update(imagesToShow, 0, 5); // that visible by closure
+							that.update(imagesToShow); // that visible by closure
 						}
 					} else {
 						that.alert.textContent = message;
@@ -128,18 +132,29 @@
 		};
 
 
-		this.update = function(arrayImages, currentBlock, numToShow) {
+		this.update = function(arrayImages) {
 			var row, imageThumbnail, titleBody, imageAnchor, imageTag;
 			this.galleryBody.innerHTML = ""; // empty the table body
 			// build updated list
 			var that = this;
 			row = document.createElement("tr");
-			var i = currentBlock * numToShow;
-			var end = i + numToShow;
+
+			console.log(i);
+			console.log(end);
+			if (arrayImages) {
+				that.images = arrayImages;
+			}
+			var i = that.currentBlock * that.numToShow;
+
+			var end = i + that.numToShow;
+			if (end > that.images.length) {
+				end = that.images.length;
+			}
+
 
 			for (; i < end; i++) {
 
-				var image = arrayImages[i];
+				var image = that.images[i];
 				imageThumbnail = document.createElement("td");
 				titleBody = document.createElement("p");
 				titleBody.textContent = image.title;
@@ -151,14 +166,13 @@
 				imageTag.classList.add("img-thumbnail");
 				imageAnchor.appendChild(imageTag);
 				imageThumbnail.appendChild(imageAnchor);
+				row.appendChild(imageThumbnail);
 
 				imageAnchor.setAttribute('imageId', image.id);
 				imageAnchor.addEventListener("click", (e) => {
-
-					imageDetails.show(e.target.getAttribute("imageId"));
+					imageDetails.show(e.currentTarget.getAttribute("imageId"));
 				}, false);
 				imageAnchor.href = "#";
-				row.appendChild(imageThumbnail);
 
 
 			}
@@ -168,8 +182,43 @@
 
 		}
 
+		this.next = function() {
 
+			if (((this.currentBlock * this.numToShow) + this.numToShow) < this.images.length) {
+				this.currentBlock++;
+				this.update(null);
 
+			}
+		}
+
+		this.previous = function() {
+			if (this.currentBlock > 0) {
+				this.currentBlock--;
+				this.update(null);
+
+			}
+		}
+
+	}
+
+	function NextButton() {
+		this.registerEvents = function(orchestrator) {
+			document.getElementById("id_nextButton").addEventListener('click', (e) => {
+
+				orchestrator.moveImagesNext();
+
+			});
+		}
+	}
+
+	function PreviousButton() {
+		this.registerEvents = function(orchestrator) {
+			document.getElementById("id_previousButton").addEventListener('click', (e) => {
+				orchestrator.moveImagesPrevious();
+
+			});
+
+		}
 	}
 
 	function ImageDetails(_alert, _imageRow, _imageBody, _descriptionBody, _commentBody) {
@@ -186,12 +235,14 @@
 
 		this.show = function(imageId) {
 			var that = this;
+			console.log(imageId);
 			makeCall("GET", "GetImageAndComments?imageId=" + imageId, null,
 				function(req) {
 					if (req.readyState == 4) {
 						var message = req.responseText;
 						if (req.status == 200) {
 							var imageAndComments = JSON.parse(req.responseText);
+							console.log(imageAndComments);
 							if (imageAndComments.length == 0) {
 								that.alert.textContent = "No images of this album available!";
 								return;
@@ -214,48 +265,50 @@
 			this.descriptionBody.innerHTML = ""; // empty the table body
 			// build updated list
 			var that = this;
-			imageAndComments.forEach(function(elem) {
+			var image = imageAndComments.image;
+			var comments = imageAndComments.comments;
 
-				//image info : title + date
-				imageCell = document.createElement("p");
-				imageCell = document.createTextNode(elem.image.title);
-				that.imageBody.appendChild(imageBody);
-				imageDateCell = document.createElement("p");
-				imageDateCell = document.createTextNode(elem.image.date);
-				that.imageBody.appendChild(imageDateCell);
 
-				//image scr + description
-				imageTag = document.createElement("img");
-				imageTag.setAttribute('src', elem.image.filePath);
-				that.descriptionBody.appendChild(imageTag);
-				imageDescription = document.createElement("p");
-				imageDescription = document.createTextNode(elem.image.description);
-				that.imageBody.appendChild(imageDescription);
+			//image info : title + date
+			imageCell = document.createElement("p");
+			imageCell = document.createTextNode(image.title);
+			that.imageBody.appendChild(imageCell);
+			imageDateCell = document.createElement("p");
+			imageDateCell = document.createTextNode(image.date);
+			that.imageBody.appendChild(imageDateCell);
 
-				elem.comments.forEach(function(comment) {
-					commentRow = document.createElement("div");
-					//comments of the image selected
-					commentCell1 = document.createElement("div");
-					commentUsername = document.createElement("p");
-					commentUsername = document.createTextNode(comment.username);
-					commentCell1.appendChild(commentUsername);
-					commentRow.appendChild(commentCell1);
+			//image scr + description
+			imageTag = document.createElement("img");
+			imageTag.setAttribute('src', image.filePath);
+			that.descriptionBody.appendChild(imageTag);
+			imageDescription = document.createElement("p");
+			imageDescription = document.createTextNode(image.description);
+			that.imageBody.appendChild(imageDescription);
 
-					commentCell2 = document.createElement("div");
-					commentText = document.createElement("p");
-					commentText = document.createTextNode(comment.text);
-					commentCell2.appendChild(commentText);
-					commentRow.appendChild(commentCell2);
+			comments.forEach(function(comment) {
+				commentRow = document.createElement("div");
+				//comments of the image selected
+				commentCell1 = document.createElement("div");
+				commentUsername = document.createElement("p");
+				commentUsername = document.createTextNode(comment.username);
+				commentCell1.appendChild(commentUsername);
+				commentRow.appendChild(commentCell1);
 
-					commentCell3 = document.createElement("div");
-					commentDate = document.createElement("p");
-					commentDate = document.createTextNode(comment.date);
-					commentCell3.appendChild(commentDate);
-					commentRow.appendChild(commentCell3);
+				commentCell2 = document.createElement("div");
+				commentText = document.createElement("p");
+				commentText = document.createTextNode(comment.text);
+				commentCell2.appendChild(commentText);
+				commentRow.appendChild(commentCell2);
 
-				});
-				that.commentBody.appendChild(commentRow);
+				commentCell3 = document.createElement("div");
+				commentDate = document.createElement("p");
+				commentDate = document.createTextNode(comment.date);
+				commentCell3.appendChild(commentDate);
+				commentRow.appendChild(commentCell3);
+
 			});
+			that.commentBody.appendChild(commentRow);
+
 
 		}
 
@@ -263,32 +316,13 @@
 
 	}
 
-	function NextButton() {
-		this.registerEvents = function(orchestrator) {
-			document.getElementById("id_nextButton").addEventListener('click', (e) => {
 
-				//COSE
-
-			});
-		}
-	}
-
-	function PreviousButton() {
-		this.registerEvents = function(orchestrator) {
-			document.getElementById("id_previousButton").addEventListener('click', (e) => {
-				//COSE
-
-			});
-
-		}
-	}
 
 
 
 	function PageOrchestrator() {
 		var alertContainer = document.getElementById("id_alert");
 		this.start = function() {
-
 
 			albumsList = new AlbumsList(
 				alertContainer,
@@ -307,20 +341,36 @@
 				document.getElementById("id_descriptionBody"),
 				document.getElementById("id_commentBody"));
 
+			nextButton = new NextButton();
+			previousButton = new PreviousButton();
+			nextButton.registerEvents(this);
+			previousButton.registerEvents(this);
+
 			document.querySelector("a[href='Logout']").addEventListener('click', () => {
 				window.sessionStorage.removeItem('username');
 			})
 		};
 
 
-		this.refresh = function(currentAlbum) {
+
+		this.refresh = function() {
 			alertContainer.textContent = "";
 			albumsList.reset();
 			imageList.reset();
 			imageDetails.reset();
 			albumsList.show();
-			NextButton();
-			PreviousButton();
+
+		};
+
+
+		this.moveImagesNext = function() {
+
+			imageList.next();
+		};
+
+		this.moveImagesPrevious = function() {
+
+			imageList.previous();
 		};
 	}
 })();
