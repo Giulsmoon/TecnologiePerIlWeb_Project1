@@ -18,7 +18,7 @@ public class UserDAO {
 	}
 
 	public User checkCredentials(String usrn, String pwd) throws SQLException {
-		String query = "SELECT  id, username FROM user  WHERE username = ? AND BINARY u.password = BINARY ?";
+		String query = "SELECT  u.id, u.username FROM user as u WHERE u.username = ? AND BINARY u.password = BINARY ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, usrn);
 			pstatement.setString(2, pwd);

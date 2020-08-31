@@ -233,6 +233,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 				SQLException e) {
 					res.sendError(500, "Database access failed");
+					return;
+
 				}
 			} else {
 				String path = getServletContext().getContextPath() + "/GoToHomePage";

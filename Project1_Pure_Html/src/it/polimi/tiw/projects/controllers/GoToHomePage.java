@@ -76,6 +76,8 @@ public class GoToHomePage extends HttpServlet {
 
 		SQLException e) {
 			res.sendError(500, "Database access failed");
+			return;
+
 		}
 	}
 

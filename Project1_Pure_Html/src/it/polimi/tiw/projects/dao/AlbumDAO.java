@@ -19,7 +19,7 @@ public class AlbumDAO {
 
 	public List<Album> findAllAlbums() throws SQLException {
 		List<Album> albums = new ArrayList<Album>();
-		String query = "SELECT * album ORDER BY creationDate DESC";
+		String query = "SELECT * FROM album ORDER BY creationDate DESC";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		try {

@@ -32,11 +32,13 @@
  </filter> 
  <filter-mapping> 
     <filter-name>GuestCheck</filter-name> 
+    <url-pattern>/index.html</url-pattern>
     <url-pattern>/CheckLogin</url-pattern> 
     <url-pattern>/OpenRegistrationForm</url-pattern> 
     <url-pattern>/CheckGuest</url-pattern> 
     <url-pattern>/Registration</url-pattern> 
  </filter-mapping> 
+
  
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

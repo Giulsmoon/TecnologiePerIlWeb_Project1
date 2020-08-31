@@ -41,8 +41,8 @@ public class PreviousImages extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String path = getServletContext().getContextPath() + "/GoToHomePage";
-		response.sendRedirect(path);
+		doPost(request, response);
+
 	}
 
 	/**
