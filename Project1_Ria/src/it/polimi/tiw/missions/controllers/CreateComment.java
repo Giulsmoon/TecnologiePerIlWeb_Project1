@@ -67,7 +67,7 @@ public class CreateComment extends HttpServlet {
 		user = (User) s.getAttribute("user");
 		
 		try {
-			comment = StringEscapeUtils.escapeJava(request.getParameter("comment"));
+			comment = request.getParameter("comment");
 			imageId = Integer.parseInt(request.getParameter("imageId"));
 			isBadRequest = comment.isEmpty() || imageId <=0;
 		} catch (NumberFormatException | NullPointerException e) {
