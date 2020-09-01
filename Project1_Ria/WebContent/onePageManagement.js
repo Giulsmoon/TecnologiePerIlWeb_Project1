@@ -211,8 +211,9 @@
 				imageAnchor.setAttribute('imageId', image.id);
 				imageAnchor.addEventListener("mouseenter", (e) => {
 					e.preventDefault();
-					document.getElementById("box").style.display = 'block';
 					imageDetails.show(e.currentTarget.getAttribute("imageId"));
+
+
 				}, false);
 				//imageAnchor.addEventListener("click", (e) => {
 				//	e.preventDefault();
@@ -380,22 +381,6 @@
 			var image = imageAndComments.image;
 			var comments = imageAndComments.comments;
 
-			//passo l'image id come paramentro alla funzione show del comment form.
-			commentForm.show(image.id);
-
-
-			this.imageContainer.classList.remove("invisible");
-			this.imageContainer.classList.add("visible");
-			if (comments.length > 0) {
-				that.commentRow.classList.remove("invisible");
-				that.commentRow.classList.add("visible");
-			} else {
-				this.commentRow.classList.remove("visible");
-				this.commentRow.classList.add("invisible");
-
-			}
-
-
 			//image info : title + date
 			imageP = document.createElement("p");
 			imageP.className = "h1 pt-3 border-top";
@@ -430,7 +415,23 @@
 				that.addNewComment(comment);
 			});
 
+			//passo l'image id come paramentro alla funzione show del comment form.
+			commentForm.show(image.id);
 
+
+			this.imageContainer.classList.remove("invisible");
+			this.imageContainer.classList.add("visible");
+			if (comments.length > 0) {
+				that.commentRow.classList.remove("invisible");
+				that.commentRow.classList.add("visible");
+			} else {
+				this.commentRow.classList.remove("visible");
+				this.commentRow.classList.add("invisible");
+
+			}
+
+
+			document.getElementById("box").style.display = 'block';
 		}
 
 
@@ -454,7 +455,7 @@
 				if (e.target == box) { box.style.display = "none"; }
 			}, false);
 		}
-		
+
 
 
 	}
