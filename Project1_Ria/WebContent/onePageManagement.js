@@ -1,7 +1,7 @@
 (function() { // avoid variables ending up in the global scope
 
 	// page components
-	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton, CommentForm;
+	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton, CommentForm, RedirectToIndex;
 	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -428,6 +428,17 @@
 
 
 	}
+	
+	function RedirectToIndex() {
+		
+		this.registerEvents = function() {
+
+			document.getElementById("id_loginToComment").addEventListener('click', (e) => {
+						window.location.href = "OnePage.html";
+					}, false);
+		};
+				
+	}
 
 	function CommentForm(_alert, _commentRow, _userNotLogged, _userLogged) {
 		this.alert = _alert;
@@ -539,12 +550,15 @@
 				document.getElementById("id_commentRow"),
 				document.getElementById("id_userNotLogged"),
 				document.getElementById("id_userLogged"));
+				
+			redirectToIndex = new RedirectToIndex();
 
 			nextButton = new NextButton();
 			previousButton = new PreviousButton();
 			nextButton.registerEvents(this);
 			previousButton.registerEvents(this);
 			commentForm.registerEvents(this);
+			redirectToIndex.registerEvents();
 
 			document.querySelector("a[href='Logout']").addEventListener('click', () => {
 				window.sessionStorage.removeItem('username');
