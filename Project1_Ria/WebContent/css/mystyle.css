@@ -236,3 +236,11 @@ textarea {
 	text-decoration: none;
 	cursor: pointer;
 }
+
+.draggable{
+	cursor: grab;
+}
+
+.draggable.dragging {
+	opacity: .7;
+}

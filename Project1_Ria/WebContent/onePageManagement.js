@@ -47,6 +47,57 @@
 			);
 		};
 
+		this.setDraggable = function() {
+			const draggables = document.querySelectorAll('.draggable');
+
+			draggables.forEach(function(draggable) {
+				draggable.addEventListener('dragstart', (e) => {
+					console.log('dragstart');
+					draggable.classList.add('dragging')
+				})
+
+				draggable.addEventListener('dragend', (e) => {
+
+					console.log('dragend');
+					draggable.classList.remove('dragging')
+				})
+			});
+
+			this.albumsBody.addEventListener('dragover', (e) => {
+				e.preventDefault();
+				console.log('drag over')
+				const afterElement = getDragAfterElement(this.albumsBody, e.clientY);
+				const draggable = document.querySelector('.dragging')
+
+				if (afterElement == null) {
+					this.albumsBody.appendChild(draggable)
+				}
+				else {
+					this.albumsBody.insertBefore(draggable, afterElement)
+				}
+
+			})
+
+			function getDragAfterElement(container, y) {
+				const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
+
+				return draggableElements.reduce((closest, child) => {
+					const box = child.getBoundingClientRect();
+					const offset = y - box.top - box.height / 2;
+
+					if (offset < 0 && offset > closest.offset) {
+						return { offset: offset, element: child }
+					} else {
+						return closest;
+					}
+
+				}, { offset: Number.NEGATIVE_INFINITY }).element;
+			}
+
+		}
+
+
+
 
 		this.update = function(arrayAlbums) {
 			var elem, i, row, imageCell, imageTag, titleCell, linkTitle, dateCell, dateBody, titleAnchor;
@@ -56,7 +107,8 @@
 			arrayAlbums.forEach(function(album) {
 
 				row = document.createElement("tr");
-
+				row.classList.add("draggable");
+				row.setAttribute('draggable', true);
 				imageCell = document.createElement("td");
 				imageTag = document.createElement("img");
 				//imageTag.currentSrc = album.iconPath;
@@ -93,7 +145,7 @@
 
 			});
 			this.albumsRow.style.visibility = "visible";
-
+			this.setDraggable();
 		}
 
 
