@@ -65,7 +65,7 @@ public class GetImageAndComments extends HttpServlet {
 		try {
 			imageAndComments.setImage(imageDAO.findImageById(imageId));
 			imageAndComments.setComments(commentDAO.findCommentsOfImage(imageId));
-			commentDAO.findUsernameOfComment(imageAndComments.getComments());
+			commentDAO.findUsernameOfComments(imageAndComments.getComments());
 		} catch (
 
 		SQLException e) {

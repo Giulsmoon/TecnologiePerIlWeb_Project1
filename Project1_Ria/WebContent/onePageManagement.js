@@ -1,7 +1,7 @@
 (function() { // avoid variables ending up in the global scope
 
 	// page components
-	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton;
+	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton, CommentForm;
 	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -79,6 +79,7 @@
 					imageList.resetButtonsNextAndPrevious();
 					imageList.resetImages();
 					imageDetails.reset();
+					commentForm.reset();
 				}, false);
 				titleAnchor.href = "#";
 
@@ -293,14 +294,12 @@
 
 		this.show = function(imageId) {
 			var that = this;
-			console.log(imageId);
 			makeCall("GET", "GetImageAndComments?imageId=" + imageId, null,
 				function(req) {
 					if (req.readyState == 4) {
 						var message = req.responseText;
 						if (req.status == 200) {
 							var imageAndComments = JSON.parse(req.responseText);
-							console.log(imageAndComments);
 							if (imageAndComments.length == 0) {
 								that.alert.textContent = "No images of this album available!";
 								return;
@@ -314,11 +313,56 @@
 			);
 		};
 
+		this.addNewComment = function(comment) {
 
-		this.update = function(imageAndComments) {
-			var row1, commentRow, imageP, dateP, descriptionP, imageCell, imageDateCell, imageTag,
-				imageDescription, commentCell1, commentUsername, commentCell2, commentP1,
+			var commentRow, commentCell1, commentUsername, commentCell2, commentP1,
 				commentText, commentMedia, commentCell3, commentDate;
+			var that = this;
+
+			commentRow = document.createElement("div");
+			commentRow.className = "comments-list";
+			commentMedia = document.createElement("div");
+			commentMedia.className = "media";
+
+
+			//comments of the image selected
+			commentCell1 = document.createElement("div");
+			commentP1 = document.createElement("p");
+			commentP1.className = "media-heading user_name";
+			commentUsername = document.createTextNode(comment.username);
+			commentP1.appendChild(commentUsername);
+			commentCell1.appendChild(commentP1);
+			commentMedia.appendChild(commentCell1);
+
+			commentCell2 = document.createElement("div");
+			commentCell2.className = "media-body";
+			commentText = document.createTextNode(comment.text);
+			commentCell2.appendChild(commentText);
+			commentMedia.appendChild(commentCell2);
+
+			commentCell3 = document.createElement("div");
+			commentCell3.className = "pull-right";
+			commentDate = document.createTextNode(comment.date);
+			commentCell3.appendChild(commentDate);
+			commentMedia.appendChild(commentCell3);
+
+
+			commentRow.appendChild(commentMedia);
+			that.commentBody.appendChild(commentRow);
+		}
+
+		this.showComments = function() {
+			var that = this;
+			if(that.commentRow.classList.contains("invisible")){
+				that.commentRow.classList.remove("invisible");
+				that.commentRow.classList.add("visible");
+			}
+			
+		}
+		
+		this.update = function(imageAndComments) {
+			var row1, imageP, dateP, descriptionP, imageCell, imageDateCell, imageTag,
+				imageDescription;
 
 			this.titleBody.innerHTML = "";
 			this.commentBody.innerHTML = "";
@@ -327,6 +371,9 @@
 			var that = this;
 			var image = imageAndComments.image;
 			var comments = imageAndComments.comments;
+
+			//passo l'image id come paramentro alla funzione show del comment form.
+			commentForm.show(image.id);
 
 
 			this.imageContainer.classList.remove("invisible");
@@ -372,38 +419,8 @@
 
 
 			comments.forEach(function(comment) {
-				commentRow = document.createElement("div");
-				commentRow.className = "comments-list";
-				commentMedia = document.createElement("div");
-				commentMedia.className = "media";
-
-
-				//comments of the image selected
-				commentCell1 = document.createElement("div");
-				commentP1 = document.createElement("p");
-				commentP1.className = "media-heading user_name";
-				commentUsername = document.createTextNode(comment.username);
-				commentP1.appendChild(commentUsername);
-				commentCell1.appendChild(commentP1);
-				commentMedia.appendChild(commentCell1);
-
-				commentCell2 = document.createElement("div");
-				commentCell2.className = "media-body";
-				commentText = document.createTextNode(comment.text);
-				commentCell2.appendChild(commentText);
-				commentMedia.appendChild(commentCell2);
-
-				commentCell3 = document.createElement("div");
-				commentCell3.className = "pull-right";
-				commentDate = document.createTextNode(comment.date);
-				commentCell3.appendChild(commentDate);
-				commentMedia.appendChild(commentCell3);
-
-
-				commentRow.appendChild(commentMedia);
-				that.commentBody.appendChild(commentRow);
+				that.addNewComment(comment);
 			});
-
 
 
 		}
@@ -412,6 +429,80 @@
 
 	}
 
+	function CommentForm(_alert, _commentRow, _userNotLogged, _userLogged) {
+		this.alert = _alert;
+		this.commentRow = _commentRow;
+		this.userNotLogged = _userNotLogged;
+		this.userLogged = _userLogged;
+
+		this.reset = function() {
+			document.getElementById("id_textComment").innerHTML = "";
+			this.userNotLogged.classList.remove("visible");
+			this.userNotLogged.classList.add("invisible");
+			this.userLogged.classList.remove("visible");
+			this.userLogged.classList.add("invisible");
+			this.commentRow.classList.remove("visible");
+			this.commentRow.classList.add("invisible");
+
+		};
+
+		this.show = function(imageId) {
+			this.commentRow.classList.remove("invisible");
+			this.commentRow.classList.add("visible");
+			if (sessionStorage.getItem('username') === null) {
+				this.userNotLogged.classList.remove("invisible")
+				this.userNotLogged.classList.add("visible")
+				this.userLogged.classList.remove("visible")
+				this.userLogged.classList.add("invisible")
+			} else {
+				this.userNotLogged.classList.remove("visible")
+				this.userNotLogged.classList.add("invisible")
+				this.userLogged.classList.remove("invisible")
+				this.userLogged.classList.add("visible")
+				document.getElementById("id_commentImageId").value = imageId;
+			}
+
+
+		};
+
+		this.registerEvents = function(orchestrator) {
+
+			document.getElementById("id_commentButton").addEventListener('click', (e) => {
+				var form = e.target.closest("form");
+				console.log(form);
+				if (form.checkValidity()) {
+					makeCall("POST", 'CreateComment', e.target.closest("form"),
+						function(req) {
+							if (req.readyState == XMLHttpRequest.DONE) {
+								var message = req.responseText;
+
+								switch (req.status) {
+									case 200:
+										var comment = JSON.parse(req.responseText);
+										document.getElementById("message").textContent
+											= "Comment saved";
+										orchestrator.addNewComment(comment);
+										break;
+									case 400: // bad request
+										document.getElementById("message").textContent = message;
+										break;
+									case 401: // unauthorized
+										document.getElementById("message").textContent = message;
+										break;
+									case 500: // server error
+										document.getElementById("message").textContent = message;
+										break;
+								}
+							}
+						}
+					);
+				} else {
+					form.reportValidity();
+				}
+			});
+		}
+
+	};
 
 
 
@@ -442,10 +533,18 @@
 				document.getElementById("id_imageAndCommentsRow"),
 				document.getElementById("id_imageContainer"));
 
+
+			commentForm = new CommentForm(
+				alertContainer,
+				document.getElementById("id_commentRow"),
+				document.getElementById("id_userNotLogged"),
+				document.getElementById("id_userLogged"));
+
 			nextButton = new NextButton();
 			previousButton = new PreviousButton();
 			nextButton.registerEvents(this);
 			previousButton.registerEvents(this);
+			commentForm.registerEvents(this);
 
 			document.querySelector("a[href='Logout']").addEventListener('click', () => {
 				window.sessionStorage.removeItem('username');
@@ -460,6 +559,11 @@
 			imageList.reset();
 			albumsList.show();
 
+		};
+
+		this.addNewComment = function(comment) {
+			imageDetails.addNewComment(comment);
+			imageDetails.showComments();
 		};
 
 		this.resetImageContainer = function() {
