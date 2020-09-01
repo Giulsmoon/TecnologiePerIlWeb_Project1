@@ -1,7 +1,7 @@
 (function() { // avoid variables ending up in the global scope
 
 	// page components
-	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton, CommentForm, RedirectToIndex;
+	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton, CommentForm, RedirectToIndex, CloseModalWindow;
 	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -74,7 +74,7 @@
 
 				titleAnchor.setAttribute('albumId', album.id);
 				titleAnchor.addEventListener("click", (e) => {
-
+					e.preventDefault();
 					imageList.show(e.target.getAttribute("albumId"));
 					imageList.resetButtonsNextAndPrevious();
 					imageList.resetImages();
@@ -209,10 +209,15 @@
 				row.appendChild(imageThumbnail);
 
 				imageAnchor.setAttribute('imageId', image.id);
-				imageAnchor.addEventListener("click", (e) => {
-
+				imageAnchor.addEventListener("mouseenter", (e) => {
+					e.preventDefault();
+					document.getElementById("box").style.display = 'block';
 					imageDetails.show(e.currentTarget.getAttribute("imageId"));
 				}, false);
+				//imageAnchor.addEventListener("click", (e) => {
+				//	e.preventDefault();
+				//	imageDetails.show(e.currentTarget.getAttribute("imageId"));
+				//}, false);
 				imageAnchor.href = "#";
 
 
@@ -249,7 +254,7 @@
 	function NextButton() {
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_nextButton").addEventListener('click', (e) => {
-
+				e.preventDefault();
 				orchestrator.moveImagesNext();
 
 			});
@@ -259,12 +264,15 @@
 	function PreviousButton() {
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_previousButton").addEventListener('click', (e) => {
+				e.preventDefault();
 				orchestrator.moveImagesPrevious();
 
 			});
 
 		}
 	}
+
+
 
 	function ImageDetails(_alert, _titleRow, _titleBody, _descriptionBody, _commentRow,
 		_commentBody, _imageAndCommentsRow, _imageContainer) {
@@ -353,13 +361,13 @@
 
 		this.showComments = function() {
 			var that = this;
-			if(that.commentRow.classList.contains("invisible")){
+			if (that.commentRow.classList.contains("invisible")) {
 				that.commentRow.classList.remove("invisible");
 				that.commentRow.classList.add("visible");
 			}
-			
+
 		}
-		
+
 		this.update = function(imageAndComments) {
 			var row1, imageP, dateP, descriptionP, imageCell, imageDateCell, imageTag,
 				imageDescription;
@@ -428,16 +436,39 @@
 
 
 	}
-	
-	function RedirectToIndex() {
+
+	function CloseModalWindow() {
+
+		var modal_close = document.getElementsByClassName("modal_close")[0];
+		var box = document.getElementById('box');
+		this.registerEvents = function() {
+			//chiude la finestra cliccando la x
+			modal_close.addEventListener('click', (e) => {
+				e.preventDefault();
+				box.style.display = "none";
+			}, false);
+
+			// Chiude la finestra quando l'utente clicca al di fuori di essa
+			window.addEventListener('mouseenter', (e) => {
+				e.preventDefault();
+				if (e.target == box) { box.style.display = "none"; }
+			}, false);
+		}
 		
+
+
+	}
+
+	function RedirectToIndex() {
+
 		this.registerEvents = function() {
 
 			document.getElementById("id_loginToComment").addEventListener('click', (e) => {
-						window.location.href = "OnePage.html";
-					}, false);
+				e.preventDefault();
+				window.location.href = "index.html";
+			}, false);
 		};
-				
+
 	}
 
 	function CommentForm(_alert, _commentRow, _userNotLogged, _userLogged) {
@@ -479,6 +510,7 @@
 		this.registerEvents = function(orchestrator) {
 
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
+				e.preventDefault();
 				var form = e.target.closest("form");
 				console.log(form);
 				if (form.checkValidity()) {
@@ -550,8 +582,10 @@
 				document.getElementById("id_commentRow"),
 				document.getElementById("id_userNotLogged"),
 				document.getElementById("id_userLogged"));
-				
+
 			redirectToIndex = new RedirectToIndex();
+
+			closeModalWindow = new CloseModalWindow();
 
 			nextButton = new NextButton();
 			previousButton = new PreviousButton();
@@ -559,8 +593,10 @@
 			previousButton.registerEvents(this);
 			commentForm.registerEvents(this);
 			redirectToIndex.registerEvents();
+			closeModalWindow.registerEvents();
 
 			document.querySelector("a[href='Logout']").addEventListener('click', () => {
+				e.preventDefault();
 				window.sessionStorage.removeItem('username');
 			})
 		};
