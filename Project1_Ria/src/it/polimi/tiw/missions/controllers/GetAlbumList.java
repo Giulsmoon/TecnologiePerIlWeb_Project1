@@ -97,7 +97,7 @@ public class GetAlbumList extends HttpServlet {
 		}
 		
 		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy MM dd").create();
+				   .setDateFormat("yyyy-MM-dd").create();
 		String json = gson.toJson(albums);
 	
 		response.setContentType("application/json");

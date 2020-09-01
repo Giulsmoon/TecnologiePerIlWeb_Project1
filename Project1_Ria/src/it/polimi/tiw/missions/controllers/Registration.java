@@ -52,6 +52,7 @@ public class Registration extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
 		boolean isBadRequest = false;
 
 		String username = null;
@@ -60,9 +61,9 @@ public class Registration extends HttpServlet {
 		RegistrationDAO registrationDAO = new RegistrationDAO(connection);
 
 		try {
-			username = StringEscapeUtils.escapeJava(request.getParameter("username"));
-			password = StringEscapeUtils.escapeJava(request.getParameter("password"));
-			passwordReinserted = StringEscapeUtils.escapeJava(request.getParameter("passwordReinserted"));
+			username = request.getParameter("username");
+			password = request.getParameter("password");
+			passwordReinserted = request.getParameter("passwordReinserted");
 
 			isBadRequest = username.isEmpty() || password.isEmpty() || passwordReinserted.isEmpty()
 					|| !password.equals(passwordReinserted);

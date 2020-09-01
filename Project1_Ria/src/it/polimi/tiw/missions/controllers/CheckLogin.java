@@ -38,10 +38,12 @@ public class CheckLogin extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// obtain and escape params
+		request.setCharacterEncoding("UTF-8");
+
 		String usrn = null;
 		String pwd = null;
-		usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));
+		usrn = request.getParameter("username");
+		pwd = request.getParameter("pwd");
 		if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty() ) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Credentials must be not null");
