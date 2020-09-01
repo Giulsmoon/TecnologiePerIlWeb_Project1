@@ -24,30 +24,31 @@
 		this.registerEvents = function(orchestrator) {
 
 			document.getElementById("id_loginButton").addEventListener('click', (e) => {
+				e.preventDefault();
 				var form = e.target.closest("form");
 				if (form.checkValidity()) {
 					makeCall("POST", 'CheckLogin', e.target.closest("form"),
-							 function(req) {
-						if (req.readyState == XMLHttpRequest.DONE) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
-									sessionStorage.setItem('username', message);
-									window.location.href = "OnePage.html";
-									break;
-								case 400: // bad request
-									document.getElementById("errormessage").textContent = message;
-									break;
-								case 401: // unauthorized
-									document.getElementById("errormessage").textContent = message;
-									break;
-								case 500: // server error
-									document.getElementById("errormessage").textContent = message;
-									break;
+						function(req) {
+							if (req.readyState == XMLHttpRequest.DONE) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+										sessionStorage.setItem('username', message);
+										window.location.href = "OnePage.html";
+										break;
+									case 400: // bad request
+										document.getElementById("errormessage").textContent = message;
+										break;
+									case 401: // unauthorized
+										document.getElementById("errormessage").textContent = message;
+										break;
+									case 500: // server error
+										document.getElementById("errormessage").textContent = message;
+										break;
+								}
 							}
 						}
-					}
-							);
+					);
 				} else {
 					form.reportValidity();
 				}
@@ -58,10 +59,18 @@
 
 	};
 
-	function NewAccountButton(orchestrator) {
+	function NewAccountButton(_buttonRow) {
+		this.buttonRow = _buttonRow;
+		this.reset = function() {
+			this.buttonRow.classList.remove("visible");
+			this.buttonRow.classList.add("invisible");
+		}
 
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_createNewAccountButton").addEventListener('click', (e) => {
+				e.preventDefault();
+
+				this.reset();
 				orchestrator.showRegisterForm();
 			}, false);
 
@@ -82,30 +91,32 @@
 		this.registerEvents = function(orchestrator) {
 
 			document.getElementById("id_registrationButton").addEventListener('click', (e) => {
+				e.preventDefault();
+
 				var form = e.target.closest("form");
 				if (form.checkValidity()) {
 					makeCall("POST", 'Registration', e.target.closest("form"),
-							 function(req) {
-						if (req.readyState == XMLHttpRequest.DONE) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
-									document.getElementById("errormessage").textContent 
-										= "Registration Done";										
-									break;
-								case 400: // bad request
-									document.getElementById("errormessage").textContent = message;
-									break;
-								case 401: // unauthorized
-									document.getElementById("errormessage").textContent = message;
-									break;
-								case 500: // server error
-									document.getElementById("errormessage").textContent = message;
-									break;
+						function(req) {
+							if (req.readyState == XMLHttpRequest.DONE) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+										document.getElementById("errormessage").textContent
+											= "Registration Done";
+										break;
+									case 400: // bad request
+										document.getElementById("errormessage").textContent = message;
+										break;
+									case 401: // unauthorized
+										document.getElementById("errormessage").textContent = message;
+										break;
+									case 500: // server error
+										document.getElementById("errormessage").textContent = message;
+										break;
+								}
 							}
 						}
-					}
-							);
+					);
 				} else {
 					form.reportValidity();
 				}
@@ -118,19 +129,21 @@
 
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_continueAsGuest").addEventListener('click', (e) => {
-				if (sessionStorage.getItem('username') == null) {
+				e.preventDefault();
+
+				if (sessionStorage.getItem('username') === null) {
 					makeCall("GET", "CheckGuest", null,
-							 function(req) {
-						if (req.readyState == 4) {
-							var message = req.responseText;
-							if (req.status == 200) {
-								window.location.href = "OnePage.html";
-							} else {
-								document.getElementById("errormessage").textContent = "Error";
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								if (req.status == 200) {
+									window.location.href = "OnePage.html";
+								} else {
+									document.getElementById("errormessage").textContent = "Error";
+								}
 							}
 						}
-					}
-							);
+					);
 				} else {
 					document.getElementById("errormessage").textContent = "you Are logged";
 				}
@@ -144,6 +157,8 @@
 		var alertContainer = document.getElementById("id_alert");
 		this.start = function() {
 
+			sessionStorage.clear(); //Ogni volta che apro il sito pulisco le sessioni vecchie
+
 			loginForm = new LoginForm();
 
 			registrationForm = new RegistrationForm(
@@ -151,7 +166,7 @@
 
 			guestButton = new GuestButton();
 
-			newAccountButton = new NewAccountButton();
+			newAccountButton = new NewAccountButton(document.getElementById("id_buttonRow"));
 
 			loginForm.registerEvents();
 			registrationForm.registerEvents();

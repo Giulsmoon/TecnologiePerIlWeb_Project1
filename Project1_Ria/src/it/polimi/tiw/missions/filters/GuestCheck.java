@@ -12,18 +12,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import it.polimi.tiw.missions.beans.User;
+
 /**
  * Servlet Filter implementation class GuestCheck
  */
 @WebFilter("/GuestCheck")
 public class GuestCheck implements Filter {
 
-    /**
-     * Default constructor. 
-     */
-    public GuestCheck() {
-        // TODO Auto-generated constructor stub
-    }
+	/**
+	 * Default constructor.
+	 */
+	public GuestCheck() {
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see Filter#destroy()
@@ -46,11 +48,16 @@ public class GuestCheck implements Filter {
 		HttpSession s = req.getSession();
 		if (s.getAttribute("user") != null) {
 			s.invalidate();
-			res.sendRedirect(((HttpServletRequest) request).getContextPath());
+			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			String loginpath = req.getServletContext().getContextPath() + "/index.html";
+			res.sendRedirect(loginpath);
 			return;
 		}
+		res.setContentType("text/html");
+		res.setCharacterEncoding("UTF-8");
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
+
 	}
 
 	/**

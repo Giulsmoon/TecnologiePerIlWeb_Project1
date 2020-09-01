@@ -32,7 +32,8 @@ public class LoggedUser implements Filter {
 
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
-			res.sendRedirect(((HttpServletRequest) request).getContextPath());
+			String loginpath = req.getServletContext().getContextPath() + "/index.html";
+			res.sendRedirect(loginpath);
 			return;
 		}
 		// pass the request along the filter chain
