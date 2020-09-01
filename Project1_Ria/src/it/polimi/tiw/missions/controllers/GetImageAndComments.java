@@ -74,7 +74,7 @@ public class GetImageAndComments extends HttpServlet {
 		}
 		
 		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy MM dd").create();
+				   .setDateFormat("yyyy-MM-dd").create();
 		String json = gson.toJson(imageAndComments);
 
 		response.setContentType("application/json");

@@ -87,7 +87,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 			}
 		}
 		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy MM dd").create();
+				   .setDateFormat("yyyy-MM-dd").create();
 		String json = gson.toJson(images);
 	
 		response.setContentType("application/json");

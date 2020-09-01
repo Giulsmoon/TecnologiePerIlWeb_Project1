@@ -62,12 +62,14 @@ public class CreateComment extends HttpServlet {
 		boolean isBadRequest = false;
 		User user = null;
 		HttpSession s = request.getSession();
+		request.setCharacterEncoding("UTF-8");
 		String comment = null;
 		Integer imageId = null;
 		user = (User) s.getAttribute("user");
 		
 		try {
-			comment = StringEscapeUtils.escapeJava(request.getParameter("comment"));
+			comment = request.getParameter("comment");
+			System.out.println(comment);
 			imageId = Integer.parseInt(request.getParameter("imageId"));
 			isBadRequest = comment.isEmpty() || imageId <=0;
 		} catch (NumberFormatException | NullPointerException e) {
@@ -97,7 +99,7 @@ public class CreateComment extends HttpServlet {
 					System.out.println(commentResponse.getText());
 					response.setStatus(HttpServletResponse.SC_OK);
 					Gson gson = new GsonBuilder()
-							.setDateFormat("yyyy MM dd").create();
+							.setDateFormat("yyyy-MM-dd").create();
 					String json = gson.toJson(commentResponse);
 					response.setContentType("application/json");
 					response.setCharacterEncoding("UTF-8");
