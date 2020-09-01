@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import it.polimi.tiw.missions.beans.Comment;
+import com.mysql.cj.x.protobuf.MysqlxPrepare.Execute;
+import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
+import com.mysql.cj.xdevapi.Statement;
 
+import it.polimi.tiw.missions.beans.Comment;
 
 public class CommentDAO {
 	private Connection con;
@@ -22,43 +25,74 @@ public class CommentDAO {
 
 	}
 
-
-	public void  findUsernameOfComment(List<Comment> comments) throws SQLException {
+	public void findUsernameOfComments(List<Comment> comments) throws SQLException {
 		if (!comments.isEmpty()) {
-				String query2 = "SELECT  u.username, c.id from user u JOIN comment c ON u.id=c.idUser";
-				//String query = "SELECT username FROM project1_pure_html.user  WHERE id = ?";
-				ResultSet result = null;
-				PreparedStatement pstatement = null;
-				try {
-					pstatement = con.prepareStatement(query2);
-					//pstatement.setInt(1, comments.get(i).getIdUser());
-					result = pstatement.executeQuery();
-					while (result.next()) {
-						
-							for (int i = 0; i < comments.size(); i++) {
-								if(comments.get(i).getId()==result.getInt("id")) {
-									comments.get(i).setUsername(result.getString("username"));
-								}		
-						}					
-					}
-				} catch (SQLException e) {
-					throw new SQLException(e);
-
-				} finally {
-					try {
-						result.close();
-					} catch (Exception e1) {
-						throw new SQLException("Cannot close result");
-					}
-					try {
-						pstatement.close();
-					} catch (Exception e1) {
-						throw new SQLException("Cannot close statement");
+			String query = "SELECT  u.username, c.id from user u JOIN comment c ON u.id=c.idUser";
+			ResultSet result = null;
+			PreparedStatement pstatement = null;
+			try {
+				pstatement = con.prepareStatement(query);
+				// pstatement.setInt(1, comments.get(i).getIdUser());
+				result = pstatement.executeQuery();
+				while (result.next()) {
+					for (int i = 0; i < comments.size(); i++) {
+						if (comments.get(i).getId() == result.getInt("id")) {
+							comments.get(i).setUsername(result.getString("username"));
+						}
 					}
 				}
+			} catch (SQLException e) {
+				throw new SQLException(e);
+
+			} finally {
+				try {
+					result.close();
+				} catch (Exception e1) {
+					throw new SQLException("Cannot close result");
+				}
+				try {
+					pstatement.close();
+				} catch (Exception e1) {
+					throw new SQLException("Cannot close statement");
+				}
 			}
+		}
 	}
-	
+
+	public void findUsernameOfComment(Comment comment) throws SQLException {
+		if (comment != null) {
+			String query = "SELECT  u.username, c.id from user u JOIN comment c ON u.id=c.idUser";
+			ResultSet result = null;
+			PreparedStatement pstatement = null;
+			try {
+				pstatement = con.prepareStatement(query);
+				// pstatement.setInt(1, comments.get(i).getIdUser());
+				result = pstatement.executeQuery();
+				while (result.next()) {
+					if (comment.getId() == result.getInt("id")) {
+						comment.setUsername(result.getString("username"));
+					}
+				}
+
+			} catch (SQLException e) {
+				throw new SQLException(e);
+
+			} finally {
+				try {
+					result.close();
+				} catch (Exception e1) {
+					throw new SQLException("Cannot close result");
+				}
+				try {
+					pstatement.close();
+				} catch (Exception e1) {
+					throw new SQLException("Cannot close statement");
+				}
+			}
+		}
+
+	}
+
 	public void createComment(String text, int imageId, int userId) throws SQLException {
 		String query = "INSERT into comment (text, idImage, idUser, date)   VALUES(?, ?, ?, ?)";
 
@@ -70,6 +104,42 @@ public class CommentDAO {
 			pstatement.setObject(4, DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now()));
 			pstatement.executeUpdate();
 		}
+	}
+
+	public Comment findLastInsertedComment() throws SQLException {
+		Comment comment = new Comment();
+		String query = "SELECT * FROM comment  WHERE id= (SELECT MAX(id) FROM comment) ";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		try {
+			pstatement = con.prepareStatement(query);
+			result = pstatement.executeQuery();
+			while (result.next()) {
+
+				comment.setId(result.getInt("id"));
+				comment.setText(result.getString("text"));
+				comment.setIdImage(result.getInt("idImage"));
+				comment.setIdUser(result.getInt("idUser"));
+				comment.setDate(result.getDate("date"));
+
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+
+		} finally {
+			try {
+				result.close();
+			} catch (Exception e1) {
+				throw new SQLException("Cannot close result");
+			}
+			try {
+				pstatement.close();
+			} catch (Exception e1) {
+				throw new SQLException("Cannot close statement");
+			}
+
+		}
+		return comment;
 	}
 
 	public List<Comment> findCommentsOfImage(int imageId) throws SQLException {

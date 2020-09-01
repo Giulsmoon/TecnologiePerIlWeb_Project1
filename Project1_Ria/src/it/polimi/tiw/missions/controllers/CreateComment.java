@@ -18,8 +18,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import it.polimi.tiw.missions.beans.Comment;
 import it.polimi.tiw.missions.beans.User;
 import it.polimi.tiw.missions.dao.CommentDAO;
+import it.polimi.tiw.missions.utils.ConnectionHandler;
 
 @WebServlet("/CreateComment")
 @MultipartConfig
@@ -33,70 +40,82 @@ public class CreateComment extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-		try {
-			ServletContext context = getServletContext();
-			String driver = context.getInitParameter("dbDriver");
-			String url = context.getInitParameter("dbUrl");
-			String user = context.getInitParameter("dbUser");
-			String password = context.getInitParameter("dbPassword");
-			Class.forName(driver);
-			connection = DriverManager.getConnection(url, user, password);
-		} catch (ClassNotFoundException e) {
-			throw new UnavailableException("Can't load database driver");
-		} catch (SQLException e) {
-			throw new UnavailableException("Couldn't get db connection");
-		}
+		connection = ConnectionHandler.getConnection(getServletContext());
+
 	}
 
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		doPost(request, response);
 	}
 
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		User u = null;
+		
+		boolean isBadRequest = false;
+		User user = null;
 		HttpSession s = request.getSession();
-		String comment = request.getParameter("comment");
-		String imageId = request.getParameter("imageId");
-		String albumId = request.getParameter("albumId");
-		String urlPreviousImages = request.getParameter("urlPreviousImages");
-		String urlNextImages = request.getParameter("urlNextImages");
+		String comment = null;
+		Integer imageId = null;
+		user = (User) s.getAttribute("user");
+		
+		try {
+			comment = StringEscapeUtils.escapeJava(request.getParameter("comment"));
+			imageId = Integer.parseInt(request.getParameter("imageId"));
+			isBadRequest = comment.isEmpty() || imageId <=0;
+		} catch (NumberFormatException | NullPointerException e) {
+			isBadRequest = true;
+			e.printStackTrace();
+		}
 
-		u = (User) s.getAttribute("user");
-
-		if (comment == null || imageId == null || albumId == null || 
-				 urlPreviousImages == null || urlNextImages == null) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in comment creation");
+		if (isBadRequest) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Incorrect or missing param values");
 			return;
+		} else {
+			if(user==null || user.getId()<=0) {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				response.getWriter().println("You have to log in order to comment");
+				
+			}
+			else {
+				
+				CommentDAO commentDAO = new CommentDAO(connection);
+				try {
+					Comment commentResponse = new Comment();
+					commentDAO.createComment(comment, imageId, user.getId());
+					commentResponse = commentDAO.findLastInsertedComment();
+					commentDAO.findUsernameOfComment(commentResponse);
+					System.out.println(commentResponse.getId());
+					System.out.println(commentResponse.getText());
+					response.setStatus(HttpServletResponse.SC_OK);
+					Gson gson = new GsonBuilder()
+							.setDateFormat("yyyy MM dd").create();
+					String json = gson.toJson(commentResponse);
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					response.getWriter().write(json);
+					 
+					
+
+				} catch (SQLException e) {
+
+					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.getWriter().println("Failure of comment creation in database");
+					return;
+				}
+			}
 		}
 		
-		int imgId = 0;
-		int userId = 0;
-		int alId = 0;
-
-		try {
-			userId = u.getId();
-			imgId = Integer.parseInt(imageId);
-			alId = Integer.parseInt(albumId);
-		} catch (NumberFormatException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad parameter in comment creation");
-			return;
-		}
-		CommentDAO commentDAO = new CommentDAO(connection);
-		try {
-			commentDAO.createComment(comment, imgId, userId);
-
-		} catch (SQLException e) {
-
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of comment creation in database");
-			return;
-		}
-
-		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/GetImagesOfAlbum?albumId=" + alId + "&imageId=" + imgId + 
-				"&nextImages=" + urlNextImages + "&previousImages=" + urlPreviousImages;
-		response.sendRedirect(path);
+		
+		
 	}
 
 	public void destroy() {
