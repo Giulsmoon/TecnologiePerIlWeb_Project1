@@ -25,6 +25,8 @@
 
 			document.getElementById("id_loginButton").addEventListener('click', (e) => {
 				e.preventDefault();
+
+
 				var form = e.target.closest("form");
 				if (form.checkValidity()) {
 					makeCall("POST", 'CheckLogin', e.target.closest("form"),
@@ -62,6 +64,11 @@
 	function NewAccountButton(_buttonRow) {
 		this.buttonRow = _buttonRow;
 		this.reset = function() {
+			this.buttonRow.classList.remove("invisible");
+			this.buttonRow.classList.add("visible");
+		}
+
+		this.hide = function() {
 			this.buttonRow.classList.remove("visible");
 			this.buttonRow.classList.add("invisible");
 		}
@@ -70,7 +77,7 @@
 			document.getElementById("id_createNewAccountButton").addEventListener('click', (e) => {
 				e.preventDefault();
 
-				this.reset();
+				this.hide();
 				orchestrator.showRegisterForm();
 			}, false);
 
@@ -79,46 +86,64 @@
 	function RegistrationForm(_registrationRow) {
 		this.registrationRow = _registrationRow;
 		this.reset = function() {
+
 			this.registrationRow.classList.remove("visible")
 			this.registrationRow.classList.add("invisible")
 
 		};
 		this.show = function() {
+
 			this.registrationRow.classList.remove("invisible")
 			this.registrationRow.classList.add("visible")
 		};
 
 		this.registerEvents = function(orchestrator) {
-
 			document.getElementById("id_registrationButton").addEventListener('click', (e) => {
 				e.preventDefault();
+				var password1 = e.target.closest("form").password.value;
+				var password2 = e.target.closest("form").passwordReinserted.value;
 
-				var form = e.target.closest("form");
-				if (form.checkValidity()) {
-					makeCall("POST", 'Registration', e.target.closest("form"),
-						function(req) {
-							if (req.readyState == XMLHttpRequest.DONE) {
-								var message = req.responseText;
-								switch (req.status) {
-									case 200:
-										document.getElementById("errormessage").textContent
-											= "Registration Done";
-										break;
-									case 400: // bad request
-										document.getElementById("errormessage").textContent = message;
-										break;
-									case 401: // unauthorized
-										document.getElementById("errormessage").textContent = message;
-										break;
-									case 500: // server error
-										document.getElementById("errormessage").textContent = message;
-										break;
+				if (password1 === password2) {
+
+					var form = e.target.closest("form");
+					form.password.closest("input").classList.remove("is-invalid");
+					form.passwordReinserted.closest("input").classList.remove("is-invalid");
+					if (form.checkValidity()) {
+						makeCall("POST", 'Registration', e.target.closest("form"),
+							function(req) {
+
+								if (req.readyState == XMLHttpRequest.DONE) {
+									var message = req.responseText;
+									switch (req.status) {
+										case 200:
+											orchestrator.refresh();
+											document.getElementById("errormessage").textContent
+												= "Registration Done";
+											break;
+										case 400: // bad request
+											document.getElementById("errormessage").textContent = message;
+											break;
+										case 401: // unauthorized
+											document.getElementById("errormessage").textContent = message;
+											break;
+										case 500: // server error
+											document.getElementById("errormessage").textContent = message;
+											break;
+									}
 								}
 							}
-						}
-					);
-				} else {
-					form.reportValidity();
+						);
+					} else {
+						form.reportValidity();
+					}
+
+				}
+
+				else {
+					document.getElementById("errormessage").textContent = "password are different";
+
+					e.target.closest("form").password.closest("input").classList.add("is-invalid");
+					e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
 				}
 			});
 		}
@@ -169,7 +194,7 @@
 			newAccountButton = new NewAccountButton(document.getElementById("id_buttonRow"));
 
 			loginForm.registerEvents();
-			registrationForm.registerEvents();
+			registrationForm.registerEvents(this);
 			guestButton.registerEvents();
 			newAccountButton.registerEvents(this);
 
@@ -177,6 +202,7 @@
 
 
 		this.refresh = function() {
+			newAccountButton.reset();
 			registrationForm.reset();
 
 		};
