@@ -15,8 +15,8 @@
 
 
 
-	function AlbumsList(_albumsRow, _albumsBody) {
-		
+	function AlbumsList(orchestrator, _albumsRow, _albumsBody) {
+
 		this.albumsRow = _albumsRow;
 		this.albumsBody = _albumsBody;
 
@@ -24,7 +24,7 @@
 			this.albumsRow.style.visibility = "hidden";
 		}
 
-		this.show = function(orchestrator) {
+		this.show = function() {
 			var that = this;
 			makeCall("GET", "GetAlbumList", null,
 				function(req) {
@@ -38,11 +38,11 @@
 								return;
 							}
 							that.update(albumsToShow); // that visible by closure
-							
+
 						}
 					} else {
-						//orchestrator.showAlert(message);
-						
+
+
 					}
 				}
 			);
@@ -129,11 +129,7 @@
 				titleAnchor.setAttribute('albumId', album.id);
 				titleAnchor.addEventListener("click", (e) => {
 					e.preventDefault();
-					imageList.show(e.target.getAttribute("albumId"));
-					imageList.resetButtonsNextAndPrevious();
-					imageList.resetImages();
-					imageDetails.reset();
-					commentForm.reset();
+					orchestrator.afterClickAlbum(e.target.getAttribute("albumId"));
 				}, false);
 				titleAnchor.href = "#";
 
@@ -155,8 +151,8 @@
 	}
 
 
-	function ImageList( _galleryRow, _galleryBody, _previousButton, _nextButton) {
-		
+	function ImageList(orchestrator, _galleryRow, _galleryBody, _previousButton, _nextButton) {
+
 		this.galleryRow = _galleryRow;
 		this.galleryBody = _galleryBody;
 		this.previousButton = _previousButton;
@@ -193,16 +189,13 @@
 						if (req.status == 200) {
 							var imagesToShow = JSON.parse(req.responseText);
 							if (imagesToShow.length == 0) {
-								
+
 								var text = "No images of this album available!";
-								//orchestrator.showAlert(text);
+								orchestrator.showAlert(text);
 								return;
 							}
 							that.update(imagesToShow); // that visible by closure
 						}
-					} else {
-						
-						//orchestrator.showAlert(message);
 					}
 				}
 			);
@@ -268,8 +261,8 @@
 				imageAnchor.setAttribute('imageId', image.id);
 				imageAnchor.addEventListener("mouseenter", (e) => {
 					e.preventDefault();
-					imageDetails.show(e.currentTarget.getAttribute("imageId"));
 
+					orchestrator.showImageDetails(e.currentTarget.getAttribute("imageId"));
 
 				}, false);
 
@@ -329,9 +322,9 @@
 
 
 
-	function ImageDetails( _titleRow, _titleBody, _descriptionBody, _commentRow,
+	function ImageDetails(orchestrator, _titleRow, _titleBody, _descriptionBody, _commentRow,
 		_commentBody, _imageAndCommentsRow, _imageContainer) {
-		
+
 		this.titleRow = _titleRow;
 		this.titleBody = _titleBody;
 		this.descriptionBody = _descriptionBody;
@@ -364,16 +357,13 @@
 						if (req.status == 200) {
 							var imageAndComments = JSON.parse(req.responseText);
 							if (imageAndComments.length == 0) {
-								
+
 								var text = "No images of this album available"
-								//orchestrator.showAlert(text);
+								orchestrator.showAlert(text);
 								return;
 							}
 							that.update(imageAndComments); // that visible by closure
 						}
-					} else {
-						
-						//orchestrator.showAlert(message);
 					}
 				}
 			);
@@ -472,8 +462,9 @@
 				that.addNewComment(comment);
 			});
 
-			//passo l'image id come paramentro alla funzione show del comment form.
-			commentForm.show(image.id);
+			//passo l'image id come parametro alla funzione show del comment form.
+			orchestrator.showCommentForm(image.id);
+			
 
 
 			this.imageContainer.classList.remove("invisible");
@@ -496,7 +487,7 @@
 	}
 
 	function AlertModal(_alert, _textAlert, _spanAlert) {
-		
+
 		this.alert = _alert;
 		this.textAlert = _textAlert //dove inserire il messaggio
 		this.span = _spanAlert;
@@ -521,13 +512,13 @@
 
 
 		this.registerEvents = function() {
-			var that=this;
+			var that = this;
 			//chiude la finestra cliccando la x
 			that.span.addEventListener('click', (e) => {
 				e.preventDefault();
 				that.alert.style.display = "none";
 			}, false);
-			
+
 		}
 
 
@@ -567,7 +558,7 @@
 	}
 
 	function CommentForm(_commentRow, _userNotLogged, _userLogged) {
-		
+
 		this.commentRow = _commentRow;
 		this.userNotLogged = _userNotLogged;
 		this.userLogged = _userLogged;
@@ -616,7 +607,7 @@
 								switch (req.status) {
 									case 200:
 										var comment = JSON.parse(req.responseText);
-										
+
 										var text = "Comment saved";
 										orchestrator.addNewComment(text);
 										break;
@@ -697,20 +688,23 @@
 
 
 	function PageOrchestrator() {
-		
+
 		this.start = function() {
 
 			albumsList = new AlbumsList(
+				this,
 				document.getElementById("id_albumsRow"),
 				document.getElementById("id_albumsBody"));
 
 			imageList = new ImageList(
+				this,
 				document.getElementById("id_galleryRow"),
 				document.getElementById("id_galleryBody"),
 				document.getElementById("id_previousButton"),
 				document.getElementById("id_nextButton"));
 
 			imageDetails = new ImageDetails(
+				this,
 				document.getElementById("id_titleRow"),
 				document.getElementById("id_titleBody"),
 				document.getElementById("id_descriptionBody"),
@@ -734,7 +728,7 @@
 				document.getElementById("id_alertUser"),
 				document.getElementById("id_textAlert"),
 				document.getElementById("id_closeAlert"));
-				
+
 			saveOrderButton = new SaveOrderButton(
 				document.getElementById("id_saveButton"));
 
@@ -757,18 +751,33 @@
 
 
 		this.refresh = function() {
-			
+
 			albumsList.reset();
 			imageList.reset();
 			albumsList.show(this);
 
 		};
 
+		this.afterClickAlbum = function(albumId) {
+			imageList.show(albumId);
+			imageList.resetButtonsNextAndPrevious();
+			imageList.resetImages();
+			imageDetails.reset();
+			commentForm.reset();
+		};
 		this.addNewComment = function(comment) {
 			imageDetails.addNewComment(comment);
 			imageDetails.showComments();
 		};
 
+		this.showImageDetails = function(imageId) {
+			imageDetails.show(imageId);
+		};
+
+		this.showCommentForm = function(imageId){
+			commentForm.show(imageId);
+		};
+		
 		this.resetImageContainer = function() {
 
 			imageDetails.reset();
@@ -779,13 +788,13 @@
 			imageList.next();
 		};
 
-		
+
 		this.moveImagesPrevious = function() {
 
 			imageList.previous();
 		};
-		
-		this.showAlert = function(message){
+
+		this.showAlert = function(message) {
 			alertModal.show(message);
 		};
 	}
