@@ -606,6 +606,7 @@
 			var that = this;
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
 				e.preventDefault();
+				if(sessionStorage.getItem('username')){
 				var form = e.target.closest("form");
 				if (form.checkValidity()) {
 					makeCall("POST", 'CreateComment', e.target.closest("form"),
@@ -636,6 +637,7 @@
 				} else {
 					form.reportValidity();
 				}
+					}
 			});
 		}
 
@@ -658,6 +660,9 @@
 		}
 
 		this.saveOrder = function(orchestrator) {
+			var _username = sessionStorage.getItem('username');
+			if(_username){
+
 			var _arrayPosition = [];
 
 			arrayPosition = _arrayPosition;
@@ -666,7 +671,6 @@
 			tableRows.forEach(function(row) {
 				arrayPosition.push(row.getAttribute("albumId"))
 			});
-			var _username = sessionStorage.getItem('username');
 			var obj = { id: 0, username: _username, prefAlbumOrder: arrayPosition }
 			makeCallSendObj("POST", 'SaveAlbumOrder', obj,
 				function(req) {
@@ -692,7 +696,7 @@
 				}
 			);
 		}
-
+		}
 	}
 
 
