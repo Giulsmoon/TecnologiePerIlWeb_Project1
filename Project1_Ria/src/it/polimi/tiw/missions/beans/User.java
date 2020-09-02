@@ -1,7 +1,5 @@
 package it.polimi.tiw.missions.beans;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class User {
 	private int id;

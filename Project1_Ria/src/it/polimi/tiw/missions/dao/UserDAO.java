@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,13 +49,63 @@ public class UserDAO {
 			try (ResultSet result = pstatement.executeQuery();) {
 				while (result.next()) {
 					Gson gson = new GsonBuilder().create();
-					
+
 					int[] order = gson.fromJson(result.getString("albumOrder"), int[].class);
 					user.setPrefAlbumOrder(order);
 				}
 			}
 		}
 		return user;
+	}
+
+	public User findUserByUsername(String username) throws SQLException {
+		String query = "SELECT  u.id, u.username FROM user u WHERE u.username = ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setString(1, username);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, credential check failed
+					return null;
+				else {
+					result.next();
+					User user = new User();
+					user.setId(result.getInt("id"));
+					user.setUsername(result.getString("username"));
+					return user;
+				}
+			}
+		}
+	}
+
+	public void updatePreferenceAlbum(String username, String albPref) throws SQLException {
+
+		User user = findUserByUsername(username);
+		String query = "SELECT  * FROM preference p WHERE p.idUser = ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, user.getId());
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, insert new user preference
+				{
+					String query2 = "INSERT into preference (idUser, albumOrder)   VALUES(?,?)";
+					PreparedStatement pstatement2 = con.prepareStatement(query2);
+					pstatement2.setInt(1, user.getId());
+					pstatement2.setString(2, albPref);
+					pstatement2.executeUpdate();
+				} else {
+					result.next();	 // founded result, update user preference
+					String query3 = "UPDATE preference SET albumOrder = ? where idUser = ?";
+					PreparedStatement pstatement3 = con.prepareStatement(query3);
+					pstatement3.setString(1, albPref);
+					pstatement3.setInt(2, user.getId());
+					pstatement3.executeUpdate();
+				}
+			}
+		}
+		
+
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+
+			
+		}
 	}
 
 	public List<User> findAllUsers() throws SQLException {

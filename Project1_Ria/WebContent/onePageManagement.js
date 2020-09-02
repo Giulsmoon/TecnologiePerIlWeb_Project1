@@ -1,7 +1,8 @@
 (function() { // avoid variables ending up in the global scope
 
 	// page components
-	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton, CommentForm, RedirectToIndex, CloseModalWindow;
+	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton,
+		CommentForm, RedirectToIndex, CloseModalWindow, SaveOrderButton;
 	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -31,8 +32,6 @@
 						var message = req.responseText;
 						if (req.status == 200) {
 							var albumsToShow = JSON.parse(req.responseText);
-							console.log(req.responseText);
-							console.log(albumsToShow);
 							if (albumsToShow.length == 0) {
 								that.alert.textContent = "No albums available!";
 								return;
@@ -48,54 +47,53 @@
 		};
 
 		this.setDraggable = function() {
-			const draggables = document.querySelectorAll('.draggable');
+			if (sessionStorage.getItem('username')) {
 
-			draggables.forEach(function(draggable) {
-				draggable.addEventListener('dragstart', (e) => {
-					console.log('dragstart');
-					draggable.classList.add('dragging')
-				})
+				const draggables = document.querySelectorAll('.draggable');
 
-				draggable.addEventListener('dragend', (e) => {
+				draggables.forEach(function(draggable) {
+					draggable.addEventListener('dragstart', (e) => {
+						draggable.classList.add('dragging')
+					})
 
-					console.log('dragend');
-					draggable.classList.remove('dragging')
-				})
-			});
+					draggable.addEventListener('dragend', (e) => {
 
-			this.albumsBody.addEventListener('dragover', (e) => {
-				e.preventDefault();
-				console.log('drag over')
-				const afterElement = getDragAfterElement(this.albumsBody, e.clientY);
-				const draggable = document.querySelector('.dragging')
+						draggable.classList.remove('dragging')
+					})
+				});
 
-				if (afterElement == null) {
-					this.albumsBody.appendChild(draggable)
-				}
-				else {
-					this.albumsBody.insertBefore(draggable, afterElement)
-				}
+				this.albumsBody.addEventListener('dragover', (e) => {
+					e.preventDefault();
+					const afterElement = getDragAfterElement(this.albumsBody, e.clientY);
+					const draggable = document.querySelector('.dragging')
 
-			})
-
-			function getDragAfterElement(container, y) {
-				const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
-
-				return draggableElements.reduce((closest, child) => {
-					const box = child.getBoundingClientRect();
-					const offset = y - box.top - box.height / 2;
-
-					if (offset < 0 && offset > closest.offset) {
-						return { offset: offset, element: child }
-					} else {
-						return closest;
+					if (afterElement == null) {
+						this.albumsBody.appendChild(draggable)
+					}
+					else {
+						this.albumsBody.insertBefore(draggable, afterElement)
 					}
 
-				}, { offset: Number.NEGATIVE_INFINITY }).element;
+				})
+
+				function getDragAfterElement(container, y) {
+					const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
+
+					return draggableElements.reduce((closest, child) => {
+						const box = child.getBoundingClientRect();
+						const offset = y - box.top - box.height / 2;
+
+						if (offset < 0 && offset > closest.offset) {
+							return { offset: offset, element: child }
+						} else {
+							return closest;
+						}
+
+					}, { offset: Number.NEGATIVE_INFINITY }).element;
+				}
+
 			}
-
 		}
-
 
 
 
@@ -109,9 +107,9 @@
 				row = document.createElement("tr");
 				row.classList.add("draggable");
 				row.setAttribute('draggable', true);
+
 				imageCell = document.createElement("td");
 				imageTag = document.createElement("img");
-				//imageTag.currentSrc = album.iconPath;
 				imageTag.setAttribute('src', album.iconPath);
 				imageTag.classList.add("img-thumbnail");
 				imageCell.appendChild(imageTag);
@@ -565,7 +563,6 @@
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
 				e.preventDefault();
 				var form = e.target.closest("form");
-				console.log(form);
 				if (form.checkValidity()) {
 					makeCall("POST", 'CreateComment', e.target.closest("form"),
 						function(req) {
@@ -600,7 +597,55 @@
 
 	};
 
+	function SaveOrderButton(_saveButton) {
+		this.saveButton = _saveButton;
 
+
+		this.registerEvents = function() {
+			this.saveButton.addEventListener('click', (e) => {
+				e.preventDefault();
+				this.saveOrder();
+			});
+		}
+
+
+		this.saveOrder = function() {
+			var _arrayPosition = [];
+
+			arrayPosition = _arrayPosition;
+			tableRows = document.querySelectorAll("a[albumId]");
+
+			tableRows.forEach(function(row) {
+				arrayPosition.push(row.getAttribute("albumId"))
+			});
+			var _username = sessionStorage.getItem('username');
+			var obj = {id: 0, username: _username, prefAlbumOrder: arrayPosition }
+			makeCallSendObj("POST", 'SaveAlbumOrder', obj,
+				function(req) {
+					if (req.readyState == XMLHttpRequest.DONE) {
+						var message = req.responseText;
+
+						switch (req.status) {
+							case 200:
+								document.getElementById("message").textContent
+									= "Order saved";
+								break;
+							case 400: // bad request
+								document.getElementById("message").textContent = message;
+								break;
+							case 401: // unauthorized
+								document.getElementById("message").textContent = message;
+								break;
+							case 500: // server error
+								document.getElementById("message").textContent = message;
+								break;
+						}
+					}
+				}
+			);
+		}
+
+	}
 
 
 	function PageOrchestrator() {
@@ -630,6 +675,7 @@
 				document.getElementById("id_imageContainer"));
 
 
+
 			commentForm = new CommentForm(
 				alertContainer,
 				document.getElementById("id_commentRow"),
@@ -640,6 +686,9 @@
 
 			closeModalWindow = new CloseModalWindow();
 
+			saveOrderButton = new SaveOrderButton(
+				document.getElementById("id_saveButton"));
+
 			nextButton = new NextButton();
 			previousButton = new PreviousButton();
 			nextButton.registerEvents(this);
@@ -647,9 +696,10 @@
 			commentForm.registerEvents(this);
 			redirectToIndex.registerEvents();
 			closeModalWindow.registerEvents();
+			saveOrderButton.registerEvents();
 
-			document.querySelector("a[href='Logout']").addEventListener('click', () => {
-				e.preventDefault();
+			document.querySelector("a[href='Logout']").addEventListener('click', (e) => {
+			
 				window.sessionStorage.removeItem('username');
 			})
 		};

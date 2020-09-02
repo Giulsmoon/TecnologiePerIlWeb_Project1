@@ -104,5 +104,11 @@ public class GetImagesOfAlbum extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

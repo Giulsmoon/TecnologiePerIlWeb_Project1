@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import it.polimi.tiw.missions.beans.User;
 import it.polimi.tiw.missions.dao.UserDAO;
 import it.polimi.tiw.missions.utils.ConnectionHandler;
@@ -70,7 +73,8 @@ public class CheckLogin extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-			response.getWriter().println(usrn);
+						
+			response.getWriter().write(usrn);
 		}
 	}
 

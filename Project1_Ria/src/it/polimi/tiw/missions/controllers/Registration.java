@@ -2,6 +2,7 @@ package it.polimi.tiw.missions.controllers;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -94,5 +95,13 @@ public class Registration extends HttpServlet {
 			}
 		}
 
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
