@@ -28,6 +28,7 @@ import com.google.gson.JsonArray;
 
 import it.polimi.tiw.missions.beans.Comment;
 import it.polimi.tiw.missions.beans.User;
+import it.polimi.tiw.missions.dao.AlbumDAO;
 import it.polimi.tiw.missions.dao.CommentDAO;
 import it.polimi.tiw.missions.dao.UserDAO;
 import it.polimi.tiw.missions.utils.ConnectionHandler;
@@ -61,7 +62,9 @@ public class SaveAlbumOrder extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-	    StringBuilder buffer = new StringBuilder();
+		
+		boolean isBadRequest = false;
+		StringBuilder buffer = new StringBuilder();
 	    BufferedReader reader = request.getReader();
 	    String line;
 	    while ((line = reader.readLine()) != null) {
@@ -71,6 +74,24 @@ public class SaveAlbumOrder extends HttpServlet {
 
 	    Gson gson = new Gson();
 	    User user = gson.fromJson(data, User.class);
+	    
+	    AlbumDAO albumDAO = new AlbumDAO(connection);
+	    int albumSize = -1;
+		try {
+			albumSize = albumDAO.findAlbumsOrderedById().size();
+			
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		isBadRequest = user.getPrefAlbumOrder().length < albumSize || user.getPrefAlbumOrder().length > albumSize ;
+		if (isBadRequest) {
+			
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Incorrect or missing param values");
+			return;
+		} 
+		
+		
 	    UserDAO userDAO = new UserDAO(connection);
 	    try {
 			userDAO.updatePreferenceAlbum(user.getUsername(), gson.toJson(user.getPrefAlbumOrder()));

@@ -68,7 +68,8 @@ public class CreateComment extends HttpServlet {
 		user = (User) s.getAttribute("user");
 		
 		try {
-			comment = request.getParameter("comment");
+			//comment = request.getParameter("comment");
+			comment = null;
 			System.out.println(comment);
 			imageId = Integer.parseInt(request.getParameter("imageId"));
 			isBadRequest = comment.isEmpty() || imageId <=0;

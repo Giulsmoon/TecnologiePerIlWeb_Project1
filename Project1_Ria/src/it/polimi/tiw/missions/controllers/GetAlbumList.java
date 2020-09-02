@@ -79,11 +79,12 @@ public class GetAlbumList extends HttpServlet {
 		List<Album> albums = new ArrayList<Album>();
 		List<Album> orderedAlbumsById = new ArrayList<Album>();
 		try {
-			if(user!=null)
+			if(user!=null) {
 				user=userDAO.checkUserAlbumPreference(user);
-			if(user!=null && user.getPrefAlbumOrder()!=null) {
-				
 				orderedAlbumsById = albumDAO.findAlbumsOrderedById();
+				}
+			if(user!=null && user.getPrefAlbumOrder()!=null && user.getPrefAlbumOrder().length==orderedAlbumsById.size()) {
+				
 				albums = sortAlbumByUserPreference(user.getPrefAlbumOrder(), orderedAlbumsById);
 			}else {
 				

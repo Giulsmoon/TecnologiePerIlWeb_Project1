@@ -2,7 +2,7 @@
 
 	// page components
 	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton,
-		CommentForm, RedirectToIndex, CloseModalWindow, SaveOrderButton;
+		CommentForm, RedirectToIndex, CloseModalWindow, SaveOrderButton, AlertModal;
 	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -15,8 +15,8 @@
 
 
 
-	function AlbumsList(_alert, _albumsRow, _albumsBody) {
-		this.alert = _alert;
+	function AlbumsList(_albumsRow, _albumsBody) {
+		
 		this.albumsRow = _albumsRow;
 		this.albumsBody = _albumsBody;
 
@@ -24,7 +24,7 @@
 			this.albumsRow.style.visibility = "hidden";
 		}
 
-		this.show = function(next) {
+		this.show = function(orchestrator) {
 			var that = this;
 			makeCall("GET", "GetAlbumList", null,
 				function(req) {
@@ -33,14 +33,16 @@
 						if (req.status == 200) {
 							var albumsToShow = JSON.parse(req.responseText);
 							if (albumsToShow.length == 0) {
-								that.alert.textContent = "No albums available!";
+								var text = "No albums available!";
+								orchestrator.showAlert(text);
 								return;
 							}
 							that.update(albumsToShow); // that visible by closure
-							if (next) next(); // show the default element of the list if present
+							
 						}
 					} else {
-						that.alert.textContent = message;
+						//orchestrator.showAlert(message);
+						
 					}
 				}
 			);
@@ -53,12 +55,14 @@
 
 				draggables.forEach(function(draggable) {
 					draggable.addEventListener('dragstart', (e) => {
-						draggable.classList.add('dragging')
+						draggable.classList.add('dragging');
 					})
 
 					draggable.addEventListener('dragend', (e) => {
 
-						draggable.classList.remove('dragging')
+						draggable.classList.remove('dragging');
+						//non appena concludo il primo drag si attiva il bottone per salvare la preferenza dell'utente
+						this.saveOrderButton.show();
 					})
 				});
 
@@ -151,8 +155,8 @@
 	}
 
 
-	function ImageList(_alert, _galleryRow, _galleryBody, _previousButton, _nextButton) {
-		this.alert = _alert;
+	function ImageList( _galleryRow, _galleryBody, _previousButton, _nextButton) {
+		
 		this.galleryRow = _galleryRow;
 		this.galleryBody = _galleryBody;
 		this.previousButton = _previousButton;
@@ -189,13 +193,16 @@
 						if (req.status == 200) {
 							var imagesToShow = JSON.parse(req.responseText);
 							if (imagesToShow.length == 0) {
-								that.alert.textContent = "No images of this album available!";
+								
+								var text = "No images of this album available!";
+								//orchestrator.showAlert(text);
 								return;
 							}
 							that.update(imagesToShow); // that visible by closure
 						}
 					} else {
-						that.alert.textContent = message;
+						
+						//orchestrator.showAlert(message);
 					}
 				}
 			);
@@ -265,10 +272,7 @@
 
 
 				}, false);
-				//imageAnchor.addEventListener("click", (e) => {
-				//	e.preventDefault();
-				//	imageDetails.show(e.currentTarget.getAttribute("imageId"));
-				//}, false);
+
 				imageAnchor.href = "#";
 
 
@@ -325,9 +329,9 @@
 
 
 
-	function ImageDetails(_alert, _titleRow, _titleBody, _descriptionBody, _commentRow,
+	function ImageDetails( _titleRow, _titleBody, _descriptionBody, _commentRow,
 		_commentBody, _imageAndCommentsRow, _imageContainer) {
-		this.alert = _alert;
+		
 		this.titleRow = _titleRow;
 		this.titleBody = _titleBody;
 		this.descriptionBody = _descriptionBody;
@@ -360,13 +364,16 @@
 						if (req.status == 200) {
 							var imageAndComments = JSON.parse(req.responseText);
 							if (imageAndComments.length == 0) {
-								that.alert.textContent = "No images of this album available!";
+								
+								var text = "No images of this album available"
+								//orchestrator.showAlert(text);
 								return;
 							}
 							that.update(imageAndComments); // that visible by closure
 						}
 					} else {
-						that.alert.textContent = message;
+						
+						//orchestrator.showAlert(message);
 					}
 				}
 			);
@@ -488,9 +495,46 @@
 
 	}
 
+	function AlertModal(_alert, _textAlert, _spanAlert) {
+		
+		this.alert = _alert;
+		this.textAlert = _textAlert //dove inserire il messaggio
+		this.span = _spanAlert;
+
+		this.show = function(message) {
+			var that = this;
+			that.reset();
+			that.update(message);
+			that.alert.style.display = "block";
+		}
+
+		this.update = function(message) {
+			var that = this;
+			text = document.createTextNode(message);
+			that.textAlert.appendChild(text);
+		}
+
+		this.reset = function() {
+			var that = this;
+			that.textAlert.innerHTML = "";
+		}
+
+
+		this.registerEvents = function() {
+			var that=this;
+			//chiude la finestra cliccando la x
+			that.span.addEventListener('click', (e) => {
+				e.preventDefault();
+				that.alert.style.display = "none";
+			}, false);
+			
+		}
+
+
+	}
 	function CloseModalWindow() {
 
-		var modal_close = document.getElementsByClassName("modal_close")[0];
+		var modal_close = document.getElementById("imageWindowClose");
 		var box = document.getElementById('box');
 		this.registerEvents = function() {
 			//chiude la finestra cliccando la x
@@ -522,8 +566,8 @@
 
 	}
 
-	function CommentForm(_alert, _commentRow, _userNotLogged, _userLogged) {
-		this.alert = _alert;
+	function CommentForm(_commentRow, _userNotLogged, _userLogged) {
+		
 		this.commentRow = _commentRow;
 		this.userNotLogged = _userNotLogged;
 		this.userLogged = _userLogged;
@@ -559,7 +603,7 @@
 		};
 
 		this.registerEvents = function(orchestrator) {
-
+			var that = this;
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
 				e.preventDefault();
 				var form = e.target.closest("form");
@@ -572,18 +616,18 @@
 								switch (req.status) {
 									case 200:
 										var comment = JSON.parse(req.responseText);
-										document.getElementById("message").textContent
-											= "Comment saved";
-										orchestrator.addNewComment(comment);
+										
+										var text = "Comment saved";
+										orchestrator.addNewComment(text);
 										break;
 									case 400: // bad request
-										document.getElementById("message").textContent = message;
+										orchestrator.showAlert(message);
 										break;
 									case 401: // unauthorized
-										document.getElementById("message").textContent = message;
+										orchestrator.showAlert(message);
 										break;
 									case 500: // server error
-										document.getElementById("message").textContent = message;
+										orchestrator.showAlert(message);
 										break;
 								}
 							}
@@ -601,15 +645,19 @@
 		this.saveButton = _saveButton;
 
 
-		this.registerEvents = function() {
+		this.registerEvents = function(orchestrator) {
 			this.saveButton.addEventListener('click', (e) => {
 				e.preventDefault();
-				this.saveOrder();
+				this.saveOrder(orchestrator);
 			});
 		}
 
+		this.show = function() {
+			this.saveButton.classList.remove("invisible")
+			this.saveButton.classList.add("visible")
+		}
 
-		this.saveOrder = function() {
+		this.saveOrder = function(orchestrator) {
 			var _arrayPosition = [];
 
 			arrayPosition = _arrayPosition;
@@ -619,7 +667,7 @@
 				arrayPosition.push(row.getAttribute("albumId"))
 			});
 			var _username = sessionStorage.getItem('username');
-			var obj = {id: 0, username: _username, prefAlbumOrder: arrayPosition }
+			var obj = { id: 0, username: _username, prefAlbumOrder: arrayPosition }
 			makeCallSendObj("POST", 'SaveAlbumOrder', obj,
 				function(req) {
 					if (req.readyState == XMLHttpRequest.DONE) {
@@ -627,17 +675,17 @@
 
 						switch (req.status) {
 							case 200:
-								document.getElementById("message").textContent
-									= "Order saved";
+								var text = "Order saved";
+								orchestrator.showAlert(text);
 								break;
 							case 400: // bad request
-								document.getElementById("message").textContent = message;
+								orchestrator.showAlert(message);
 								break;
 							case 401: // unauthorized
-								document.getElementById("message").textContent = message;
+								orchestrator.showAlert(message);
 								break;
 							case 500: // server error
-								document.getElementById("message").textContent = message;
+								orchestrator.showAlert(message);
 								break;
 						}
 					}
@@ -649,23 +697,20 @@
 
 
 	function PageOrchestrator() {
-		var alertContainer = document.getElementById("id_alert");
+		
 		this.start = function() {
 
 			albumsList = new AlbumsList(
-				alertContainer,
 				document.getElementById("id_albumsRow"),
 				document.getElementById("id_albumsBody"));
 
 			imageList = new ImageList(
-				alertContainer,
 				document.getElementById("id_galleryRow"),
 				document.getElementById("id_galleryBody"),
 				document.getElementById("id_previousButton"),
 				document.getElementById("id_nextButton"));
 
 			imageDetails = new ImageDetails(
-				alertContainer,
 				document.getElementById("id_titleRow"),
 				document.getElementById("id_titleBody"),
 				document.getElementById("id_descriptionBody"),
@@ -677,7 +722,6 @@
 
 
 			commentForm = new CommentForm(
-				alertContainer,
 				document.getElementById("id_commentRow"),
 				document.getElementById("id_userNotLogged"),
 				document.getElementById("id_userLogged"));
@@ -686,6 +730,11 @@
 
 			closeModalWindow = new CloseModalWindow();
 
+			alertModal = new AlertModal(
+				document.getElementById("id_alertUser"),
+				document.getElementById("id_textAlert"),
+				document.getElementById("id_closeAlert"));
+				
 			saveOrderButton = new SaveOrderButton(
 				document.getElementById("id_saveButton"));
 
@@ -696,10 +745,11 @@
 			commentForm.registerEvents(this);
 			redirectToIndex.registerEvents();
 			closeModalWindow.registerEvents();
-			saveOrderButton.registerEvents();
+			saveOrderButton.registerEvents(this);
+			alertModal.registerEvents();
 
 			document.querySelector("a[href='Logout']").addEventListener('click', (e) => {
-			
+
 				window.sessionStorage.removeItem('username');
 			})
 		};
@@ -707,10 +757,10 @@
 
 
 		this.refresh = function() {
-			alertContainer.textContent = "";
+			
 			albumsList.reset();
 			imageList.reset();
-			albumsList.show();
+			albumsList.show(this);
 
 		};
 
@@ -729,9 +779,14 @@
 			imageList.next();
 		};
 
+		
 		this.moveImagesPrevious = function() {
 
 			imageList.previous();
+		};
+		
+		this.showAlert = function(message){
+			alertModal.show(message);
 		};
 	}
 })();
