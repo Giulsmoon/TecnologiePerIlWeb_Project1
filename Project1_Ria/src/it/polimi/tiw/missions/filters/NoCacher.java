@@ -7,7 +7,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -36,7 +38,13 @@ public class NoCacher implements Filter {
 
 	{
 		System.out.print("No cacher filter executing ...\n");
+		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
+		HttpSession s = req.getSession();
+
+		if (s.getAttribute("user") != null) {
+			s.invalidate();
+		}
 		res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 		res.setHeader("Pragma", "no-cache"); // HTTP 1.0.
 		res.setHeader("Expires", "0"); // Proxies.

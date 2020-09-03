@@ -44,17 +44,18 @@ public class GuestCheck implements Filter {
 
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-
 		HttpSession s = req.getSession();
-		if (s.getAttribute("user") != null) {
-			s.invalidate();
-			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			String loginpath = req.getServletContext().getContextPath() + "/index.html";
-			res.sendRedirect(loginpath);
-			return;
-		}
 		res.setContentType("text/html");
 		res.setCharacterEncoding("UTF-8");
+		
+		if (s.getAttribute("user") != null) {
+			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("You are already logged on server");
+
+			return;
+		}
+		res.setStatus(HttpServletResponse.SC_OK);
+
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 

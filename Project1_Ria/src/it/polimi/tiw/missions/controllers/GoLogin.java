@@ -9,18 +9,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/Logout")
-public class Logout extends HttpServlet {
+@WebServlet("/GoLogin")
+public class GoLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	public Logout() {
+	public GoLogin() {
 		super();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

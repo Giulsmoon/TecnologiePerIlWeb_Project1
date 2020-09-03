@@ -37,10 +37,17 @@
  
    <filter-mapping> 
     <filter-name>GuestCheck</filter-name> 
-    <url-pattern>/index.html</url-pattern>
     <url-pattern>/CheckLogin</url-pattern> 
     <url-pattern>/CheckGuest</url-pattern> 
-    <url-pattern>/Registration</url-pattern>  
+    <url-pattern>/Registration</url-pattern>
+    <url-pattern>/GoLogin</url-pattern>  
+ </filter-mapping> 
+ 
+  <filter-mapping> 
+    <filter-name>LoggedUser</filter-name> 
+    <url-pattern>/CreateComment</url-pattern>
+    <url-pattern>/Logout</url-pattern> 
+    <url-pattern>/SaveAlbumOrder</url-pattern> 
  </filter-mapping> 
  
   <welcome-file-list>

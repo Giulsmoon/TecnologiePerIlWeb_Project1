@@ -2,7 +2,8 @@
 
 	// page components
 	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton,
-		CommentForm, RedirectToIndex, CloseModalWindow, SaveOrderButton, AlertModal;
+		CommentForm, RedirectToIndex, CloseModalWindow, SaveOrderButton, AlertModal,
+		LogoutButton, LoginButton;
 	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -27,25 +28,25 @@
 		this.show = function() {
 			var that = this;
 			makeCall("GET", "GetAlbumList", null,
-				function(req) {
-					if (req.readyState == 4) {
-						var message = req.responseText;
-						if (req.status == 200) {
-							var albumsToShow = JSON.parse(req.responseText);
-							if (albumsToShow.length == 0) {
-								var text = "No albums available!";
-								orchestrator.showAlert(text);
-								return;
-							}
-							that.update(albumsToShow); // that visible by closure
-
+					 function(req) {
+				if (req.readyState == 4) {
+					var message = req.responseText;
+					if (req.status == 200) {
+						var albumsToShow = JSON.parse(req.responseText);
+						if (albumsToShow.length == 0) {
+							var text = "No albums available!";
+							orchestrator.showAlert(text);
+							return;
 						}
-					} else {
-
+						that.update(albumsToShow); // that visible by closure
 
 					}
+				} else {
+
+
 				}
-			);
+			}
+					);
 		};
 
 		this.setDraggable = function() {
@@ -183,22 +184,22 @@
 			var that = this;
 
 			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null,
-				function(req) {
-					if (req.readyState == 4) {
-						var message = req.responseText;
-						if (req.status == 200) {
-							var imagesToShow = JSON.parse(req.responseText);
-							if (imagesToShow.length == 0) {
+					 function(req) {
+				if (req.readyState == 4) {
+					var message = req.responseText;
+					if (req.status == 200) {
+						var imagesToShow = JSON.parse(req.responseText);
+						if (imagesToShow.length == 0) {
 
-								var text = "No images of this album available!";
-								orchestrator.showAlert(text);
-								return;
-							}
-							that.update(imagesToShow); // that visible by closure
+							var text = "No images of this album available!";
+							orchestrator.showAlert(text);
+							return;
 						}
+						that.update(imagesToShow); // that visible by closure
 					}
 				}
-			);
+			}
+					);
 		};
 
 
@@ -323,7 +324,7 @@
 
 
 	function ImageDetails(orchestrator, _titleRow, _titleBody, _descriptionBody, _commentRow,
-		_commentBody, _imageAndCommentsRow, _imageContainer) {
+						   _commentBody, _imageAndCommentsRow, _imageContainer) {
 
 		this.titleRow = _titleRow;
 		this.titleBody = _titleBody;
@@ -351,22 +352,22 @@
 		this.show = function(imageId) {
 			var that = this;
 			makeCall("GET", "GetImageAndComments?imageId=" + imageId, null,
-				function(req) {
-					if (req.readyState == 4) {
-						var message = req.responseText;
-						if (req.status == 200) {
-							var imageAndComments = JSON.parse(req.responseText);
-							if (imageAndComments.length == 0) {
+					 function(req) {
+				if (req.readyState == 4) {
+					var message = req.responseText;
+					if (req.status == 200) {
+						var imageAndComments = JSON.parse(req.responseText);
+						if (imageAndComments.length == 0) {
 
-								var text = "No images of this album available"
-								orchestrator.showAlert(text);
-								return;
-							}
-							that.update(imageAndComments); // that visible by closure
+							var text = "No images of this album available"
+							orchestrator.showAlert(text);
+							return;
 						}
+						that.update(imageAndComments); // that visible by closure
 					}
 				}
-			);
+			}
+					);
 		};
 
 		this.addNewComment = function(comment) {
@@ -464,7 +465,7 @@
 
 			//passo l'image id come parametro alla funzione show del comment form.
 			orchestrator.showCommentForm(image.id);
-			
+
 
 
 			this.imageContainer.classList.remove("invisible");
@@ -598,19 +599,19 @@
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
 				e.preventDefault();
 				if(sessionStorage.getItem('username')){
-				var form = e.target.closest("form");
-				if (form.checkValidity()) {
-					makeCall("POST", 'CreateComment', e.target.closest("form"),
-						function(req) {
+					var form = e.target.closest("form");
+					if (form.checkValidity()) {
+						makeCall("POST", 'CreateComment', e.target.closest("form"),
+								 function(req) {
 							if (req.readyState == XMLHttpRequest.DONE) {
 								var message = req.responseText;
 
 								switch (req.status) {
 									case 200:
 										var comment = JSON.parse(req.responseText);
-
+										orchestrator.addNewComment(comment);
 										var text = "Comment saved";
-										orchestrator.addNewComment(text);
+										orchestrator.showAlert(text);
 										break;
 									case 400: // bad request
 										orchestrator.showAlert(message);
@@ -624,11 +625,14 @@
 								}
 							}
 						}
-					);
-				} else {
-					form.reportValidity();
-				}
+								);
+					} else {
+						form.reportValidity();
 					}
+				}
+				else{
+					orchestrator.showAlert("You are not logged");
+				}
 			});
 		}
 
@@ -650,21 +654,28 @@
 			this.saveButton.classList.add("visible")
 		}
 
+		this.reset = function(){
+			this.saveButton.classList.remove("visible")
+			this.saveButton.classList.add("invisible")
+		}
+
 		this.saveOrder = function(orchestrator) {
+			var that = this;
+
 			var _username = sessionStorage.getItem('username');
 			if(_username){
 
-			var _arrayPosition = [];
+				var _arrayPosition = [];
 
-			arrayPosition = _arrayPosition;
-			tableRows = document.querySelectorAll("a[albumId]");
+				arrayPosition = _arrayPosition;
+				tableRows = document.querySelectorAll("a[albumId]");
 
-			tableRows.forEach(function(row) {
-				arrayPosition.push(row.getAttribute("albumId"))
-			});
-			var obj = { id: 0, username: _username, prefAlbumOrder: arrayPosition }
-			makeCallSendObj("POST", 'SaveAlbumOrder', obj,
-				function(req) {
+				tableRows.forEach(function(row) {
+					arrayPosition.push(row.getAttribute("albumId"))
+				});
+				var obj = { id: 0, username: _username, prefAlbumOrder: arrayPosition }
+				makeCallSendObj("POST", 'SaveAlbumOrder', obj,
+								function(req) {
 					if (req.readyState == XMLHttpRequest.DONE) {
 						var message = req.responseText;
 
@@ -672,6 +683,7 @@
 							case 200:
 								var text = "Order saved";
 								orchestrator.showAlert(text);
+								that.reset();
 								break;
 							case 400: // bad request
 								orchestrator.showAlert(message);
@@ -685,11 +697,101 @@
 						}
 					}
 				}
-			);
-		}
+							   );
+			}
+			else{
+				orchestrator.showAlert("You are not logged");
+			}
 		}
 	}
 
+	function LogoutButton(_logoutBtn){
+		this.logoutBtn=_logoutBtn;
+
+		this.show = function() {
+			this.logoutBtn.classList.remove("d-none")
+			this.logoutBtn.classList.add("d-block")
+		}
+
+		this.reset = function(){
+			this.logoutBtn.classList.remove("d-block")
+			this.logoutBtn.classList.add("d-none")
+		}
+
+		this.registerEvents = function(orchestrator){
+			this.logoutBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				if(sessionStorage.getItem('username')){
+					makeCall("GET", "Logout", null,
+							 function(req) {
+						if (req.readyState == 4) {
+							var message = req.responseText;
+							switch (req.status) {
+								case 200:
+									window.sessionStorage.removeItem('username');
+									window.location.href = "index.html";
+									break;
+								case 401: // unauthorized
+									orchestrator.showAlert(message);
+									break;
+							}
+						}
+					}
+
+							);
+				}
+				else{
+					orchestrator.showAlert("You are not logged");
+
+				}
+
+			})
+		}
+	}
+
+	function LoginButton(_goLoginBtn){
+		this.goLoginBtn=_goLoginBtn;
+
+		this.show = function() {
+			this.goLoginBtn.classList.remove("d-none")
+			this.goLoginBtn.classList.add("d-block")
+		}
+
+		this.reset = function(){
+			this.goLoginBtn.classList.remove("d-block")
+			this.goLoginBtn.classList.add("d-none")
+		}
+
+		this.registerEvents = function(orchestrator){
+			this.goLoginBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				if(!sessionStorage.getItem('username')){
+					makeCall("GET", "GoLogin", null,
+							 function(req) {
+						if (req.readyState == 4) {
+							var message = req.responseText;
+							switch (req.status) {
+								case 200:
+
+									window.location.href = "index.html";
+									break;
+								case 401: // unauthorized
+									orchestrator.showAlert(message);
+									break;
+							}
+						}
+					}
+
+							);
+				}
+				else{
+					orchestrator.showAlert("You are already logged");
+
+				}
+
+			})
+		}
+	}
 
 	function PageOrchestrator() {
 
@@ -717,8 +819,6 @@
 				document.getElementById("id_imageAndCommentsRow"),
 				document.getElementById("id_imageContainer"));
 
-
-
 			commentForm = new CommentForm(
 				document.getElementById("id_commentRow"),
 				document.getElementById("id_userNotLogged"),
@@ -737,7 +837,16 @@
 				document.getElementById("id_saveButton"));
 
 			nextButton = new NextButton();
+
 			previousButton = new PreviousButton();
+
+			logoutButton = new LogoutButton(
+				document.querySelector("a[href='Logout']"));
+
+			loginButton = new LoginButton(
+				document.querySelector("a[href='GoLogin']"));
+
+
 			nextButton.registerEvents(this);
 			previousButton.registerEvents(this);
 			commentForm.registerEvents(this);
@@ -745,11 +854,11 @@
 			closeModalWindow.registerEvents();
 			saveOrderButton.registerEvents(this);
 			alertModal.registerEvents();
+			logoutButton.registerEvents(this);
+			loginButton.registerEvents(this);
 
-			document.querySelector("a[href='Logout']").addEventListener('click', (e) => {
 
-				window.sessionStorage.removeItem('username');
-			})
+
 		};
 
 
@@ -760,6 +869,14 @@
 			imageList.reset();
 			albumsList.show(this);
 
+			if(sessionStorage.getItem('username')){
+				logoutButton.show();
+				loginButton.reset();
+			}
+			else{
+				logoutButton.reset();
+				loginButton.show();
+			}
 		};
 
 		this.afterClickAlbum = function(albumId) {
@@ -781,7 +898,7 @@
 		this.showCommentForm = function(imageId){
 			commentForm.show(imageId);
 		};
-		
+
 		this.resetImageContainer = function() {
 
 			imageDetails.reset();

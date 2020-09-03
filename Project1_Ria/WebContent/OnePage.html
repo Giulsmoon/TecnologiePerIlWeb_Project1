@@ -28,8 +28,8 @@
 				</div>
 				<div class="col-lg-2 col-md-2 col-sm-2 col-2 text-right p-0">
 					<a href="Logout" class="btn btn-outline-success p-2 shadow-sm">
-						Logout </a> <a href="Login"
-									   class="btn btn-outline-success p-2 shadow-sm"> Log in </a>
+						Logout </a> 
+					<a href="GoLogin" class="btn btn-outline-success p-2 shadow-sm"> Log in </a>
 				</div>
 			</div>
 
@@ -50,20 +50,20 @@
 				</div>
 			</div>
 			<div>
-				<div id="id_guestRow" class="py-3 col-lg-12 col-md-12 ">
+				<div class="py-3 col-lg-12 col-md-12  border-top ">
 					<a id="id_saveButton" type="submit"
 					   class="btn btn-outline-success p-1 shadow-sm invisible">Save
 						Album Order</a>
 				</div>
 			</div>
-			<div class="row align-items-center py-2 border-top ">
+			<div id="id_galleryRow" class="row align-items-center py-2">
 				<div class="col-lg-1 col-md-1  col-sm-2 col-2 p-0">
 					<button id="id_previousButton"
 							class="btn btn-outline-primary btn-gallery shadow-sm invisible">
 						back</button>
 				</div>
 
-				<div id="id_galleryRow"
+				<div
 					 class="col-lg-10 col-md-10 col-sm-8 col-8 p-0">
 					<table class="table-responsive gallery-table">
 						<tbody id="id_galleryBody">
@@ -116,7 +116,7 @@
 									</div>
 									<div class="col-lg-5 col-md-6 col-sm-12 col-12 mx-auto">
 										<div id="id_commentForm" class="align-items-center p-3 invisible">
-												
+
 
 											<div id="id_userNotLogged" class="p-3 invisible">
 												<a id="id_loginToComment" href="#"
@@ -156,19 +156,30 @@
 			</div>			
 
 			<div id="id_alertUser" class="modal">
-				<div class = "modal-dialog modal-dialog-centered">
+				<div class = "modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span id="id_closeAlert">&times;</span>
-							</button>
-						</div>
+								<div id="id_alertTitleRow" class="row py-2">
+									<div  class="col-lg-11 col-md-11">
+										<h5 id="id_alertTitleBody" class="modal-title" id="exampleModalLongTitle">Alert!!</h5>
+									</div>
+									<div  class="col-lg-1 col-md-1">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span id="id_closeAlert">&times;</span>
+										</button>
+									</div>
+								</div>
+
+
+							</div>
 						<div class="modal-body">
 							<p id="id_textAlert"></p>
 
 						</div>
 
+						<div id="id_modalFooter" class="modal-footer d-none">
+							<button id="id_alerLogoutBtn" type="button" class="btn btn-success">Logout</button>
+						</div>
 					</div>
 				</div>
 			</div>
