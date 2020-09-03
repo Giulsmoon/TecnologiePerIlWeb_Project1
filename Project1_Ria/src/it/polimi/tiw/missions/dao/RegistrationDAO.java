@@ -12,13 +12,14 @@ public class RegistrationDAO {
 
 	}
 
-	public void createRegistrationOfUser(String username, String password) throws SQLException {
-		String query = "INSERT into user (username, password)   VALUES(?, ?)";
+	public void createRegistrationOfUser(String username, String email, String password) throws SQLException {
+		String query = "INSERT into user (username, email, password)   VALUES(?, ?, ?)";
 
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 
 			pstatement.setString(1, username);
-			pstatement.setString(2, password);	
+			pstatement.setString(2, email);
+			pstatement.setString(3, password);	
 			pstatement.executeUpdate();
 		}
 	}
