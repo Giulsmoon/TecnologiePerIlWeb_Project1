@@ -57,16 +57,18 @@ public class Registration extends HttpServlet {
 		boolean isBadRequest = false;
 
 		String username = null;
+		String email = null;
 		String password = null;
 		String passwordReinserted = null;
 		RegistrationDAO registrationDAO = new RegistrationDAO(connection);
 
 		try {
 			username = request.getParameter("username");
+			email = request.getParameter("email");
 			password = request.getParameter("password");
 			passwordReinserted = request.getParameter("passwordReinserted");
 
-			isBadRequest = username.isEmpty() || password.isEmpty() || passwordReinserted.isEmpty()
+			isBadRequest = username.isEmpty() || email.isEmpty() || password.isEmpty() || passwordReinserted.isEmpty()
 					|| !password.equals(passwordReinserted);
 		} catch (NumberFormatException | NullPointerException e) {
 			isBadRequest = true;
@@ -79,7 +81,7 @@ public class Registration extends HttpServlet {
 		} else {
 			try {
 				if (registrationDAO.controlRegistrationOfUser(username)) {
-					registrationDAO.createRegistrationOfUser(username, password);
+					registrationDAO.createRegistrationOfUser(username, email, password);
 					response.setStatus(HttpServletResponse.SC_OK);
 
 				} else {

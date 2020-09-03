@@ -100,12 +100,16 @@
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_registrationButton").addEventListener('click', (e) => {
 				e.preventDefault();
+				var email = e.target.closest("form").email.value;
 				var password1 = e.target.closest("form").password.value;
 				var password2 = e.target.closest("form").passwordReinserted.value;
+				var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+				console.log(mailValidate);
 
-				if (password1 === password2) {
+				if (password1 === password2 && mailValidate) {
 
 					var form = e.target.closest("form");
+					form.email.closest("input").classList.remove("is-invalid");
 					form.password.closest("input").classList.remove("is-invalid");
 					form.passwordReinserted.closest("input").classList.remove("is-invalid");
 					if (form.checkValidity()) {
@@ -140,10 +144,24 @@
 				}
 
 				else {
-					document.getElementById("errormessage").textContent = "password are different";
-
-					e.target.closest("form").password.closest("input").classList.add("is-invalid");
-					e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
+					if (mailValidate && password1 !== password2) {
+						document.getElementById("errormessage").textContent = "password are different";
+						e.target.closest("form").password.closest("input").classList.add("is-invalid");
+						e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
+						e.target.closest("form").email.closest("input").classList.remove("is-invalid");
+					}
+					if (!mailValidate && password1 === password2) {
+						document.getElementById("errormessage").textContent = "You have entered an invalid email address!";
+						e.target.closest("form").email.closest("input").classList.add("is-invalid");
+						e.target.closest("form").password.closest("input").classList.remove("is-invalid");
+						e.target.closest("form").passwordReinserted.closest("input").classList.remove("is-invalid");
+					}
+					if(!mailValidate && password1 !== password2){
+						document.getElementById("errormessage").textContent = "You have entered an invalid email address and the password are different!";
+						e.target.closest("form").email.closest("input").classList.add("is-invalid");
+						e.target.closest("form").password.closest("input").classList.add("is-invalid");
+						e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
+					}
 				}
 			});
 		}

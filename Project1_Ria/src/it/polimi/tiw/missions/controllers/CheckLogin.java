@@ -34,20 +34,22 @@ public class CheckLogin extends HttpServlet {
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doPost(request, response);
 	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// obtain and escape params
 		request.setCharacterEncoding("UTF-8");
 
-		String usrn = null;
+		String usernameOrEmail = null;
 		String pwd = null;
-		usrn = request.getParameter("username");
+		usernameOrEmail = request.getParameter("username");
 		pwd = request.getParameter("pwd");
-		if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty() ) {
+		if (usernameOrEmail == null || pwd == null || usernameOrEmail.isEmpty() || pwd.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Credentials must be not null");
 			return;
@@ -56,7 +58,9 @@ public class CheckLogin extends HttpServlet {
 		UserDAO userDao = new UserDAO(connection);
 		User user = null;
 		try {
-			user = userDao.checkCredentials(usrn, pwd);
+
+			user = userDao.checkCredentials(usernameOrEmail, pwd);
+
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Internal server error, retry later");
@@ -73,8 +77,8 @@ public class CheckLogin extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-						
-			response.getWriter().write(usrn);
+
+			response.getWriter().write(usernameOrEmail);
 		}
 	}
 

@@ -21,23 +21,57 @@ public class UserDAO {
 		this.con = connection;
 	}
 
-	public User checkCredentials(String usrn, String pwd) throws SQLException {
-		String query = "SELECT  u.id, u.username FROM user u WHERE u.username = ? AND BINARY u.password = BINARY ?";
-		try (PreparedStatement pstatement = con.prepareStatement(query);) {
-			pstatement.setString(1, usrn);
-			pstatement.setString(2, pwd);
-			try (ResultSet result = pstatement.executeQuery();) {
-				if (!result.isBeforeFirst()) // no results, credential check failed
-					return null;
-				else {
-					result.next();
-					User user = new User();
-					user.setId(result.getInt("id"));
-					user.setUsername(result.getString("username"));
-					return user;
+	public User checkCredentials(String usrnOrEmail, String pwd) throws SQLException {
+		User user = new User();
+
+		if (findUserByUsername(usrnOrEmail) != null && findUserByEmail(usrnOrEmail) == null) {
+			String query = "SELECT  u.id, u.username FROM user u WHERE u.username = ?  AND BINARY u.password = BINARY ?";
+
+			try (PreparedStatement pstatement = con.prepareStatement(query);) {
+
+				pstatement.setString(1, usrnOrEmail);
+				pstatement.setString(2, pwd);
+				try (ResultSet result = pstatement.executeQuery();) {
+
+					if (!result.isBeforeFirst()) // no results, credential check failed
+						user = null;
+					else {
+						result.next();
+
+						user.setId(result.getInt("id"));
+						user.setUsername(result.getString("username"));
+						System.out.println(user.getId());
+						System.out.println(user.getUsername());
+					}
 				}
 			}
+
 		}
+		if (findUserByUsername(usrnOrEmail) == null && findUserByEmail(usrnOrEmail) != null) {
+
+			String query = "SELECT  u.id, u.username FROM user u WHERE u.email = ?  AND BINARY u.password = BINARY ?";
+			try (PreparedStatement pstatement = con.prepareStatement(query);) {
+				pstatement.setString(1, usrnOrEmail);
+				pstatement.setString(2, pwd);
+				try (ResultSet result = pstatement.executeQuery();) {
+					if (!result.isBeforeFirst()) // no results, credential check failed
+						user = null;
+					else {
+						result.next();
+
+						user.setId(result.getInt("id"));
+						user.setUsername(result.getString("username"));
+
+					}
+				}
+			}
+
+		}
+		if (findUserByUsername(usrnOrEmail) == null && findUserByEmail(usrnOrEmail) == null) {
+
+			user = null;
+		}
+		return user;
 	}
 
 	public User checkUserAlbumPreference(User user) throws SQLException {
@@ -59,7 +93,7 @@ public class UserDAO {
 	}
 
 	public User findUserByUsername(String username) throws SQLException {
-		String query = "SELECT  u.id, u.username FROM user u WHERE u.username = ?";
+		String query = "SELECT  u.id, u.username, u.email FROM user u WHERE u.username = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, username);
 			try (ResultSet result = pstatement.executeQuery();) {
@@ -70,6 +104,26 @@ public class UserDAO {
 					User user = new User();
 					user.setId(result.getInt("id"));
 					user.setUsername(result.getString("username"));
+					user.setUsername(result.getString("email"));
+					return user;
+				}
+			}
+		}
+	}
+
+	public User findUserByEmail(String email) throws SQLException {
+		String query = "SELECT  u.id, u.username, u.email FROM user u WHERE u.email = ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setString(1, email);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, credential check failed
+					return null;
+				else {
+					result.next();
+					User user = new User();
+					user.setId(result.getInt("id"));
+					user.setUsername(result.getString("username"));
+					user.setUsername(result.getString("email"));
 					return user;
 				}
 			}
@@ -91,7 +145,7 @@ public class UserDAO {
 					pstatement2.setString(2, albPref);
 					pstatement2.executeUpdate();
 				} else {
-					result.next();	 // founded result, update user preference
+					result.next(); // founded result, update user preference
 					String query3 = "UPDATE preference SET albumOrder = ? where idUser = ?";
 					PreparedStatement pstatement3 = con.prepareStatement(query3);
 					pstatement3.setString(1, albPref);
@@ -100,11 +154,9 @@ public class UserDAO {
 				}
 			}
 		}
-		
 
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 
-			
 		}
 	}
 
@@ -120,7 +172,7 @@ public class UserDAO {
 				User u = new User();
 				u.setId(result.getInt("id"));
 				u.setUsername(result.getString("username"));
-
+				u.setEmail(result.getString("email"));
 				users.add(u);
 			}
 		} catch (SQLException e) {
