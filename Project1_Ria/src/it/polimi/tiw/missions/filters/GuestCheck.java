@@ -51,7 +51,6 @@ public class GuestCheck implements Filter {
 		if (s.getAttribute("user") != null) {
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println("You are already logged on server");
-
 			return;
 		}
 		res.setStatus(HttpServletResponse.SC_OK);
