@@ -23,8 +23,10 @@ public class UserDAO {
 
 	public User checkCredentials(String usrnOrEmail, String pwd) throws SQLException {
 		User user = new User();
+		boolean isExistingUsername = isExistingUsername(usrnOrEmail);
+		boolean isExistingEmail = isExistingEmail(usrnOrEmail);
 
-		if (findUserByUsername(usrnOrEmail) != null && findUserByEmail(usrnOrEmail) == null) {
+		if (isExistingUsername == true && isExistingEmail == false) {
 			String query = "SELECT  u.id, u.username FROM user u WHERE u.username = ?  AND BINARY u.password = BINARY ?";
 
 			try (PreparedStatement pstatement = con.prepareStatement(query);) {
@@ -37,39 +39,38 @@ public class UserDAO {
 						user = null;
 					else {
 						result.next();
-
+						
 						user.setId(result.getInt("id"));
 						user.setUsername(result.getString("username"));
-						System.out.println(user.getId());
-						System.out.println(user.getUsername());
 					}
 				}
 			}
 
-		}
-		if (findUserByUsername(usrnOrEmail) == null && findUserByEmail(usrnOrEmail) != null) {
+		} else {
+			if (isExistingUsername == false && isExistingEmail == true) {
 
-			String query = "SELECT  u.id, u.username FROM user u WHERE u.email = ?  AND BINARY u.password = BINARY ?";
-			try (PreparedStatement pstatement = con.prepareStatement(query);) {
-				pstatement.setString(1, usrnOrEmail);
-				pstatement.setString(2, pwd);
-				try (ResultSet result = pstatement.executeQuery();) {
-					if (!result.isBeforeFirst()) // no results, credential check failed
-						user = null;
-					else {
-						result.next();
+				String query = "SELECT  u.id, u.username FROM user u WHERE u.email = ?  AND BINARY u.password = BINARY ?";
+				try (PreparedStatement pstatement = con.prepareStatement(query);) {
+					pstatement.setString(1, usrnOrEmail);
+					pstatement.setString(2, pwd);
+					try (ResultSet result = pstatement.executeQuery();) {
+						if (!result.isBeforeFirst()) // no results, credential check failed
+							user = null;
+						else {
+							result.next();
 
-						user.setId(result.getInt("id"));
-						user.setUsername(result.getString("username"));
-
+							user.setId(result.getInt("id"));
+							user.setUsername(result.getString("username"));
+						}
 					}
 				}
+
+			} else {
+				if (isExistingUsername == false && isExistingEmail == false) {
+
+					user = null;
+				}
 			}
-
-		}
-		if (findUserByUsername(usrnOrEmail) == null && findUserByEmail(usrnOrEmail) == null) {
-
-			user = null;
 		}
 		return user;
 	}
@@ -111,20 +112,32 @@ public class UserDAO {
 		}
 	}
 
-	public User findUserByEmail(String email) throws SQLException {
+	public boolean isExistingUsername(String username) throws SQLException {
+		String query = "SELECT  u.id, u.username, u.email FROM user u WHERE u.username = ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setString(1, username);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, credential check failed
+					return false;
+				else {
+					result.next();
+
+					return true;
+				}
+			}
+		}
+	}
+
+	public boolean isExistingEmail(String email) throws SQLException {
 		String query = "SELECT  u.id, u.username, u.email FROM user u WHERE u.email = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, email);
 			try (ResultSet result = pstatement.executeQuery();) {
 				if (!result.isBeforeFirst()) // no results, credential check failed
-					return null;
+					return false;
 				else {
 					result.next();
-					User user = new User();
-					user.setId(result.getInt("id"));
-					user.setUsername(result.getString("username"));
-					user.setUsername(result.getString("email"));
-					return user;
+					return true;
 				}
 			}
 		}
@@ -160,36 +173,4 @@ public class UserDAO {
 		}
 	}
 
-	public List<User> findAllUsers() throws SQLException {
-		List<User> users = new ArrayList<User>();
-		String query = "SELECT * FROM user  ";
-		ResultSet result = null;
-		PreparedStatement pstatement = null;
-		try {
-			pstatement = con.prepareStatement(query);
-			result = pstatement.executeQuery();
-			while (result.next()) {
-				User u = new User();
-				u.setId(result.getInt("id"));
-				u.setUsername(result.getString("username"));
-				u.setEmail(result.getString("email"));
-				users.add(u);
-			}
-		} catch (SQLException e) {
-			throw new SQLException(e);
-
-		} finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException("Cannot close result");
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e1) {
-				throw new SQLException("Cannot close statement");
-			}
-		}
-		return users;
-	}
 }

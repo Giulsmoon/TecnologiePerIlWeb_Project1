@@ -15,42 +15,34 @@
 
 	function LoginForm() {
 
-		this.reset = function() {
-			this.registrationRow.style.visibility = "hidden";
-		};
-
-		this.show = function(next) { };
-
 		this.registerEvents = function(orchestrator) {
 
 			document.getElementById("id_loginButton").addEventListener('click', (e) => {
 				e.preventDefault();
-
-
 				var form = e.target.closest("form");
-				if (form.checkValidity()) {
+				if (form.checkValidity() && !sessionStorage.getItem('username')) {
 					makeCall("POST", 'CheckLogin', e.target.closest("form"),
-						function(req) {
-							if (req.readyState == XMLHttpRequest.DONE) {
-								var message = req.responseText;
-								switch (req.status) {
-									case 200:
-										sessionStorage.setItem('username', message);
-										window.location.href = "OnePage.html";
-										break;
-									case 400: // bad request
-										document.getElementById("errormessage").textContent = message;
-										break;
-									case 401: // unauthorized
-										document.getElementById("errormessage").textContent = message;
-										break;
-									case 500: // server error
-										document.getElementById("errormessage").textContent = message;
-										break;
-								}
+							 function(req) {
+						if (req.readyState == XMLHttpRequest.DONE) {
+							var message = req.responseText;
+							switch (req.status) {
+								case 200:
+									sessionStorage.setItem('username', message);
+									window.location.href = "OnePage.html";
+									break;
+								case 400: // bad request
+									document.getElementById("errormessage").textContent = message;
+									break;
+								case 401: // unauthorized
+									document.getElementById("errormessage").textContent = message;
+									break;
+								case 500: // server error
+									document.getElementById("errormessage").textContent = message;
+									break;
 							}
 						}
-					);
+					}
+							);
 				} else {
 					form.reportValidity();
 				}
@@ -100,68 +92,71 @@
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_registrationButton").addEventListener('click', (e) => {
 				e.preventDefault();
-				var email = e.target.closest("form").email.value;
-				var password1 = e.target.closest("form").password.value;
-				var password2 = e.target.closest("form").passwordReinserted.value;
-				var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
-				console.log(mailValidate);
+				var form = e.target.closest("form");
 
-				if (password1 === password2 && mailValidate) {
+				if (form.checkValidity() && !sessionStorage.getItem('username')) {
 
-					var form = e.target.closest("form");
-					form.email.closest("input").classList.remove("is-invalid");
-					form.password.closest("input").classList.remove("is-invalid");
-					form.passwordReinserted.closest("input").classList.remove("is-invalid");
-					if (form.checkValidity()) {
+					var email = e.target.closest("form").email.value;
+					var password1 = e.target.closest("form").password.value;
+					var password2 = e.target.closest("form").passwordReinserted.value;
+					var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+					console.log(mailValidate);
+
+					if (password1 === password2 && mailValidate) {
+
+						form.email.closest("input").classList.remove("is-invalid");
+						form.password.closest("input").classList.remove("is-invalid");
+						form.passwordReinserted.closest("input").classList.remove("is-invalid");
 						makeCall("POST", 'Registration', e.target.closest("form"),
-							function(req) {
+								 function(req) {
 
-								if (req.readyState == XMLHttpRequest.DONE) {
-									var message = req.responseText;
-									switch (req.status) {
-										case 200:
-											orchestrator.refresh();
-											document.getElementById("errormessage").textContent
-												= "Registration Done";
-											break;
-										case 400: // bad request
-											document.getElementById("errormessage").textContent = message;
-											break;
-										case 401: // unauthorized
-											document.getElementById("errormessage").textContent = message;
-											break;
-										case 500: // server error
-											document.getElementById("errormessage").textContent = message;
-											break;
-									}
+							if (req.readyState == XMLHttpRequest.DONE) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+										orchestrator.refresh();
+										document.getElementById("errormessage").textContent
+											= "Registration Done";
+										break;
+									case 400: // bad request
+										document.getElementById("errormessage").textContent = message;
+										break;
+									case 401: // unauthorized
+										document.getElementById("errormessage").textContent = message;
+										break;
+									case 500: // server error
+										document.getElementById("errormessage").textContent = message;
+										break;
 								}
 							}
-						);
-					} else {
-						form.reportValidity();
+						}
+								);
+
+
 					}
 
-				}
-
-				else {
-					if (mailValidate && password1 !== password2) {
-						document.getElementById("errormessage").textContent = "password are different";
-						e.target.closest("form").password.closest("input").classList.add("is-invalid");
-						e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
-						e.target.closest("form").email.closest("input").classList.remove("is-invalid");
+					else {
+						if (mailValidate && password1 !== password2) {
+							document.getElementById("errormessage").textContent = "password are different";
+							e.target.closest("form").password.closest("input").classList.add("is-invalid");
+							e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
+							e.target.closest("form").email.closest("input").classList.remove("is-invalid");
+						}
+						if (!mailValidate && password1 === password2) {
+							document.getElementById("errormessage").textContent = "You have entered an invalid email address!";
+							e.target.closest("form").email.closest("input").classList.add("is-invalid");
+							e.target.closest("form").password.closest("input").classList.remove("is-invalid");
+							e.target.closest("form").passwordReinserted.closest("input").classList.remove("is-invalid");
+						}
+						if(!mailValidate && password1 !== password2){
+							document.getElementById("errormessage").textContent = "You have entered an invalid email address and the password are different!";
+							e.target.closest("form").email.closest("input").classList.add("is-invalid");
+							e.target.closest("form").password.closest("input").classList.add("is-invalid");
+							e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
+						}
 					}
-					if (!mailValidate && password1 === password2) {
-						document.getElementById("errormessage").textContent = "You have entered an invalid email address!";
-						e.target.closest("form").email.closest("input").classList.add("is-invalid");
-						e.target.closest("form").password.closest("input").classList.remove("is-invalid");
-						e.target.closest("form").passwordReinserted.closest("input").classList.remove("is-invalid");
-					}
-					if(!mailValidate && password1 !== password2){
-						document.getElementById("errormessage").textContent = "You have entered an invalid email address and the password are different!";
-						e.target.closest("form").email.closest("input").classList.add("is-invalid");
-						e.target.closest("form").password.closest("input").classList.add("is-invalid");
-						e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
-					}
+				} else {
+					form.reportValidity();
 				}
 			});
 		}
@@ -176,17 +171,17 @@
 
 				if (sessionStorage.getItem('username') === null) {
 					makeCall("GET", "CheckGuest", null,
-						function(req) {
-							if (req.readyState == 4) {
-								var message = req.responseText;
-								if (req.status == 200) {
-									window.location.href = "OnePage.html";
-								} else {
-									document.getElementById("errormessage").textContent = "Error";
-								}
+							 function(req) {
+						if (req.readyState == 4) {
+							var message = req.responseText;
+							if (req.status == 200) {
+								window.location.href = "OnePage.html";
+							} else {
+								document.getElementById("errormessage").textContent = "Error";
 							}
 						}
-					);
+					}
+							);
 				} else {
 					document.getElementById("errormessage").textContent = "you Are logged";
 				}

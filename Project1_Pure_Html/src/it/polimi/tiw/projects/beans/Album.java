@@ -5,8 +5,6 @@ import java.util.Date;
 public class Album {
 	private int id;
 	private String iconPath;
-
-
 	private String title;
 	private Date date;
 

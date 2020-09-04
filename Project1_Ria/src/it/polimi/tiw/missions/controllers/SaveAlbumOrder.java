@@ -64,6 +64,9 @@ public class SaveAlbumOrder extends HttpServlet {
 			throws ServletException, IOException {
 		
 		boolean isBadRequest = false;
+		User user = null;
+		HttpSession s = request.getSession();
+
 		StringBuilder buffer = new StringBuilder();
 	    BufferedReader reader = request.getReader();
 	    String line;
@@ -72,9 +75,10 @@ public class SaveAlbumOrder extends HttpServlet {
 	    }
 	    String data = buffer.toString();
 
-	    Gson gson = new Gson();
-	    User user = gson.fromJson(data, User.class);
-	    
+	    Gson gson = new Gson();  	   
+		user = (User) s.getAttribute("user");
+	    user.setPrefAlbumOrder(gson.fromJson(data, int [].class));
+
 	    AlbumDAO albumDAO = new AlbumDAO(connection);
 	    int albumSize = -1;
 		try {

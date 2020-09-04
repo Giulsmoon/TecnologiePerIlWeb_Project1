@@ -130,6 +130,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 				albumId = Integer.parseInt(urlAlbumId);
 			} catch (NumberFormatException e) {
 				res.sendError(505, "Bad number format");
+				return;
+
 			}
 
 			if (checkALbumId(albumId)) {
@@ -172,6 +174,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 							previousImagesFromRequest = Integer.parseInt(urlPreviousImages);
 						} catch (NumberFormatException e) {
 							res.sendError(505, "Bad number format");
+							return;
+
 						}
 						int somma = 0;
 						somma = nextImagesFromRequest + previousImagesFromRequest;
@@ -237,11 +241,13 @@ public class GetImagesOfAlbum extends HttpServlet {
 
 				}
 			} else {
-				String path = getServletContext().getContextPath() + "/GoToHomePage";
-				res.sendRedirect(path);
+				res.sendError(505, "Bad album ID");
+				return;
 			}
 		} else {
 			res.sendError(505, "Bad album ID");
+			return;
+
 		}
 	}
 }

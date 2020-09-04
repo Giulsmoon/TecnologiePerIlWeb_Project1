@@ -69,7 +69,6 @@ public class CreateComment extends HttpServlet {
 		
 		try {
 			comment = request.getParameter("comment");
-			System.out.println(comment);
 			imageId = Integer.parseInt(request.getParameter("imageId"));
 			isBadRequest = comment.isEmpty() || imageId <=0;
 		} catch (NumberFormatException | NullPointerException e) {
@@ -95,8 +94,6 @@ public class CreateComment extends HttpServlet {
 					commentDAO.createComment(comment, imageId, user.getId());
 					commentResponse = commentDAO.findLastInsertedComment();
 					commentDAO.findUsernameOfComment(commentResponse);
-					System.out.println(commentResponse.getId());
-					System.out.println(commentResponse.getText());
 					response.setStatus(HttpServletResponse.SC_OK);
 					Gson gson = new GsonBuilder()
 							.setDateFormat("yyyy-MM-dd").create();

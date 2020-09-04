@@ -1,9 +1,9 @@
 (function() { // avoid variables ending up in the global scope
 
 	// page components
-	var AlbumsList, ImageList, ImageDetails, NextButton, PreviousButton,
-		CommentForm, RedirectToIndex, CloseModalWindow, SaveOrderButton, AlertModal,
-		LogoutButton, LoginButton;
+	var albumsList, imageList, imageDetails, nextButton, previousButton,
+		commentForm, redirectToIndex, closeModalWindow, saveOrderButton, alertModal,
+		logoutButton, loginButton;
 	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -22,31 +22,32 @@
 		this.albumsBody = _albumsBody;
 
 		this.reset = function() {
-			this.albumsRow.style.visibility = "hidden";
+			this.albumsRow.classList.remove("d-block");
+			this.albumsRow.classList.add("d-none")
 		}
 
 		this.show = function() {
 			var that = this;
 			makeCall("GET", "GetAlbumList", null,
-					 function(req) {
-				if (req.readyState == 4) {
-					var message = req.responseText;
-					if (req.status == 200) {
-						var albumsToShow = JSON.parse(req.responseText);
-						if (albumsToShow.length == 0) {
-							var text = "No albums available!";
-							orchestrator.showAlert(text);
-							return;
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var albumsToShow = JSON.parse(req.responseText);
+							if (albumsToShow.length == 0) {
+								var text = "No albums available!";
+								orchestrator.showAlert(text);
+								return;
+							}
+							that.update(albumsToShow); // that visible by closure
+
 						}
-						that.update(albumsToShow); // that visible by closure
+					} else {
+
 
 					}
-				} else {
-
-
 				}
-			}
-					);
+			);
 		};
 
 		this.setDraggable = function() {
@@ -55,7 +56,10 @@
 				const draggables = document.querySelectorAll('.draggable');
 
 				draggables.forEach(function(draggable) {
+					draggable.style.userSelect = 'none';
+
 					draggable.addEventListener('dragstart', (e) => {
+
 						draggable.classList.add('dragging');
 					})
 
@@ -143,7 +147,10 @@
 				that.albumsBody.appendChild(row);
 
 			});
-			this.albumsRow.style.visibility = "visible";
+			this.albumsRow.classList.remove("d-none");
+			this.albumsRow.classList.add("d-block");
+
+
 			this.setDraggable();
 		}
 
@@ -163,7 +170,8 @@
 		this.numToShow = 5;
 
 		this.reset = function() {
-			this.galleryRow.style.visibility = "hidden";
+			this.galleryRow.classList.remove("visible");
+			this.galleryRow.classList.add("invisible");
 		}
 
 		this.resetImages = function() {
@@ -184,36 +192,33 @@
 			var that = this;
 
 			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null,
-					 function(req) {
-				if (req.readyState == 4) {
-					var message = req.responseText;
-					if (req.status == 200) {
-						var imagesToShow = JSON.parse(req.responseText);
-						if (imagesToShow.length == 0) {
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var imagesToShow = JSON.parse(req.responseText);
+							if (imagesToShow.length == 0) {
 
-							var text = "No images of this album available!";
-							orchestrator.showAlert(text);
-							return;
+								var text = "No images of this album available!";
+								orchestrator.showAlert(text);
+								return;
+							}
+							that.images =imagesToShow;
+							that.update(); // that visible by closure
 						}
-						that.update(imagesToShow); // that visible by closure
 					}
 				}
-			}
-					);
+			);
 		};
 
 
-		this.update = function(arrayImages) {
+		this.update = function() {
 			var row, imageThumbnail, titleBody, imageAnchor, imageTag;
 			this.galleryBody.innerHTML = ""; // empty the table body
 			// build updated list
 			var that = this;
 			row = document.createElement("tr");
 
-
-			if (arrayImages) {
-				that.images = arrayImages;
-			}
 			var i = that.currentBlock * that.numToShow;
 
 			var end = i + that.numToShow;
@@ -273,7 +278,8 @@
 			}
 			that.galleryBody.appendChild(row);
 
-			this.galleryRow.style.visibility = "visible";
+			this.galleryRow.classList.remove("invisible");
+			this.galleryRow.classList.add("visible");
 
 		}
 
@@ -282,7 +288,7 @@
 			if (this.images) {
 				if (((this.currentBlock * this.numToShow) + this.numToShow) < this.images.length) {
 					this.currentBlock++;
-					this.update(null);
+					this.update();
 
 				}
 			}
@@ -293,7 +299,7 @@
 
 			if (this.images && this.currentBlock > 0) {
 				this.currentBlock--;
-				this.update(null);
+				this.update();
 
 			}
 		}
@@ -324,7 +330,7 @@
 
 
 	function ImageDetails(orchestrator, _titleRow, _titleBody, _descriptionBody, _commentRow,
-						   _commentBody, _imageAndCommentsRow, _imageContainer) {
+		_commentBody, _imageAndCommentsRow, _imageContainer) {
 
 		this.titleRow = _titleRow;
 		this.titleBody = _titleBody;
@@ -352,22 +358,22 @@
 		this.show = function(imageId) {
 			var that = this;
 			makeCall("GET", "GetImageAndComments?imageId=" + imageId, null,
-					 function(req) {
-				if (req.readyState == 4) {
-					var message = req.responseText;
-					if (req.status == 200) {
-						var imageAndComments = JSON.parse(req.responseText);
-						if (imageAndComments.length == 0) {
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var imageAndComments = JSON.parse(req.responseText);
+							if (imageAndComments.length == 0) {
 
-							var text = "No images of this album available"
-							orchestrator.showAlert(text);
-							return;
+								var text = "No images of this album available"
+								orchestrator.showAlert(text);
+								return;
+							}
+							that.update(imageAndComments); // that visible by closure
 						}
-						that.update(imageAndComments); // that visible by closure
 					}
 				}
-			}
-					);
+			);
 		};
 
 		this.addNewComment = function(comment) {
@@ -598,39 +604,39 @@
 			var that = this;
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
 				e.preventDefault();
-				if(sessionStorage.getItem('username')){
+				if (sessionStorage.getItem('username')) {
 					var form = e.target.closest("form");
 					if (form.checkValidity()) {
 						makeCall("POST", 'CreateComment', e.target.closest("form"),
-								 function(req) {
-							if (req.readyState == XMLHttpRequest.DONE) {
-								var message = req.responseText;
+							function(req) {
+								if (req.readyState == XMLHttpRequest.DONE) {
+									var message = req.responseText;
 
-								switch (req.status) {
-									case 200:
-										var comment = JSON.parse(req.responseText);
-										orchestrator.addNewComment(comment);
-										var text = "Comment saved";
-										orchestrator.showAlert(text);
-										break;
-									case 400: // bad request
-										orchestrator.showAlert(message);
-										break;
-									case 401: // unauthorized
-										orchestrator.showAlert(message);
-										break;
-									case 500: // server error
-										orchestrator.showAlert(message);
-										break;
+									switch (req.status) {
+										case 200:
+											var comment = JSON.parse(req.responseText);
+											orchestrator.addNewComment(comment);
+											var text = "Comment saved";
+											orchestrator.showAlert(text);
+											break;
+										case 400: // bad request
+											orchestrator.showAlert(message);
+											break;
+										case 401: // unauthorized
+											orchestrator.showAlert(message);
+											break;
+										case 500: // server error
+											orchestrator.showAlert(message);
+											break;
+									}
 								}
 							}
-						}
-								);
+						);
 					} else {
 						form.reportValidity();
 					}
 				}
-				else{
+				else {
 					orchestrator.showAlert("You are not logged");
 				}
 			});
@@ -654,7 +660,7 @@
 			this.saveButton.classList.add("visible")
 		}
 
-		this.reset = function(){
+		this.reset = function() {
 			this.saveButton.classList.remove("visible")
 			this.saveButton.classList.add("invisible")
 		}
@@ -663,7 +669,7 @@
 			var that = this;
 
 			var _username = sessionStorage.getItem('username');
-			if(_username){
+			if (_username) {
 
 				var _arrayPosition = [];
 
@@ -673,74 +679,74 @@
 				tableRows.forEach(function(row) {
 					arrayPosition.push(row.getAttribute("albumId"))
 				});
-				var obj = { id: 0, username: _username, prefAlbumOrder: arrayPosition }
+				var obj = arrayPosition;
 				makeCallSendObj("POST", 'SaveAlbumOrder', obj,
-								function(req) {
-					if (req.readyState == XMLHttpRequest.DONE) {
-						var message = req.responseText;
+					function(req) {
+						if (req.readyState == XMLHttpRequest.DONE) {
+							var message = req.responseText;
 
-						switch (req.status) {
-							case 200:
-								var text = "Order saved";
-								orchestrator.showAlert(text);
-								that.reset();
-								break;
-							case 400: // bad request
-								orchestrator.showAlert(message);
-								break;
-							case 401: // unauthorized
-								orchestrator.showAlert(message);
-								break;
-							case 500: // server error
-								orchestrator.showAlert(message);
-								break;
+							switch (req.status) {
+								case 200:
+									var text = "Order saved";
+									orchestrator.showAlert(text);
+									that.reset();
+									break;
+								case 400: // bad request
+									orchestrator.showAlert(message);
+									break;
+								case 401: // unauthorized
+									orchestrator.showAlert(message);
+									break;
+								case 500: // server error
+									orchestrator.showAlert(message);
+									break;
+							}
 						}
 					}
-				}
-							   );
+				);
 			}
-			else{
+			else {
 				orchestrator.showAlert("You are not logged");
 			}
 		}
 	}
 
-	function LogoutButton(_logoutBtn){
-		this.logoutBtn=_logoutBtn;
+	function LogoutButton(_logoutBtn) {
+		this.logoutBtn = _logoutBtn;
 
 		this.show = function() {
 			this.logoutBtn.classList.remove("d-none")
 			this.logoutBtn.classList.add("d-block")
 		}
 
-		this.reset = function(){
+		this.reset = function() {
 			this.logoutBtn.classList.remove("d-block")
 			this.logoutBtn.classList.add("d-none")
 		}
 
-		this.registerEvents = function(orchestrator){
+		this.registerEvents = function(orchestrator) {
 			this.logoutBtn.addEventListener('click', (e) => {
 				e.preventDefault();
-				if(sessionStorage.getItem('username')){
+				if (sessionStorage.getItem('username')) {
 					makeCall("GET", "Logout", null,
-							 function(req) {
-						if (req.readyState == 4) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
-									window.sessionStorage.removeItem('username');
-									window.location.href = "index.html";
-									break;
-								case 401: // unauthorized
-									orchestrator.showAlert(message);
-									break;
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+										window.sessionStorage.removeItem('username');
+										window.location.href = "index.html";
+										break;
+									case 401: // unauthorized
+										orchestrator.showAlert(message);
+										break;
+								}
 							}
 						}
-					}
 
-							);
+					);
 				}
-				else{
+				else {
 					orchestrator.showAlert("You are not logged");
 
 				}
@@ -749,42 +755,42 @@
 		}
 	}
 
-	function LoginButton(_goLoginBtn){
-		this.goLoginBtn=_goLoginBtn;
+	function LoginButton(_goLoginBtn) {
+		this.goLoginBtn = _goLoginBtn;
 
 		this.show = function() {
 			this.goLoginBtn.classList.remove("d-none")
 			this.goLoginBtn.classList.add("d-block")
 		}
 
-		this.reset = function(){
+		this.reset = function() {
 			this.goLoginBtn.classList.remove("d-block")
 			this.goLoginBtn.classList.add("d-none")
 		}
 
-		this.registerEvents = function(orchestrator){
+		this.registerEvents = function(orchestrator) {
 			this.goLoginBtn.addEventListener('click', (e) => {
 				e.preventDefault();
-				if(!sessionStorage.getItem('username')){
+				if (!sessionStorage.getItem('username')) {
 					makeCall("GET", "GoLogin", null,
-							 function(req) {
-						if (req.readyState == 4) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
 
-									window.location.href = "index.html";
-									break;
-								case 401: // unauthorized
-									orchestrator.showAlert(message);
-									break;
+										window.location.href = "index.html";
+										break;
+									case 401: // unauthorized
+										orchestrator.showAlert(message);
+										break;
+								}
 							}
 						}
-					}
 
-							);
+					);
 				}
-				else{
+				else {
 					orchestrator.showAlert("You are already logged");
 
 				}
@@ -869,20 +875,21 @@
 			imageList.reset();
 			albumsList.show(this);
 
-			if(sessionStorage.getItem('username')){
+			if (sessionStorage.getItem('username')) {
 				logoutButton.show();
 				loginButton.reset();
 			}
-			else{
+			else {
 				logoutButton.reset();
 				loginButton.show();
 			}
 		};
 
 		this.afterClickAlbum = function(albumId) {
-			imageList.show(albumId);
 			imageList.resetButtonsNextAndPrevious();
 			imageList.resetImages();
+			imageList.reset();
+			imageList.show(albumId);
 			imageDetails.reset();
 			commentForm.reset();
 		};
@@ -895,7 +902,7 @@
 			imageDetails.show(imageId);
 		};
 
-		this.showCommentForm = function(imageId){
+		this.showCommentForm = function(imageId) {
 			commentForm.show(imageId);
 		};
 
