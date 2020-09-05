@@ -67,7 +67,7 @@
 
 						draggable.classList.remove('dragging');
 						//non appena concludo il primo drag si attiva il bottone per salvare la preferenza dell'utente
-						this.saveOrderButton.show();
+						orchestrator.showSaveButton();
 					}, false)
 				});
 
@@ -558,29 +558,23 @@
 
 			document.getElementById("id_loginToComment").addEventListener('click', (e) => {
 				e.preventDefault();
-				if (!sessionStorage.getItem('username')) {
-					makeCall("GET", "GoLogin", null,
-						function(req) {
-							if (req.readyState == 4) {
-								var message = req.responseText;
-								switch (req.status) {
-									case 200:
+				makeCall("GET", "GoLogin", null,
+					function(req) {
+						if (req.readyState == 4) {
+							var message = req.responseText;
+							switch (req.status) {
+								case 200:
 
-										window.location.href = "index.html";
-										break;
-									case 401: // unauthorized
-										orchestrator.showAlert(message);
-										break;
-								}
+									window.location.href = "index.html";
+									break;
+								case 401: // unauthorized
+									orchestrator.showAlert(message);
+									break;
 							}
 						}
+					}
 
-					);
-				}
-				else {
-					orchestrator.showAlert("You are already logged");
-
-				}
+				);
 
 			}, false);
 		};
@@ -628,40 +622,35 @@
 			var that = this;
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
 				e.preventDefault();
-				if (sessionStorage.getItem('username')) {
-					var form = e.target.closest("form");
-					if (form.checkValidity()) {
-						makeCall("POST", 'CreateComment', e.target.closest("form"),
-							function(req) {
-								if (req.readyState == XMLHttpRequest.DONE) {
-									var message = req.responseText;
+				var form = e.target.closest("form");
+				if (form.checkValidity()) {
+					makeCall("POST", 'CreateComment', e.target.closest("form"),
+						function(req) {
+							if (req.readyState == XMLHttpRequest.DONE) {
+								var message = req.responseText;
 
-									switch (req.status) {
-										case 200:
-											var comment = JSON.parse(req.responseText);
-											orchestrator.addNewComment(comment);
-											var text = "Comment saved";
-											orchestrator.showAlert(text);
-											break;
-										case 400: // bad request
-											orchestrator.showAlert(message);
-											break;
-										case 401: // unauthorized
-											orchestrator.showAlert(message);
-											break;
-										case 500: // server error
-											orchestrator.showAlert(message);
-											break;
-									}
+								switch (req.status) {
+									case 200:
+										var comment = JSON.parse(req.responseText);
+										orchestrator.addNewComment(comment);
+										var text = "Comment saved";
+										orchestrator.showAlert(text);
+										break;
+									case 400: // bad request
+										orchestrator.showAlert(message);
+										break;
+									case 401: // unauthorized
+										orchestrator.showAlert(message);
+										break;
+									case 500: // server error
+										orchestrator.showAlert(message);
+										break;
 								}
 							}
-						);
-					} else {
-						form.reportValidity();
-					}
-				}
-				else {
-					orchestrator.showAlert("You are not logged");
+						}
+					);
+				} else {
+					form.reportValidity();
 				}
 			}, false);
 		}
@@ -693,45 +682,39 @@
 			var that = this;
 
 			var _username = sessionStorage.getItem('username');
-			if (_username) {
+			var _arrayPosition = [];
 
-				var _arrayPosition = [];
+			arrayPosition = _arrayPosition;
+			tableRows = document.querySelectorAll("a[albumId]");
 
-				arrayPosition = _arrayPosition;
-				tableRows = document.querySelectorAll("a[albumId]");
+			tableRows.forEach(function(row) {
+				arrayPosition.push(row.getAttribute("albumId"))
+			});
+			var obj = arrayPosition;
+			makeCallSendObj("POST", 'SaveAlbumOrder', obj,
+				function(req) {
+					if (req.readyState == XMLHttpRequest.DONE) {
+						var message = req.responseText;
 
-				tableRows.forEach(function(row) {
-					arrayPosition.push(row.getAttribute("albumId"))
-				});
-				var obj = arrayPosition;
-				makeCallSendObj("POST", 'SaveAlbumOrder', obj,
-					function(req) {
-						if (req.readyState == XMLHttpRequest.DONE) {
-							var message = req.responseText;
-
-							switch (req.status) {
-								case 200:
-									var text = "Order saved";
-									orchestrator.showAlert(text);
-									that.reset();
-									break;
-								case 400: // bad request
-									orchestrator.showAlert(message);
-									break;
-								case 401: // unauthorized
-									orchestrator.showAlert(message);
-									break;
-								case 500: // server error
-									orchestrator.showAlert(message);
-									break;
-							}
+						switch (req.status) {
+							case 200:
+								var text = "Order saved";
+								orchestrator.showAlert(text);
+								that.reset();
+								break;
+							case 400: // bad request
+								orchestrator.showAlert(message);
+								break;
+							case 401: // unauthorized
+								orchestrator.showAlert(message);
+								break;
+							case 500: // server error
+								orchestrator.showAlert(message);
+								break;
 						}
 					}
-				);
-			}
-			else {
-				orchestrator.showAlert("You are not logged");
-			}
+				}
+			);
 		}
 	}
 
@@ -751,29 +734,23 @@
 		this.registerEvents = function(orchestrator) {
 			this.logoutBtn.addEventListener('click', (e) => {
 				e.preventDefault();
-				if (sessionStorage.getItem('username')) {
-					makeCall("GET", "Logout", null,
-						function(req) {
-							if (req.readyState == 4) {
-								var message = req.responseText;
-								switch (req.status) {
-									case 200:
-										window.sessionStorage.removeItem('username');
-										window.location.href = "index.html";
-										break;
-									case 401: // unauthorized
-										orchestrator.showAlert(message);
-										break;
-								}
+				makeCall("GET", "Logout", null,
+					function(req) {
+						if (req.readyState == 4) {
+							var message = req.responseText;
+							switch (req.status) {
+								case 200:
+									window.sessionStorage.removeItem('username');
+									window.location.href = "index.html";
+									break;
+								case 401: // unauthorized
+									orchestrator.showLogoutAlert(message);
+									break;
 							}
 						}
+					}
 
-					);
-				}
-				else {
-					orchestrator.showAlert("You are not logged");
-
-				}
+				);
 
 			}, false)
 		}
@@ -795,29 +772,23 @@
 		this.registerEvents = function(orchestrator) {
 			this.goLoginBtn.addEventListener('click', (e) => {
 				e.preventDefault();
-				if (!sessionStorage.getItem('username')) {
-					makeCall("GET", "GoLogin", null,
-						function(req) {
-							if (req.readyState == 4) {
-								var message = req.responseText;
-								switch (req.status) {
-									case 200:
+				makeCall("GET", "GoLogin", null,
+					function(req) {
+						if (req.readyState == 4) {
+							var message = req.responseText;
+							switch (req.status) {
+								case 200:
 
-										window.location.href = "index.html";
-										break;
-									case 401: // unauthorized
-										orchestrator.showAlert(message);
-										break;
-								}
+									window.location.href = "index.html";
+									break;
+								case 401: // unauthorized
+									orchestrator.showLoginAlert(message);
+									break;
 							}
 						}
+					}
 
-					);
-				}
-				else {
-					orchestrator.showAlert("You are already logged");
-
-				}
+				);
 
 			}, false)
 		}
@@ -914,8 +885,7 @@
 			imageList.resetImages();
 			imageList.reset();
 			imageList.show(albumId);
-			imageDetails.reset();
-			commentForm.reset();
+
 		};
 		this.addNewComment = function(comment) {
 			imageDetails.addNewComment(comment);
@@ -923,10 +893,12 @@
 		};
 
 		this.showImageDetails = function(imageId) {
+			imageDetails.reset();
 			imageDetails.show(imageId);
 		};
 
 		this.showCommentForm = function(imageId) {
+			commentForm.reset();
 			commentForm.show(imageId);
 		};
 
@@ -945,9 +917,23 @@
 
 			imageList.previous();
 		};
-
+		
+		this.showSaveButton = function(){
+			saveOrderButton.show();
+		}
+		
 		this.showAlert = function(message) {
 			alertModal.show(message);
 		};
+
+		this.showLogoutAlert = function(message) {
+			alertModal.show(message);
+		};
+
+		this.showLogingAlert = function(message) {
+			alertModal.show(message);
+		};
+		
+
 	}
 })();

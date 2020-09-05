@@ -182,49 +182,47 @@
 									document.getElementById("errormessage").textContent = message;
 									break;
 							}
-						} else {
-							document.getElementById("errormessage").textContent = "Error";
 						}
 					}
-			);
+				);
 
-		});
+			});
 
-	}
-};
-
-
-function PageOrchestrator() {
-	var alertContainer = document.getElementById("id_alert");
-	this.start = function() {
-
-		sessionStorage.clear(); //Ogni volta che apro il sito pulisco le sessioni vecchie
-
-		loginForm = new LoginForm();
-
-		registrationForm = new RegistrationForm(
-			document.getElementById("id_registrationRow"));
-
-		guestButton = new GuestButton();
-
-		newAccountButton = new NewAccountButton(document.getElementById("id_buttonRow"));
-
-		loginForm.registerEvents();
-		registrationForm.registerEvents(this);
-		guestButton.registerEvents();
-		newAccountButton.registerEvents(this);
-
+		}
 	};
 
 
-	this.refresh = function() {
-		newAccountButton.reset();
-		registrationForm.reset();
+	function PageOrchestrator() {
+		var alertContainer = document.getElementById("id_alert");
+		this.start = function() {
 
-	};
+			sessionStorage.clear(); //Ogni volta che apro il sito pulisco le sessioni vecchie
 
-	this.showRegisterForm = function() {
-		registrationForm.show();
+			loginForm = new LoginForm();
+
+			registrationForm = new RegistrationForm(
+				document.getElementById("id_registrationRow"));
+
+			guestButton = new GuestButton();
+
+			newAccountButton = new NewAccountButton(document.getElementById("id_buttonRow"));
+
+			loginForm.registerEvents();
+			registrationForm.registerEvents(this);
+			guestButton.registerEvents();
+			newAccountButton.registerEvents(this);
+
+		};
+
+
+		this.refresh = function() {
+			newAccountButton.reset();
+			registrationForm.reset();
+
+		};
+
+		this.showRegisterForm = function() {
+			registrationForm.show();
+		}
 	}
-}
-}) ();
+})();

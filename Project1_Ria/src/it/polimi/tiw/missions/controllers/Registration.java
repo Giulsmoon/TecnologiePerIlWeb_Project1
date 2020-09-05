@@ -80,13 +80,20 @@ public class Registration extends HttpServlet {
 			return;
 		} else {
 			try {
-				if (registrationDAO.controlRegistrationOfUser(username)) {
-					registrationDAO.createRegistrationOfUser(username, email, password);
-					response.setStatus(HttpServletResponse.SC_OK);
-
+				if (registrationDAO.controlRegistrationOfUserName(username)) {
+					if (registrationDAO.controlRegistrationOfUserEmail(email)) {
+						registrationDAO.createRegistrationOfUser(username, email, password);
+						response.setStatus(HttpServletResponse.SC_OK);
+						return;
+					} else {
+						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+						response.getWriter().println("Email Already Exist");
+						return;
+					}
 				} else {
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					response.getWriter().println("Username Already Exist");
+					return;
 				}
 			} catch (Exception e) {
 
@@ -98,7 +105,7 @@ public class Registration extends HttpServlet {
 		}
 
 	}
-	
+
 	public void destroy() {
 		try {
 			ConnectionHandler.closeConnection(connection);

@@ -24,7 +24,7 @@ public class RegistrationDAO {
 		}
 	}
 
-	public boolean controlRegistrationOfUser(String name) throws SQLException {
+	public boolean controlRegistrationOfUserName(String name) throws SQLException {
 		String query = "SELECT * FROM user WHERE username= ?";
 		
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
@@ -40,6 +40,21 @@ public class RegistrationDAO {
 			}
 		}
 	}
-	
+	public boolean controlRegistrationOfUserEmail(String email) throws SQLException {
+		String query = "SELECT * FROM user WHERE email= ?";
+		
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setString(1, email);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, the registration is possible
+					return true;
+				else {
+					
+					return false; // la registrazione dell'utente non può essere effettuata perchè 
+					              //username già esistente nel database
+				}
+			}
+		}
+	}
 
 }
