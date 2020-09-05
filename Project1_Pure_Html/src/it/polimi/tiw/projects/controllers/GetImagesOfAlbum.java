@@ -115,6 +115,20 @@ public class GetImagesOfAlbum extends HttpServlet {
 		return correct;
 	}
 
+	public int[] updatePreviousAndNextValue(int nextImagesFromRequest, int previousImagesFromRequest, int numberOfBlocks) {
+		int somma = 0;
+		int[] update = new int[2];
+		somma = nextImagesFromRequest + previousImagesFromRequest;
+		if (somma != (numberOfBlocks - 1) || nextImagesFromRequest < 0
+				|| previousImagesFromRequest < 0) {
+			update[0]= numberOfBlocks - 1;
+			update[1] = 0;
+		} else {
+			update[0] = nextImagesFromRequest;
+			update[1] = previousImagesFromRequest;
+		}
+		return update;
+	}
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		User u = null;
 		HttpSession session = req.getSession();
@@ -133,7 +147,8 @@ public class GetImagesOfAlbum extends HttpServlet {
 				return;
 
 			}
-
+			//verifico che l'album id ottenuto dalla request sia effettivamente 
+			//presente nel database
 			if (checkALbumId(albumId)) {
 
 				ImageDAO imgDao = new ImageDAO(connection);
@@ -150,6 +165,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 				String albumTitle=null;
 
 				try {
+					//trovo tutte le immagini dell'albumId
 					images = imgDao.findImagesByAlbum(albumId);
 
 					//trovo quanti blocchi da 5 immagini contenga l'album selezionato
@@ -177,16 +193,11 @@ public class GetImagesOfAlbum extends HttpServlet {
 							return;
 
 						}
-						int somma = 0;
-						somma = nextImagesFromRequest + previousImagesFromRequest;
-						if (somma != (numberOfBlocks - 1) || nextImagesFromRequest < 0
-								|| previousImagesFromRequest < 0) {
-							nextImages = numberOfBlocks - 1;
-							previousImages = 0;
-						} else {
-							nextImages = nextImagesFromRequest;
-							previousImages = previousImagesFromRequest;
-						}
+						
+						int[] updateNextAndPrevious =updatePreviousAndNextValue(nextImagesFromRequest,previousImagesFromRequest,numberOfBlocks);
+						nextImages = updateNextAndPrevious[0];
+						previousImages = updateNextAndPrevious[1];
+						
 					}
 					imagesToDisplay = findImagesToDisplay(previousImages, images);
 

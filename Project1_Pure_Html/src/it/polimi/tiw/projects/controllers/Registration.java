@@ -83,7 +83,7 @@ public class Registration extends HttpServlet {
 			RegistrationDAO registrationDAO = new RegistrationDAO(connection);
 			try {
 				if(registrationDAO.controlRegistrationOfUser(username)&& password.equals(passwordReinserted)) {
-					System.out.println("registrazione effettuata");
+					
 					try {
 						//lo username non è presente nel database, provo a creare un nuovo utente
 						registrationDAO.createRegistrationOfUser(username, password);
