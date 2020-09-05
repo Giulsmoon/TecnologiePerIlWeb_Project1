@@ -61,14 +61,14 @@
 					draggable.addEventListener('dragstart', (e) => {
 
 						draggable.classList.add('dragging');
-					})
+					}, false)
 
 					draggable.addEventListener('dragend', (e) => {
 
 						draggable.classList.remove('dragging');
 						//non appena concludo il primo drag si attiva il bottone per salvare la preferenza dell'utente
 						this.saveOrderButton.show();
-					})
+					}, false)
 				});
 
 				this.albumsBody.addEventListener('dragover', (e) => {
@@ -83,7 +83,7 @@
 						this.albumsBody.insertBefore(draggable, afterElement)
 					}
 
-				})
+				}, false)
 
 				function getDragAfterElement(container, y) {
 					const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
@@ -203,7 +203,7 @@
 								orchestrator.showAlert(text);
 								return;
 							}
-							that.images =imagesToShow;
+							that.images = imagesToShow;
 							that.update(); // that visible by closure
 						}
 					}
@@ -312,7 +312,7 @@
 				e.preventDefault();
 				orchestrator.moveImagesNext();
 
-			});
+			}, false);
 		}
 	}
 
@@ -322,7 +322,7 @@
 				e.preventDefault();
 				orchestrator.moveImagesPrevious();
 
-			});
+			}, false);
 
 		}
 	}
@@ -558,7 +558,30 @@
 
 			document.getElementById("id_loginToComment").addEventListener('click', (e) => {
 				e.preventDefault();
-				window.location.href = "index.html";
+				if (!sessionStorage.getItem('username')) {
+					makeCall("GET", "GoLogin", null,
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+
+										window.location.href = "index.html";
+										break;
+									case 401: // unauthorized
+										orchestrator.showAlert(message);
+										break;
+								}
+							}
+						}
+
+					);
+				}
+				else {
+					orchestrator.showAlert("You are already logged");
+
+				}
+
 			}, false);
 		};
 
@@ -572,12 +595,13 @@
 
 		this.reset = function() {
 			document.getElementById("id_textComment").innerHTML = "";
-			this.userNotLogged.classList.remove("visible");
-			this.userNotLogged.classList.add("invisible");
-			this.userLogged.classList.remove("visible");
-			this.userLogged.classList.add("invisible");
 			this.commentRow.classList.remove("visible");
 			this.commentRow.classList.add("invisible");
+			this.userNotLogged.classList.remove("d-none");
+			this.userNotLogged.classList.add("d-block");
+			this.userLogged.classList.remove("d-block");
+			this.userLogged.classList.add("d-none");
+
 
 		};
 
@@ -585,15 +609,15 @@
 			this.commentRow.classList.remove("invisible");
 			this.commentRow.classList.add("visible");
 			if (sessionStorage.getItem('username') === null) {
-				this.userNotLogged.classList.remove("invisible")
-				this.userNotLogged.classList.add("visible")
-				this.userLogged.classList.remove("visible")
-				this.userLogged.classList.add("invisible")
+				this.userNotLogged.classList.remove("d-none")
+				this.userNotLogged.classList.add("d-block")
+				this.userLogged.classList.remove("d-block")
+				this.userLogged.classList.add("d-none")
 			} else {
-				this.userNotLogged.classList.remove("visible")
-				this.userNotLogged.classList.add("invisible")
-				this.userLogged.classList.remove("invisible")
-				this.userLogged.classList.add("visible")
+				this.userNotLogged.classList.remove("d-block")
+				this.userNotLogged.classList.add("d-none")
+				this.userLogged.classList.remove("d-none")
+				this.userLogged.classList.add("d-block")
 				document.getElementById("id_commentImageId").value = imageId;
 			}
 
@@ -639,7 +663,7 @@
 				else {
 					orchestrator.showAlert("You are not logged");
 				}
-			});
+			}, false);
 		}
 
 	};
@@ -652,7 +676,7 @@
 			this.saveButton.addEventListener('click', (e) => {
 				e.preventDefault();
 				this.saveOrder(orchestrator);
-			});
+			}, false);
 		}
 
 		this.show = function() {
@@ -751,7 +775,7 @@
 
 				}
 
-			})
+			}, false)
 		}
 	}
 
@@ -795,7 +819,7 @@
 
 				}
 
-			})
+			}, false)
 		}
 	}
 
@@ -826,7 +850,7 @@
 				document.getElementById("id_imageContainer"));
 
 			commentForm = new CommentForm(
-				document.getElementById("id_commentRow"),
+				document.getElementById("id_commentForm"),
 				document.getElementById("id_userNotLogged"),
 				document.getElementById("id_userLogged"));
 
