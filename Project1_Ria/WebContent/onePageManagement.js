@@ -1,4 +1,3 @@
-var timerClose, timerDisplay;
 (function() { // avoid variables ending up in the global scope
 
 	// page components
@@ -214,6 +213,7 @@ var timerClose, timerDisplay;
 
 
 		this.update = function() {
+			var timerDisplay;
 			var row, imageThumbnail, titleBody, imageAnchor, imageTag;
 			this.galleryBody.innerHTML = ""; // empty the table body
 			// build updated list
@@ -542,6 +542,7 @@ var timerClose, timerDisplay;
 
 	}
 	function CloseModalWindow() {
+		var timerClose;
 		var modal_close = document.getElementById("imageWindowClose");
 		var modal_area = document.getElementById("id_imageContainer");
 		var box = document.getElementById('box');
