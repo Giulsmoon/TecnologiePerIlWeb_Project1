@@ -3,6 +3,8 @@ package it.polimi.tiw.missions.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -42,6 +44,15 @@ public class Registration extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
+
+	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+			Pattern.CASE_INSENSITIVE);
+
+	public static boolean validate(String emailStr) {
+		Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+		return matcher.find();
+	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doPost(request, response);
@@ -69,8 +80,9 @@ public class Registration extends HttpServlet {
 			passwordReinserted = request.getParameter("passwordReinserted");
 
 			isBadRequest = username.isEmpty() || email.isEmpty() || password.isEmpty() || passwordReinserted.isEmpty()
-					|| !password.equals(passwordReinserted) || !username.matches("[a-zA-Z0-9]*") 
-					||!password.matches("[a-zA-Z0-9]*") ||!passwordReinserted.matches("[a-zA-Z0-9]*");
+					|| !password.equals(passwordReinserted) || !username.matches("[a-zA-Z0-9]*")
+					|| !password.matches("[a-zA-Z0-9]*") || !passwordReinserted.matches("[a-zA-Z0-9]*")
+					|| !validate(email);
 		} catch (NumberFormatException | NullPointerException e) {
 			isBadRequest = true;
 			e.printStackTrace();

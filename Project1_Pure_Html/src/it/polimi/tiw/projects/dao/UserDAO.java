@@ -36,36 +36,4 @@ public class UserDAO {
 		}
 	}
 	
-	public List<User> findAllUsers() throws SQLException {
-		List<User> users = new ArrayList<User>();
-		String query = "SELECT * FROM user  ";
-		ResultSet result = null;
-		PreparedStatement pstatement = null;
-		try {
-			pstatement = con.prepareStatement(query);
-			result = pstatement.executeQuery();
-			while (result.next()) {
-				User u = new User();
-				u.setId(result.getInt("id"));
-				u.setUsername(result.getString("username"));
-				
-				users.add(u);
-			}
-		} catch (SQLException e) {
-			throw new SQLException(e);
-
-		} finally {
-			try {
-				result.close();
-			} catch (Exception e1) {
-				throw new SQLException("Cannot close result");
-			}
-			try {
-				pstatement.close();
-			} catch (Exception e1) {
-				throw new SQLException("Cannot close statement");
-			}
-		}
-		return users;
-	}
 }
