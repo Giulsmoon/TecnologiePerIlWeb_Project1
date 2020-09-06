@@ -20,7 +20,7 @@
 			document.getElementById("id_loginButton").addEventListener('click', (e) => {
 				e.preventDefault();
 				var form = e.target.closest("form");
-				if (form.checkValidity()) {
+				if (form.checkValidity() && !sessionStorage.getItem('username')) {
 					makeCall("POST", 'CheckLogin', e.target.closest("form"),
 						function(req) {
 							if (req.readyState == XMLHttpRequest.DONE) {
@@ -94,7 +94,7 @@
 				e.preventDefault();
 				var form = e.target.closest("form");
 
-				if (form.checkValidity()) {
+				if (form.checkValidity() && !sessionStorage.getItem('username')) {
 
 					var email = e.target.closest("form").email.value;
 					var password1 = e.target.closest("form").password.value;
@@ -169,23 +169,23 @@
 			document.getElementById("id_continueAsGuest").addEventListener('click', (e) => {
 				e.preventDefault();
 
-
-				makeCall("GET", "CheckGuest", null,
-					function(req) {
-						if (req.readyState == 4) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
-									window.location.href = "OnePage.html";
-									break;
-								case 401: // unauthorized
-									document.getElementById("errormessage").textContent = message;
-									break;
+				if (sessionStorage.getItem('username') === null) {
+					makeCall("GET", "CheckGuest", null,
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+										window.location.href = "OnePage.html";
+										break;
+									case 401: // unauthorized
+										document.getElementById("errormessage").textContent = message;
+										break;
+								}
 							}
 						}
-					}
-				);
-
+					);
+				}
 			});
 
 		}

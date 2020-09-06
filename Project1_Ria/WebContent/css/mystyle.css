@@ -220,10 +220,11 @@ textarea {
 	font-size: 3rem;
 }
 .modal-header {
-	padding: 2px 16px;
-	background-color: #5cb85c;
+	padding: 2px 30px;
+	background-color: #28a745c4;
 	color: white;
 	display: block;
+	border-bottom: 2px solid #606060;
 }
 
 .modal-content {
@@ -235,8 +236,7 @@ textarea {
 	width: 80%;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0
 		rgba(0, 0, 0, 0.19);
-	animation-name: animatetop;
-	animation-duration: 0.4s
+
 }
 
 .draggable {
