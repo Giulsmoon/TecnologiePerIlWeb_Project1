@@ -1,3 +1,4 @@
+var timerClose, timerDisplay;
 (function() { // avoid variables ending up in the global scope
 
 	// page components
@@ -217,6 +218,7 @@
 			this.galleryBody.innerHTML = ""; // empty the table body
 			// build updated list
 			var that = this;
+
 			row = document.createElement("tr");
 
 			var i = that.currentBlock * that.numToShow;
@@ -267,11 +269,17 @@
 				imageAnchor.setAttribute('imageId', image.id);
 				imageAnchor.addEventListener("mouseenter", (e) => {
 					e.preventDefault();
+					obj = e.currentTarget
+					timerDisplay = setTimeout(function() {
+						orchestrator.showImageDetails(obj.getAttribute("imageId"));
+					}, 500);
 
-					orchestrator.showImageDetails(e.currentTarget.getAttribute("imageId"));
 
 				}, false);
-
+				imageAnchor.addEventListener("mouseleave", (e) => {
+					e.preventDefault();
+					clearTimeout(timerDisplay);
+				}, false);
 				imageAnchor.href = "#";
 
 
@@ -504,12 +512,15 @@
 			that.reset();
 			that.update(message);
 			that.alert.style.display = "block";
+
+
 		}
 
 		this.update = function(message) {
 			var that = this;
 			text = document.createTextNode(message);
 			that.textAlert.appendChild(text);
+
 		}
 
 		this.reset = function() {
@@ -531,20 +542,31 @@
 
 	}
 	function CloseModalWindow() {
-
 		var modal_close = document.getElementById("imageWindowClose");
+		var modal_area = document.getElementById("id_imageContainer");
 		var box = document.getElementById('box');
 		this.registerEvents = function() {
 			//chiude la finestra cliccando la x
 			modal_close.addEventListener('click', (e) => {
 				e.preventDefault();
+				clearTimeout(timerClose);
 				box.style.display = "none";
 			}, false);
 
 			// Chiude la finestra quando l'utente clicca al di fuori di essa
-			window.addEventListener('mouseenter', (e) => {
+			modal_area.addEventListener('mouseleave', (e) => {
 				e.preventDefault();
-				if (e.target == box) { box.style.display = "none"; }
+				if (document.getElementById("id_alertUser").style.display !== "block") {
+					timerClose = setTimeout(function() {
+						box.style.display = "none"
+					}, 500);
+				}
+
+			}, false);
+
+			modal_area.addEventListener('mouseenter', (e) => {
+				e.preventDefault();
+				clearTimeout(timerClose);
 			}, false);
 		}
 
@@ -558,24 +580,28 @@
 
 			document.getElementById("id_loginToComment").addEventListener('click', (e) => {
 				e.preventDefault();
-				makeCall("GET", "GoLogin", null,
-					function(req) {
-						if (req.readyState == 4) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
+				if (!sessionStorage.getItem('username')) {
+					makeCall("GET", "GoLogin", null,
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
 
-									window.location.href = "index.html";
-									break;
-								case 401: // unauthorized
-									orchestrator.showAlert(message);
-									break;
+										window.location.href = "index.html";
+										break;
+									case 401: // unauthorized
+										orchestrator.showAlert(message);
+										break;
+								}
 							}
 						}
-					}
 
-				);
+					);
+				} else {
+					orchestrator.showAlreadyLoggedAlert("You are already logged");
 
+				}
 			}, false);
 		};
 
@@ -588,7 +614,7 @@
 		this.userLogged = _userLogged;
 
 		this.reset = function() {
-			document.getElementById("id_textComment").innerHTML = "";
+			document.getElementById("id_textComment").value = "";
 			this.commentRow.classList.remove("visible");
 			this.commentRow.classList.add("invisible");
 			this.userNotLogged.classList.remove("d-none");
@@ -622,35 +648,40 @@
 			var that = this;
 			document.getElementById("id_commentButton").addEventListener('click', (e) => {
 				e.preventDefault();
-				var form = e.target.closest("form");
-				if (form.checkValidity()) {
-					makeCall("POST", 'CreateComment', e.target.closest("form"),
-						function(req) {
-							if (req.readyState == XMLHttpRequest.DONE) {
-								var message = req.responseText;
+				if (sessionStorage.getItem('username')) {
+					var form = e.target.closest("form");
+					if (form.checkValidity()) {
+						makeCall("POST", 'CreateComment', e.target.closest("form"),
+							function(req) {
+								if (req.readyState == XMLHttpRequest.DONE) {
+									var message = req.responseText;
 
-								switch (req.status) {
-									case 200:
-										var comment = JSON.parse(req.responseText);
-										orchestrator.addNewComment(comment);
-										var text = "Comment saved";
-										orchestrator.showAlert(text);
-										break;
-									case 400: // bad request
-										orchestrator.showAlert(message);
-										break;
-									case 401: // unauthorized
-										orchestrator.showAlert(message);
-										break;
-									case 500: // server error
-										orchestrator.showAlert(message);
-										break;
+									switch (req.status) {
+										case 200:
+											var comment = JSON.parse(req.responseText);
+											orchestrator.addNewComment(comment);
+											var text = "Comment saved";
+											orchestrator.showAlert(text);
+											break;
+										case 400: // bad request
+											orchestrator.showAlert(message);
+											break;
+										case 401: // unauthorized
+											orchestrator.showAlert(message);
+											break;
+										case 500: // server error
+											orchestrator.showAlert(message);
+											break;
+									}
 								}
 							}
-						}
-					);
+						);
+					} else {
+						form.reportValidity();
+					}
 				} else {
-					form.reportValidity();
+					orchestrator.showNotLoggedAlert("You are not logged");
+
 				}
 			}, false);
 		}
@@ -682,39 +713,45 @@
 			var that = this;
 
 			var _username = sessionStorage.getItem('username');
-			var _arrayPosition = [];
+			if (_username) {
+				var _arrayPosition = [];
 
-			arrayPosition = _arrayPosition;
-			tableRows = document.querySelectorAll("a[albumId]");
+				arrayPosition = _arrayPosition;
+				tableRows = document.querySelectorAll("a[albumId]");
 
-			tableRows.forEach(function(row) {
-				arrayPosition.push(row.getAttribute("albumId"))
-			});
-			var obj = arrayPosition;
-			makeCallSendObj("POST", 'SaveAlbumOrder', obj,
-				function(req) {
-					if (req.readyState == XMLHttpRequest.DONE) {
-						var message = req.responseText;
+				tableRows.forEach(function(row) {
+					arrayPosition.push(row.getAttribute("albumId"))
+				});
+				var obj = arrayPosition;
+				makeCallSendObj("POST", 'SaveAlbumOrder', obj,
+					function(req) {
+						if (req.readyState == XMLHttpRequest.DONE) {
+							var message = req.responseText;
 
-						switch (req.status) {
-							case 200:
-								var text = "Order saved";
-								orchestrator.showAlert(text);
-								that.reset();
-								break;
-							case 400: // bad request
-								orchestrator.showAlert(message);
-								break;
-							case 401: // unauthorized
-								orchestrator.showAlert(message);
-								break;
-							case 500: // server error
-								orchestrator.showAlert(message);
-								break;
+							switch (req.status) {
+								case 200:
+									var text = "Order saved";
+									orchestrator.showAlert(text);
+									that.reset();
+									break;
+								case 400: // bad request
+									orchestrator.showAlert(message);
+									break;
+								case 401: // unauthorized
+									orchestrator.showAlert(message);
+									break;
+								case 500: // server error
+									orchestrator.showAlert(message);
+									break;
+							}
 						}
 					}
-				}
-			);
+
+				);
+			} else {
+				orchestrator.showNotLoggedAlert("You are not logged");
+
+			}
 		}
 	}
 
@@ -734,24 +771,28 @@
 		this.registerEvents = function(orchestrator) {
 			this.logoutBtn.addEventListener('click', (e) => {
 				e.preventDefault();
-				makeCall("GET", "Logout", null,
-					function(req) {
-						if (req.readyState == 4) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
-									window.sessionStorage.removeItem('username');
-									window.location.href = "index.html";
-									break;
-								case 401: // unauthorized
-									orchestrator.showLogoutAlert(message);
-									break;
+				if (sessionStorage.getItem('username')) {
+					makeCall("GET", "Logout", null,
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
+										window.sessionStorage.removeItem('username');
+										window.location.href = "index.html";
+										break;
+									case 401: // unauthorized
+										orchestrator.showLogoutAlert(message);
+										break;
+								}
 							}
 						}
-					}
 
-				);
+					);
+				} else {
+					orchestrator.showNotLoggedAlert("You are not logged");
 
+				}
 			}, false)
 		}
 	}
@@ -772,24 +813,29 @@
 		this.registerEvents = function(orchestrator) {
 			this.goLoginBtn.addEventListener('click', (e) => {
 				e.preventDefault();
-				makeCall("GET", "GoLogin", null,
-					function(req) {
-						if (req.readyState == 4) {
-							var message = req.responseText;
-							switch (req.status) {
-								case 200:
+				if (!sessionStorage.getItem('username')) {
+					makeCall("GET", "GoLogin", null,
+						function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								switch (req.status) {
+									case 200:
 
-									window.location.href = "index.html";
-									break;
-								case 401: // unauthorized
-									orchestrator.showLoginAlert(message);
-									break;
+										window.location.href = "index.html";
+										break;
+									case 401: // unauthorized
+										orchestrator.showLoginAlert(message);
+										break;
+								}
 							}
 						}
-					}
 
-				);
+					);
+				}
+				else {
+					orchestrator.showAlreadyLoggedAlert("You are already logged");
 
+				}
 			}, false)
 		}
 	}
@@ -917,23 +963,24 @@
 
 			imageList.previous();
 		};
-		
-		this.showSaveButton = function(){
+
+		this.showSaveButton = function() {
 			saveOrderButton.show();
 		}
-		
+
 		this.showAlert = function(message) {
 			alertModal.show(message);
+
 		};
 
-		this.showLogoutAlert = function(message) {
+		this.showNotLoggedAlert = function(message) {
 			alertModal.show(message);
 		};
 
-		this.showLogingAlert = function(message) {
+		this.showAlreadyLoggedAlert = function(message) {
 			alertModal.show(message);
 		};
-		
+
 
 	}
 })();
