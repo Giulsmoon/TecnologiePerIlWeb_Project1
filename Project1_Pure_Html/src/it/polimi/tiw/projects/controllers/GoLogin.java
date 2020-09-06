@@ -35,16 +35,28 @@ public class GoLogin extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Boolean error = Boolean.parseBoolean(request.getParameter("error"));
+		Boolean errorNotGuest = Boolean.parseBoolean(request.getParameter("errorNotGuest"));
+		Boolean errorNotLogged = Boolean.parseBoolean(request.getParameter("errorNotLogged"));
 		Boolean registrationDone = Boolean.parseBoolean(request.getParameter("registrationDone"));
+		Boolean logFailed = Boolean.parseBoolean(request.getParameter("logFailed"));
+
 		String path = "index.html";
 
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-		if (error) {
+		if(errorNotGuest||errorNotLogged) {
 			ctx.setVariable("Error", true);
+		}
+		if (errorNotGuest) {
+			ctx.setVariable("ErrorNotGuest", true);
+		}
+		if (errorNotLogged) {
+			ctx.setVariable("ErrorNotLogged", true);
 		}
 		if (registrationDone) {
 			ctx.setVariable("RegistrationDone", true);
+		}
+		if (logFailed) {
+			ctx.setVariable("LogFailed", true);
 		}
 		templateEngine.process(path, ctx, response.getWriter());
 	}

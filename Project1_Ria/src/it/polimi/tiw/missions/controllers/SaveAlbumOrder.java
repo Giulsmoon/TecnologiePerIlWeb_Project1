@@ -77,7 +77,7 @@ public class SaveAlbumOrder extends HttpServlet {
 
 	    Gson gson = new Gson();  	   
 		user = (User) s.getAttribute("user");
-	    user.setPrefAlbumOrder(gson.fromJson(data, int [].class));
+	    int[] prefAlbum= gson.fromJson(data, int [].class);
 
 	    AlbumDAO albumDAO = new AlbumDAO(connection);
 	    int albumSize = -1;
@@ -87,7 +87,7 @@ public class SaveAlbumOrder extends HttpServlet {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		isBadRequest = user.getPrefAlbumOrder().length < albumSize || user.getPrefAlbumOrder().length > albumSize ;
+		isBadRequest = prefAlbum.length < albumSize || prefAlbum.length > albumSize ;
 		if (isBadRequest) {
 			
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -98,7 +98,7 @@ public class SaveAlbumOrder extends HttpServlet {
 		
 	    UserDAO userDAO = new UserDAO(connection);
 	    try {
-			userDAO.updatePreferenceAlbum(user.getUsername(), gson.toJson(user.getPrefAlbumOrder()));
+			userDAO.updatePreferenceAlbum(user.getUsername(), gson.toJson(prefAlbum));
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Error in update preference");

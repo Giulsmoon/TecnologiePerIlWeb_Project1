@@ -85,6 +85,10 @@ public class GetImagesOfAlbum extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.getWriter().println("Database access failed");
 			}
+		}else {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Album not found");
+			return;
 		}
 		Gson gson = new GsonBuilder()
 				   .setDateFormat("yyyy-MM-dd").create();

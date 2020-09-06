@@ -30,22 +30,29 @@
 			var that = this;
 			makeCall("GET", "GetAlbumList", null,
 				function(req) {
+
 					if (req.readyState == 4) {
 						var message = req.responseText;
-						if (req.status == 200) {
-							var albumsToShow = JSON.parse(req.responseText);
-							if (albumsToShow.length == 0) {
-								var text = "No albums available!";
-								orchestrator.showAlert(text);
-								return;
-							}
-							that.update(albumsToShow); // that visible by closure
+						var albumsToShow = JSON.parse(req.responseText);
+						switch (req.status) {
+							case 200:
+								if (albumsToShow.length > 0) {
+									that.update(albumsToShow); // that visible by closure
+								} else {
+									var text = "No albums available!";
+									orchestrator.showAlert(text);
+									return;
+								}
 
+								break;
+							case 500: // SC_INTERNAL_SERVER_ERROR
+								orchestrator.showAlert(message);
+								break;
 						}
-					} else {
 
 
 					}
+
 				}
 			);
 		};
@@ -193,20 +200,32 @@
 
 			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null,
 				function(req) {
+
 					if (req.readyState == 4) {
 						var message = req.responseText;
-						if (req.status == 200) {
-							var imagesToShow = JSON.parse(req.responseText);
-							if (imagesToShow.length == 0) {
+						var imagesToShow = JSON.parse(req.responseText);
+						switch (req.status) {
+							case 200:
+								if (imagesToShow.length > 0) {
+									that.images = imagesToShow;
+									that.update(); // that visible by closure
+								} else {
+									var text = "No images of this album available!";
+									orchestrator.showAlert(text);
+								}
 
-								var text = "No images of this album available!";
-								orchestrator.showAlert(text);
-								return;
-							}
-							that.images = imagesToShow;
-							that.update(); // that visible by closure
+								break;
+							case 400: // SC_BAD_REQUEST
+								orchestrator.showAlert(message);
+								break;
+							case 500: // SC_INTERNAL_SERVER_ERROR
+								orchestrator.showAlert(message);
+								break;
 						}
+
+
 					}
+
 				}
 			);
 		};
@@ -379,31 +398,29 @@
 				function(req) {
 					if (req.readyState == 4) {
 						var message = req.responseText;
-						if (req.status == 200) {
-							var comments = JSON.parse(req.responseText);
-							switch (req.status) {
-								case 200:
-									that.update(imageSelected, comments); // that visible by closure
-									break;
-								case 400: // SC_BAD_REQUEST
-									orchestrator.showAlert(message);
-									break;
-								case 500: // SC_INTERNAL_SERVER_ERROR
-									orchestrator.showAlert(message);
-									break;
-							}
-
-
+						var comments = JSON.parse(req.responseText);
+						switch (req.status) {
+							case 200:
+								that.update(imageSelected, comments); // that visible by closure
+								break;
+							case 400: // SC_BAD_REQUEST
+								orchestrator.showAlert(message);
+								break;
+							case 500: // SC_INTERNAL_SERVER_ERROR
+								orchestrator.showAlert(message);
+								break;
 						}
+
+
 					}
 				}
+
 			);
 		};
 
 		this.addNewComment = function(comment) {
 
-			console.log(comment.username);
-			console.log(comment);
+
 			var commentRow, commentCell1, commentUsername, commentCell2, commentP1,
 				commentText, commentMedia, commentCell3, commentDate;
 			var that = this;
@@ -561,7 +578,7 @@
 
 
 	}
-	
+
 	function CloseModalWindow() {
 		var timerClose;
 		var modal_close = document.getElementById("imageWindowClose");

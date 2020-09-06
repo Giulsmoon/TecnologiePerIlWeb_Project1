@@ -58,6 +58,10 @@ public class GoToAlbumListPage extends HttpServlet {
 		u = (User) session.getAttribute("user");
 		try {
 			albums = aDAO.findAllAlbums();
+			if(albums.isEmpty()) {
+				res.sendError(400, "No albums available on database");
+				return;
+			}
 			String path = "AlbumList.html";
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(req, res, servletContext, req.getLocale());

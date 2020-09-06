@@ -62,7 +62,7 @@ public class CheckLogin extends HttpServlet {
 		}
 		String path = getServletContext().getContextPath();
 		if (u == null) {
-			path = getServletContext().getContextPath() + "/index.html";
+			path = getServletContext().getContextPath() + "/GoLogin?logFailed="+true;
 		} else {
 			request.getSession().setAttribute("user", u);
 			path = path + "/GoToAlbumListPage";

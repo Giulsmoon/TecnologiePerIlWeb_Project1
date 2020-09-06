@@ -80,6 +80,7 @@ public class GetAlbumList extends HttpServlet {
 		List<Album> orderedAlbumsById = new ArrayList<Album>();
 		try {
 			if(user!=null) {
+				//controllo se l'utente ha delle preferenze e in caso affermativo gliele setto
 				user=userDAO.checkUserAlbumPreference(user);
 				orderedAlbumsById = albumDAO.findAlbumsOrderedById();
 				}
@@ -87,13 +88,13 @@ public class GetAlbumList extends HttpServlet {
 				
 				albums = sortAlbumByUserPreference(user.getPrefAlbumOrder(), orderedAlbumsById);
 			}else {
-				
+				// ordine degli album di default
 				albums = albumDAO.findAlbumsOrderedByDate();
 			}
 			
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Not possible to get all the albums");
+			response.getWriter().println("Database error access");
 			return;
 		}
 		

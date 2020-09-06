@@ -167,7 +167,10 @@ public class GetImagesOfAlbum extends HttpServlet {
 				try {
 					//trovo tutte le immagini dell'albumId
 					images = imgDao.findImagesByAlbum(albumId);
-
+					if(images.isEmpty()) {
+						res.sendError(400, "No images available on database");
+						return;
+					}
 					//trovo quanti blocchi da 5 immagini contenga l'album selezionato
 					if (images.size() % 5 == 0) {
 						numberOfBlocks = Math.floorDiv(images.size(), 5);
