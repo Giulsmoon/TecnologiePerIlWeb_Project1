@@ -50,7 +50,7 @@
 
 						<div class="form-group">
 							<label for="username" class="m-2">Username:</label> <input type="text" class="form-control" name="username" required aria-describedby="usernameHelp" placeholder=" Insert username">
-							<div class="invalid-feedback">Already existing username, insert another one.</div>
+							<div class="invalid-feedback">Please reinsert username .</div>
 						</div>
 						<div class="form-group">
 							<label for="email" class="m-2">Email:</label>
@@ -69,12 +69,13 @@
 						</div>
 
 						<button id="id_registrationButton" type="submit" value="Registration" class="p-2 btn btn-outline-primary btn-block shadow-sm">Submit</button>
-						<p id="errormessage"></p>
+						
 
 					</form>
 
 				</div>
-				<div class="col-lg-6 col-md-6">
+				<div class="col-lg-6 col-md-6 ">
+					<p class="border rounded-lg shadow-sm" id="errormessageReg"></p>
 				</div>
 			</div>
 		</div>

@@ -32,7 +32,7 @@ public class LoggedUser implements Filter {
 
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
-			res.sendRedirect(((HttpServletRequest) request).getContextPath());
+			res.sendRedirect(((HttpServletRequest) request).getContextPath()+"/GoLogin?error=" + true);
 			return;
 		}
 		// pass the request along the filter chain

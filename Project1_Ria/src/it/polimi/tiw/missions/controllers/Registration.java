@@ -69,7 +69,8 @@ public class Registration extends HttpServlet {
 			passwordReinserted = request.getParameter("passwordReinserted");
 
 			isBadRequest = username.isEmpty() || email.isEmpty() || password.isEmpty() || passwordReinserted.isEmpty()
-					|| !password.equals(passwordReinserted);
+					|| !password.equals(passwordReinserted) || !username.matches("[a-zA-Z0-9]*") 
+					||!password.matches("[a-zA-Z0-9]*") ||!passwordReinserted.matches("[a-zA-Z0-9]*");
 		} catch (NumberFormatException | NullPointerException e) {
 			isBadRequest = true;
 			e.printStackTrace();

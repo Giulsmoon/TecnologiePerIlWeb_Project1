@@ -26,16 +26,16 @@ public class OpenRegistrationForm extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public OpenRegistrationForm() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-    
-    public void init() throws ServletException {
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public OpenRegistrationForm() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -58,22 +58,40 @@ public class OpenRegistrationForm extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		Boolean characterDosentMatch = Boolean.parseBoolean(request.getParameter("characterDosentMatch"));
+		Boolean wrongPasswords = Boolean.parseBoolean(request.getParameter("wrongPasswords"));
+		Boolean checkUsername = Boolean.parseBoolean(request.getParameter("checkUsername"));
 		String path = "index.html";
-		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("RegistrationForm", true); //deve comparire la form per la registrazione
 		
+		ctx.setVariable("RegistrationForm", true); // deve comparire la form per la registrazione
+
+		if (characterDosentMatch) {
+			ctx.setVariable("CharacterDosentMatch", true); // le stringe username e password devono essere
+															// alpha-numeriche
+		}
+		if (wrongPasswords) {
+			ctx.setVariable("WrongPasswords", true); // le due password inserite sono sbagliate
+		}
+		if (checkUsername) {
+			ctx.setVariable("CheckUsername", true); // lo username inserito è già esistente nel database
+		}
+
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}

@@ -88,26 +88,43 @@
 			this.registrationRow.classList.remove("invisible")
 			this.registrationRow.classList.add("visible")
 		};
-
+		
+		this.showErrorMessage = function(message) {
+			errorDialog=document.getElementById("errormessageReg");
+			errorDialog.textContent = message;
+			errorDialog.classList.add("visible");
+			errorDialog.classList.remove("invisible");
+		}
+		this.resetErrorMessage = function() {
+			errorDialog=document.getElementById("errormessageReg");
+			errorDialog.textContent = "";
+			errorDialog.classList.remove("visible");
+			errorDialog.classList.add("invisible");
+		}
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_registrationButton").addEventListener('click', (e) => {
+				that=this;
 				e.preventDefault();
 				var form = e.target.closest("form");
-
 				if (form.checkValidity() && !sessionStorage.getItem('username')) {
+					var username = form.username.value;
+					var usernameValidate = username.match(/^[0-9a-zA-Z]+$/);
+					var email = form.email.value;
+					var password1 = form.password.value;
+					var password1Validate = password1.match(/^[0-9a-zA-Z]+$/);
+					var password2 = form.passwordReinserted.value;
+					var password2Validate = password1.match(/^[0-9a-zA-Z]+$/);
 
-					var email = e.target.closest("form").email.value;
-					var password1 = e.target.closest("form").password.value;
-					var password2 = e.target.closest("form").passwordReinserted.value;
 					var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
 					console.log(mailValidate);
 
-					if (password1 === password2 && mailValidate) {
-
+					if (password1 === password2 && mailValidate && usernameValidate 
+					&& password1Validate && password2Validate ) {
+						form.username.closest("input").classList.remove("is-invalid");
 						form.email.closest("input").classList.remove("is-invalid");
 						form.password.closest("input").classList.remove("is-invalid");
 						form.passwordReinserted.closest("input").classList.remove("is-invalid");
-						makeCall("POST", 'Registration', e.target.closest("form"),
+						makeCall("POST", 'Registration', form,
 							function(req) {
 
 								if (req.readyState == XMLHttpRequest.DONE) {
@@ -119,13 +136,13 @@
 												= "Registration Done";
 											break;
 										case 400: // bad request
-											document.getElementById("errormessage").textContent = message;
+											that.showErrorMessage(message);
 											break;
 										case 401: // unauthorized
-											document.getElementById("errormessage").textContent = message;
+											that.showErrorMessage(message);
 											break;
 										case 500: // server error
-											document.getElementById("errormessage").textContent = message;
+											that.showErrorMessage(message);
 											break;
 									}
 								}
@@ -136,24 +153,38 @@
 					}
 
 					else {
-						if (mailValidate && password1 !== password2) {
-							document.getElementById("errormessage").textContent = "password are different";
-							e.target.closest("form").password.closest("input").classList.add("is-invalid");
-							e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
-							e.target.closest("form").email.closest("input").classList.remove("is-invalid");
+						if (!usernameValidate || !password1Validate || !password2Validate) {
+							this.showErrorMessage("username or password must be only number and letter value");
+								form.password.closest("input").classList.add("is-invalid");
+								form.passwordReinserted.closest("input").classList.add("is-invalid");
+								form.username.closest("input").classList.add("is-invalid");
+						
 						}
-						if (!mailValidate && password1 === password2) {
-							document.getElementById("errormessage").textContent = "You have entered an invalid email address!";
-							e.target.closest("form").email.closest("input").classList.add("is-invalid");
-							e.target.closest("form").password.closest("input").classList.remove("is-invalid");
-							e.target.closest("form").passwordReinserted.closest("input").classList.remove("is-invalid");
+						else {
+								form.password.closest("input").classList.remove("is-invalid");
+								form.passwordReinserted.closest("input").classList.remove("is-invalid");
+								form.username.closest("input").classList.remove("is-invalid");
+								
+							if (mailValidate && password1 !== password2) {
+								this.showErrorMessage("password are different");
+								form.password.closest("input").classList.add("is-invalid");
+								form.passwordReinserted.closest("input").classList.add("is-invalid");
+								form.email.closest("input").classList.remove("is-invalid");
+							}
+							if (!mailValidate && password1 === password2) {
+								this.showErrorMessage("You have entered an invalid email address!");
+								form.email.closest("input").classList.add("is-invalid");
+								form.password.closest("input").classList.remove("is-invalid");
+								form.passwordReinserted.closest("input").classList.remove("is-invalid");
+							}
+							if (!mailValidate && password1 !== password2) {
+								this.showErrorMessage("You have entered an invalid email address and the password are different!");
+								form.email.closest("input").classList.add("is-invalid");
+								form.password.closest("input").classList.add("is-invalid");
+								form.passwordReinserted.closest("input").classList.add("is-invalid");
+							}
 						}
-						if (!mailValidate && password1 !== password2) {
-							document.getElementById("errormessage").textContent = "You have entered an invalid email address and the password are different!";
-							e.target.closest("form").email.closest("input").classList.add("is-invalid");
-							e.target.closest("form").password.closest("input").classList.add("is-invalid");
-							e.target.closest("form").passwordReinserted.closest("input").classList.add("is-invalid");
-						}
+
 					}
 				} else {
 					form.reportValidity();
@@ -216,12 +247,14 @@
 
 
 		this.refresh = function() {
+			registrationForm.resetErrorMessage();
 			newAccountButton.reset();
 			registrationForm.reset();
 
 		};
 
 		this.showRegisterForm = function() {
+			registrationForm.resetErrorMessage();
 			registrationForm.show();
 		}
 	}

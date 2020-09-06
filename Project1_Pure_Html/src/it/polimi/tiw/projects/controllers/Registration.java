@@ -28,23 +28,17 @@ import it.polimi.tiw.projects.dao.RegistrationDAO;
 public class Registration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public Registration() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-    public void init() throws ServletException {
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public Registration() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -59,77 +53,80 @@ public class Registration extends HttpServlet {
 			throw new UnavailableException("Couldn't get db connection");
 		}
 	}
-    
+
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doPost(request, response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String passwordReinserted = request.getParameter("passwordReinserted");
+		String stringError = "";
+		boolean usernameMatch;
+		boolean passwordMatch;
+		boolean passwordReinsertedMatch;
+
 		if (username == null || password == null || passwordReinserted == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter in registration creation");
 			return;
 		}
-		
-			RegistrationDAO registrationDAO = new RegistrationDAO(connection);
-			try {
-				if(registrationDAO.controlRegistrationOfUser(username)&& password.equals(passwordReinserted)) {
-					
-					try {
-						//lo username non è presente nel database, provo a creare un nuovo utente
-						registrationDAO.createRegistrationOfUser(username, password);
-						
-						String path = "index.html";
-						ServletContext servletContext = getServletContext();
-						final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-						ctx.setVariable("checkUsername", false); // lo username inserito è già esistente nel database
-						templateEngine.process(path, ctx, response.getWriter());
+		usernameMatch = username.matches("[a-zA-Z0-9]*");
+		passwordMatch = password.matches("[a-zA-Z0-9]*");
+		passwordReinsertedMatch = passwordReinserted.matches("[a-zA-Z0-9]*");
+		;
 
+		RegistrationDAO registrationDAO = new RegistrationDAO(connection);
+		try {
+			if (!usernameMatch || !passwordMatch || !passwordReinsertedMatch) {
+				stringError=stringError.concat("&characterDosentMatch=true");
+			} else {
+
+				if (registrationDAO.controlRegistrationOfUser(username) && password.equals(passwordReinserted)) {
+
+					try {
+						// lo username non è presente nel database, provo a creare un nuovo utente
+						registrationDAO.createRegistrationOfUser(username, password);
+						response.sendRedirect(getServletContext().getContextPath() + "/GoLogin?registrationDone=" + true);
+						return;
 					} catch (SQLException e) {
 
 						response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure of user creation in database");
 						return;
 					}
 				} else {
-					
-					
-					String path = "index.html";
-					ServletContext servletContext = getServletContext();
-					final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-					
-					ctx.setVariable("RegistrationForm", true); //deve rimostrare la form per la registrazione
-					
-					if(!password.equals(passwordReinserted)) {
+					stringError=stringError.concat("&registrationForm=true");
 
-						ctx.setVariable("WrongPasswords", true); //le due password inserite sono sbagliate
+					if (!password.equals(passwordReinserted)) {
+						stringError=stringError.concat("&wrongPasswords=true");
+
 					}
-					if(!registrationDAO.controlRegistrationOfUser(username)) {	
-						ctx.setVariable("checkUsername", true); // lo username inserito è già esistente nel database
+					if (!registrationDAO.controlRegistrationOfUser(username)) {
+						stringError=stringError.concat("&checkUsername=true");
 					}
-					templateEngine.process(path, ctx, response.getWriter());
-					
+
 				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} 
-		
 
-		
-		
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		} 
+
+		response.sendRedirect(getServletContext().getContextPath() + "/OpenRegistrationForm?" + stringError);
+
 	}
 
-
+}

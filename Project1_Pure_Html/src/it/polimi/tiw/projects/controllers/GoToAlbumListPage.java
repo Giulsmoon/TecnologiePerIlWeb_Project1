@@ -17,13 +17,13 @@ import it.polimi.tiw.projects.beans.User;
 import it.polimi.tiw.projects.dao.AlbumDAO;
 
 //@WebServlet(urlPatterns = {"/GetTopics", "/"})
-@WebServlet("/GoToHomePage")
-public class GoToHomePage extends HttpServlet {
+@WebServlet("/GoToAlbumListPage")
+public class GoToAlbumListPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
 
-	public GoToHomePage() {
+	public GoToAlbumListPage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

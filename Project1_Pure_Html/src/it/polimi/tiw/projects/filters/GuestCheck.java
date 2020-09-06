@@ -46,7 +46,7 @@ public class GuestCheck implements Filter {
 		HttpSession s = req.getSession();
 		if (s.getAttribute("user") != null) {
 			s.invalidate();
-			res.sendRedirect(((HttpServletRequest) request).getContextPath());
+			res.sendRedirect(((HttpServletRequest) request).getContextPath()+"/GoLogin?error=" + true);
 			return;
 		}
 		// pass the request along the filter chain

@@ -37,6 +37,8 @@
     <url-pattern>/OpenRegistrationForm</url-pattern> 
     <url-pattern>/CheckGuest</url-pattern> 
     <url-pattern>/Registration</url-pattern> 
+    <url-pattern>/GoLogin</url-pattern> 
+    
  </filter-mapping> 
 
  
