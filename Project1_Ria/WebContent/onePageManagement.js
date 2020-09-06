@@ -211,6 +211,15 @@
 			);
 		};
 
+		this.findImageById = function(imageId) {
+			var that = this;
+			var i = 0;
+			for (i; i < that.images.length; i++) {
+				if (that.images[i].id == imageId) {
+					return that.images[i];
+				}
+			}
+		}
 
 		this.update = function() {
 			var timerDisplay;
@@ -271,7 +280,8 @@
 					e.preventDefault();
 					obj = e.currentTarget
 					timerDisplay = setTimeout(function() {
-						orchestrator.showImageDetails(obj.getAttribute("imageId"));
+						var imageEntered = that.findImageById(obj.getAttribute("imageId"));
+						orchestrator.showImageDetails(obj.getAttribute("imageId"), imageEntered);
 					}, 500);
 
 
@@ -363,21 +373,27 @@
 		}
 
 
-		this.show = function(imageId) {
+		this.show = function(imageId, imageSelected) {
 			var that = this;
-			makeCall("GET", "GetImageAndComments?imageId=" + imageId, null,
+			makeCall("GET", "GetCommentsOfImage?imageId=" + imageId, null,
 				function(req) {
 					if (req.readyState == 4) {
 						var message = req.responseText;
 						if (req.status == 200) {
-							var imageAndComments = JSON.parse(req.responseText);
-							if (imageAndComments.length == 0) {
-
-								var text = "No images of this album available"
-								orchestrator.showAlert(text);
-								return;
+							var comments = JSON.parse(req.responseText);
+							switch (req.status) {
+								case 200:
+									that.update(imageSelected, comments); // that visible by closure
+									break;
+								case 400: // SC_BAD_REQUEST
+									orchestrator.showAlert(message);
+									break;
+								case 500: // SC_INTERNAL_SERVER_ERROR
+									orchestrator.showAlert(message);
+									break;
 							}
-							that.update(imageAndComments); // that visible by closure
+
+
 						}
 					}
 				}
@@ -386,6 +402,8 @@
 
 		this.addNewComment = function(comment) {
 
+			console.log(comment.username);
+			console.log(comment);
 			var commentRow, commentCell1, commentUsername, commentCell2, commentP1,
 				commentText, commentMedia, commentCell3, commentDate;
 			var that = this;
@@ -431,7 +449,7 @@
 
 		}
 
-		this.update = function(imageAndComments) {
+		this.update = function(imageSelected, commentsOfImage) {
 			var row1, imageP, dateP, descriptionP, imageCell, imageDateCell, imageTag,
 				imageDescription;
 
@@ -440,8 +458,9 @@
 			this.descriptionBody.innerHTML = "";
 			// build updated list
 			var that = this;
-			var image = imageAndComments.image;
-			var comments = imageAndComments.comments;
+			var image = imageSelected;
+			var comments = commentsOfImage;
+
 
 			//image info : title + date
 			imageP = document.createElement("p");
@@ -473,9 +492,10 @@
 			that.descriptionBody.appendChild(descriptionP);
 
 
-			comments.forEach(function(comment) {
-				that.addNewComment(comment);
-			});
+			var i = 0;
+			for (i; i < comments.length; i++) {
+				that.addNewComment(comments[i]);
+			}
 
 			//passo l'image id come parametro alla funzione show del comment form.
 			orchestrator.showCommentForm(image.id);
@@ -541,6 +561,7 @@
 
 
 	}
+	
 	function CloseModalWindow() {
 		var timerClose;
 		var modal_close = document.getElementById("imageWindowClose");
@@ -939,9 +960,9 @@
 			imageDetails.showComments();
 		};
 
-		this.showImageDetails = function(imageId) {
+		this.showImageDetails = function(imageId, imageSelected) {
 			imageDetails.reset();
-			imageDetails.show(imageId);
+			imageDetails.show(imageId, imageSelected);
 		};
 
 		this.showCommentForm = function(imageId) {

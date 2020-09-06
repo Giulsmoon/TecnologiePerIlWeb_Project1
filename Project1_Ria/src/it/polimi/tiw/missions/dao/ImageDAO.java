@@ -55,7 +55,21 @@ public class ImageDAO {
 	}
 
 	
-	
+	public boolean checkImage(int imageId) throws SQLException {
+		String query = "SELECT * FROM image WHERE id = ?";
+		
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, imageId);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, return false
+					return false;
+				else {
+					
+					return true; // trovata corrispondenza dell'immagine
+				}
+			}
+		}
+	}
 	
 	
 	public Image findImageById(int imageId) throws SQLException {

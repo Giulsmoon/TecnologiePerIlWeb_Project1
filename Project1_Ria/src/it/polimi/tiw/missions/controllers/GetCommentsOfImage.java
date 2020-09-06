@@ -3,6 +3,7 @@ package it.polimi.tiw.missions.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,9 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import it.polimi.tiw.missions.beans.Comment;
 import it.polimi.tiw.missions.beans.Image;
-import it.polimi.tiw.missions.beans.ImageAndComment;
-import it.polimi.tiw.missions.dao.AlbumDAO;
 import it.polimi.tiw.missions.dao.CommentDAO;
 import it.polimi.tiw.missions.dao.ImageDAO;
 import it.polimi.tiw.missions.utils.ConnectionHandler;
@@ -24,15 +24,15 @@ import it.polimi.tiw.missions.utils.ConnectionHandler;
 /**
  * Servlet implementation class GetImagesOfalbun
  */
-@WebServlet("/GetImageAndComments")
-public class GetImageAndComments extends HttpServlet {
+@WebServlet("/GetCommentsOfImage")
+public class GetCommentsOfImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public GetImageAndComments() {
+	public GetCommentsOfImage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -47,8 +47,8 @@ public class GetImageAndComments extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		ImageAndComment imageAndComments = new ImageAndComment();
+
+		List<Comment> comments = new ArrayList<Comment>();
 		String urlImageId = request.getParameter("imageId");
 		Integer imageId = null;
 		try {
@@ -61,21 +61,34 @@ public class GetImageAndComments extends HttpServlet {
 
 		ImageDAO imageDAO = new ImageDAO(connection);
 		CommentDAO commentDAO = new CommentDAO(connection);
-		
-		try {
-			imageAndComments.setImage(imageDAO.findImageById(imageId));
-			imageAndComments.setComments(commentDAO.findCommentsOfImage(imageId));
-			commentDAO.findUsernameOfComments(imageAndComments.getComments());
-		} catch (
 
-		SQLException e) {
+		try {
+			if (imageDAO.checkImage(imageId)) {
+				try {
+
+					comments= commentDAO.findCommentsOfImage(imageId);
+					commentDAO.findUsernameOfComments(comments);
+
+				} catch (
+
+				SQLException e) {
+					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.getWriter().println("Database access failed");
+					return;
+				}
+			}else{
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println("Image not found");
+				return;
+			}
+		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Database access failed");
+			return;
 		}
 		
-		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy-MM-dd").create();
-		String json = gson.toJson(imageAndComments);
+		Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+		String json = gson.toJson(comments);
 
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
@@ -91,6 +104,7 @@ public class GetImageAndComments extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+
 	public void destroy() {
 		try {
 			ConnectionHandler.closeConnection(connection);

@@ -1,6 +1,7 @@
 package it.polimi.tiw.missions.beans;
 
 import java.util.Date;
+import java.util.List;
 
 public class Image {
 	private int id;
@@ -9,6 +10,7 @@ public class Image {
 	private Date date;
 	private String filePath;
 	private Album album;
+	
 
 	public int getId() {
 		return id;
