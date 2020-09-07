@@ -20,31 +20,36 @@
 			document.getElementById("id_loginButton").addEventListener('click', (e) => {
 				e.preventDefault();
 				var form = e.target.closest("form");
-				if (form.checkValidity() && !sessionStorage.getItem('username')) {
-					makeCall("POST", 'CheckLogin', e.target.closest("form"),
-						function(req) {
-							if (req.readyState == XMLHttpRequest.DONE) {
-								var message = req.responseText;
-								switch (req.status) {
-									case 200:
-										sessionStorage.setItem('username', message);
-										window.location.href = "OnePage.html";
-										break;
-									case 400: // bad request
-										document.getElementById("errormessage").textContent = message;
-										break;
-									case 401: // unauthorized
-										document.getElementById("errormessage").textContent = message;
-										break;
-									case 500: // server error
-										document.getElementById("errormessage").textContent = message;
-										break;
+				if (sessionStorage.getItem('username')=== null) {
+					if (form.checkValidity()) {
+						makeCall("POST", 'CheckLogin', e.target.closest("form"),
+							function(req) {
+								if (req.readyState == XMLHttpRequest.DONE) {
+									var message = req.responseText;
+									switch (req.status) {
+										case 200:
+											sessionStorage.setItem('username', message);
+											window.location.href = "OnePage.html";
+											break;
+										case 400: // bad request
+											orchestrator.showAlert(message);
+											break;
+										case 401: // unauthorized
+											orchestrator.showAlert(message);
+											break;
+										case 500: // server error
+											orchestrator.showAlert(message);
+											break;
+									}
 								}
 							}
-						}
-					);
+						);
+					} else {
+						form.reportValidity();
+					}
 				} else {
-					form.reportValidity();
+					sessionStorage.clear();
+					orchestrator.showAlert("Permission Denied!: You was logged -> Logout Done!");
 				}
 			});
 
@@ -119,90 +124,96 @@
 		}
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_registrationButton").addEventListener('click', (e) => {
-				that=this;
+				that = this;
 				e.preventDefault();
 				var form = e.target.closest("form");
-				if (form.checkValidity() && !sessionStorage.getItem('username')) {
-					var username = form.username.value;
-					var usernameValidate = username.match(/^[0-9a-zA-Z]+$/);
-					var email = form.email.value;
-					var password1 = form.password.value;
-					var password1Validate = password1.match(/^[0-9a-zA-Z]+$/);
-					var password2 = form.passwordReinserted.value;
-					var password2Validate = password1.match(/^[0-9a-zA-Z]+$/);
+				if (sessionStorage.getItem('username') === null) {
+					if (form.checkValidity()) {
+						var username = form.username.value;
+						var usernameValidate = username.match(/^[0-9a-zA-Z]+$/);
+						var email = form.email.value;
+						var password1 = form.password.value;
+						var password1Validate = password1.match(/^[0-9a-zA-Z]+$/);
+						var password2 = form.passwordReinserted.value;
+						var password2Validate = password1.match(/^[0-9a-zA-Z]+$/);
 
-					var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
-					console.log(mailValidate);
+						var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+						console.log(mailValidate);
 
-					if (password1 === password2 && mailValidate && usernameValidate
-						&& password1Validate && password2Validate) {
-						form.username.closest("input").classList.remove("is-invalid");
-						form.email.closest("input").classList.remove("is-invalid");
-						form.password.closest("input").classList.remove("is-invalid");
-						form.passwordReinserted.closest("input").classList.remove("is-invalid");
-						makeCall("POST", 'Registration', form,
-							function(req) {
-
-								if (req.readyState == XMLHttpRequest.DONE) {
-									var message = req.responseText;
-									switch (req.status) {
-										case 200:
-											orchestrator.refresh();
-											that.showRegistrationDone("Registration Done");
-											break;
-										case 400: // bad request
-											that.showErrorMessage(message);
-											break;
-										case 401: // unauthorized
-											that.showErrorMessage(message);
-											break;
-										case 500: // server error
-											that.showErrorMessage(message);
-											break;
-									}
-								}
-							}
-						);
-
-
-					}
-
-					else {
-						if (!usernameValidate || !password1Validate || !password2Validate) {
-							this.showErrorMessage("username or password must be only number and letter value");
-							form.password.closest("input").classList.add("is-invalid");
-							form.passwordReinserted.closest("input").classList.add("is-invalid");
-							form.username.closest("input").classList.add("is-invalid");
-
-						}
-						else {
+						if (password1 === password2 && mailValidate && usernameValidate
+							&& password1Validate && password2Validate) {
+							form.username.closest("input").classList.remove("is-invalid");
+							form.email.closest("input").classList.remove("is-invalid");
 							form.password.closest("input").classList.remove("is-invalid");
 							form.passwordReinserted.closest("input").classList.remove("is-invalid");
-							form.username.closest("input").classList.remove("is-invalid");
+							makeCall("POST", 'Registration', form,
+								function(req) {
 
-							if (mailValidate && password1 !== password2) {
-								this.showErrorMessage("password are different");
-								form.password.closest("input").classList.add("is-invalid");
-								form.passwordReinserted.closest("input").classList.add("is-invalid");
-								form.email.closest("input").classList.remove("is-invalid");
-							}
-							if (!mailValidate && password1 === password2) {
-								this.showErrorMessage("You have entered an invalid email address!");
-								form.email.closest("input").classList.add("is-invalid");
-								form.password.closest("input").classList.remove("is-invalid");
-								form.passwordReinserted.closest("input").classList.remove("is-invalid");
-							}
-							if (!mailValidate && password1 !== password2) {
-								this.showErrorMessage("You have entered an invalid email address and the password are different!");
-								form.email.closest("input").classList.add("is-invalid");
-								form.password.closest("input").classList.add("is-invalid");
-								form.passwordReinserted.closest("input").classList.add("is-invalid");
-							}
+									if (req.readyState == XMLHttpRequest.DONE) {
+										var message = req.responseText;
+										switch (req.status) {
+											case 200:
+												orchestrator.refresh();
+												that.showRegistrationDone("Registration Done");
+												break;
+											case 400: // bad request
+												orchestrator.showAlert(message);
+												break;
+											case 401: // unauthorized
+												orchestrator.showAlert(message);
+												break;
+											case 500: // server error
+												orchestrator.showAlert(message);
+												break;
+										}
+									}
+								}
+							);
+
+
 						}
 
+						else {
+							if (!usernameValidate || !password1Validate || !password2Validate) {
+								this.showErrorMessage("username or password must be only number and letter value");
+								form.password.closest("input").classList.add("is-invalid");
+								form.passwordReinserted.closest("input").classList.add("is-invalid");
+								form.username.closest("input").classList.add("is-invalid");
+
+							}
+							else {
+								form.password.closest("input").classList.remove("is-invalid");
+								form.passwordReinserted.closest("input").classList.remove("is-invalid");
+								form.username.closest("input").classList.remove("is-invalid");
+
+								if (mailValidate && password1 !== password2) {
+									this.showErrorMessage("password are different");
+									form.password.closest("input").classList.add("is-invalid");
+									form.passwordReinserted.closest("input").classList.add("is-invalid");
+									form.email.closest("input").classList.remove("is-invalid");
+								}
+								if (!mailValidate && password1 === password2) {
+									this.showErrorMessage("You have entered an invalid email address!");
+									form.email.closest("input").classList.add("is-invalid");
+									form.password.closest("input").classList.remove("is-invalid");
+									form.passwordReinserted.closest("input").classList.remove("is-invalid");
+								}
+								if (!mailValidate && password1 !== password2) {
+									this.showErrorMessage("You have entered an invalid email address and the password are different!");
+									form.email.closest("input").classList.add("is-invalid");
+									form.password.closest("input").classList.add("is-invalid");
+									form.passwordReinserted.closest("input").classList.add("is-invalid");
+								}
+							}
+
+						}
+					} else {
+						form.reportValidity();
 					}
 				} else {
-					form.reportValidity();
+					sessionStorage.clear();
+					orchestrator.showAlert("Permission Denied!: You was logged -> Logout Done!");
+
 				}
 			});
 		}
@@ -225,12 +236,16 @@
 										window.location.href = "OnePage.html";
 										break;
 									case 401: // unauthorized
-										document.getElementById("errormessage").textContent = message;
+										orchestrator.showAlert(message);
 										break;
 								}
 							}
 						}
 					);
+				} else {
+					sessionStorage.clear();
+					orchestrator.showAlert("Permission Denied!: You was logged -> Logout Done!");
+
 				}
 			});
 
@@ -240,6 +255,7 @@
 
 	function PageOrchestrator() {
 		this.start = function() {
+
 
 			sessionStorage.clear(); //Ogni volta che apro il sito pulisco le sessioni vecchie
 
@@ -252,9 +268,9 @@
 
 			newAccountButton = new NewAccountButton(document.getElementById("id_buttonRow"));
 
-			loginForm.registerEvents();
+			loginForm.registerEvents(this);
 			registrationForm.registerEvents(this);
-			guestButton.registerEvents();
+			guestButton.registerEvents(this);
 			newAccountButton.registerEvents(this);
 
 		};
@@ -265,12 +281,29 @@
 			registrationForm.resetRegistrationDone();
 			newAccountButton.reset();
 			registrationForm.reset();
+			this.resetAlert();
 
 		};
 
 		this.showRegisterForm = function() {
 			registrationForm.resetErrorMessage();
 			registrationForm.show();
+		}
+		this.resetAlert = function() {
+			alertRow = document.getElementById("id_alertRow")
+			alertText = document.getElementById("id_alertText")
+			alertText.innerHTML = "";
+			alertRow.classList.remove("d-block");
+			alertRow.classList.add("d-none");
+		}
+		this.showAlert = function(message) {
+			this.resetAlert();
+			alertRow = document.getElementById("id_alertRow")
+			alertText = document.getElementById("id_alertText")
+			alertText.innerHTML = message;
+			alertRow.classList.remove("d-none");
+			alertRow.classList.add("d-block");
+
 		}
 	}
 })();

@@ -33,9 +33,9 @@
 
 					if (req.readyState == 4) {
 						var message = req.responseText;
-						var albumsToShow = JSON.parse(req.responseText);
 						switch (req.status) {
 							case 200:
+								var albumsToShow = JSON.parse(req.responseText);
 								if (albumsToShow.length > 0) {
 									that.update(albumsToShow); // that visible by closure
 								} else {
@@ -202,9 +202,9 @@
 
 					if (req.readyState == 4) {
 						var message = req.responseText;
-						var imagesToShow = JSON.parse(req.responseText);
 						switch (req.status) {
 							case 200:
+								var imagesToShow = JSON.parse(req.responseText);
 								if (imagesToShow.length > 0) {
 									that.images = imagesToShow;
 									that.update(); // that visible by closure
@@ -369,9 +369,9 @@
 			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null, function(req) {
 				if (req.readyState == 4) {
 					var message = req.responseText;
-					var imagesToShow = JSON.parse(req.responseText);
 					switch (req.status) {
 						case 200:
+							var imagesToShow = JSON.parse(req.responseText);
 							if (imagesToShow.length > 0) {
 								that.images = imagesToShow;
 								that.update(); // that visible by closure
@@ -536,9 +536,9 @@
 				function(req) {
 					if (req.readyState == 4) {
 						var message = req.responseText;
-						var comments = JSON.parse(req.responseText);
 						switch (req.status) {
 							case 200:
+								var comments = JSON.parse(req.responseText);
 								that.update(imageSelected, comments); // that visible by closure
 								break;
 							case 400: // SC_BAD_REQUEST
@@ -684,8 +684,8 @@
 		this.loginButton = _loginButton;
 		this.logoutButton = _logoutButton;
 		this.continueButton = document.getElementById("id_continueBtn");
-	
-		
+
+
 		this.show = function(message) {
 			this.reset();
 			this.update(message);
@@ -706,7 +706,7 @@
 			this.logoutButton.reset();
 			this.textAlert.innerHTML = "";
 		}
-		
+
 
 		this.registerEvents = function() {
 			var that = this;
