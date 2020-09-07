@@ -167,7 +167,6 @@
 
 
 	function ImageList(orchestrator, _galleryRow, _galleryBody, _previousButton, _nextButton) {
-
 		this.galleryRow = _galleryRow;
 		this.galleryBody = _galleryBody;
 		this.previousButton = _previousButton;
@@ -341,6 +340,145 @@
 			}
 		}
 
+	}
+	function ImageList(orchestrator, _galleryRow, _galleryBody, _previousButton, _nextButton) {
+		this.galleryRow = _galleryRow;
+		this.galleryBody = _galleryBody;
+		this.previousButton = _previousButton;
+		this.nextButton = _nextButton;
+		this.images = null;
+		this.currentBlock = 0;
+		this.numToShow = 5;
+		this.reset = function() {
+			this.galleryRow.classList.remove("visible");
+			this.galleryRow.classList.add("invisible");
+		};
+		this.resetImages = function() {
+			this.images = null;
+			this.currentBlock = 0;
+			this.numToShow = 5;
+		};
+		this.resetButtonsNextAndPrevious = function() {
+			this.previousButton.classList.remove("visible");
+			this.previousButton.classList.add("invisible");
+			this.nextButton.classList.remove("visible");
+			this.nextButton.classList.add("invisible");
+		};
+		this.show = function(albumId) {
+			var that = this;
+			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null, function(req) {
+				if (req.readyState == 4) {
+					var message = req.responseText;
+					var imagesToShow = JSON.parse(req.responseText);
+					switch (req.status) {
+						case 200:
+							if (imagesToShow.length > 0) {
+								that.images = imagesToShow;
+								that.update(); // that visible by closure
+							}
+							else {
+								var text = "No images of this album available!";
+								orchestrator.showAlert(text);
+							}
+							break;
+						case 400: // SC_BAD_REQUEST
+							orchestrator.showAlert(message);
+							break;
+						case 500: // SC_INTERNAL_SERVER_ERROR
+							orchestrator.showAlert(message);
+							break;
+					}
+				}
+			});
+		};
+		this.findImageById = function(imageId) {
+			var that = this;
+			var i = 0;
+			for (i; i < that.images.length; i++) {
+				if (that.images[i].id == imageId) {
+					return that.images[i];
+				}
+			}
+		};
+		this.update = function() {
+			var timerDisplay;
+			var row, imageThumbnail, titleBody, imageAnchor, imageTag;
+			this.galleryBody.innerHTML = ""; // empty the table body
+			// build updated list
+			var that = this;
+			row = document.createElement("tr");
+			var i = that.currentBlock * that.numToShow;
+			var end = i + that.numToShow;
+			if (end > that.images.length) {
+				end = that.images.length;
+			}
+			if (end < that.images.length && that.currentBlock > 0) {
+				that.nextButton.classList.remove("invisible");
+				that.nextButton.classList.add("visible");
+				that.previousButton.classList.remove("invisible");
+				that.previousButton.classList.add("visible");
+			}
+			else {
+				if (end >= that.images.length && that.currentBlock > 0) {
+					that.nextButton.classList.remove("visible");
+					that.nextButton.classList.add("invisible");
+					that.previousButton.classList.remove("invisible");
+					that.previousButton.classList.add("visible");
+				}
+				if (end < that.images.length && that.currentBlock === 0) {
+					that.nextButton.classList.remove("invisible");
+					that.nextButton.classList.add("visible");
+					that.previousButton.classList.remove("visible");
+					that.previousButton.classList.add("invisible");
+				}
+			}
+			for (; i < end; i++) {
+				var image = that.images[i];
+				imageThumbnail = document.createElement("td");
+				titleBody = document.createElement("p");
+				titleBody.textContent = image.title;
+				imageThumbnail.appendChild(titleBody);
+				imageAnchor = document.createElement("a");
+				imageTag = document.createElement("img");
+				imageTag.setAttribute('src', image.filePath);
+				imageTag.classList.add("image");
+				imageTag.classList.add("img-thumbnail");
+				imageAnchor.appendChild(imageTag);
+				imageThumbnail.appendChild(imageAnchor);
+				row.appendChild(imageThumbnail);
+				imageAnchor.setAttribute('imageId', image.id);
+				imageAnchor.addEventListener("mouseenter", (e) => {
+					e.preventDefault();
+					obj = e.currentTarget;
+					timerDisplay = setTimeout(function() {
+						var imageEntered = that.findImageById(obj.getAttribute("imageId"));
+						orchestrator.showImageDetails(obj.getAttribute("imageId"), imageEntered);
+					}, 500);
+				}, false);
+				imageAnchor.addEventListener("mouseleave", (e) => {
+					e.preventDefault();
+					clearTimeout(timerDisplay);
+				}, false);
+				imageAnchor.href = "#";
+			}
+			that.galleryBody.appendChild(row);
+			this.galleryRow.classList.remove("invisible");
+			this.galleryRow.classList.add("visible");
+		};
+		this.next = function() {
+			if (this.images) {
+				if (((this.currentBlock * this.numToShow) + this.numToShow) < this.images.length) {
+					this.currentBlock++;
+					this.update();
+				}
+			}
+		};
+		this.previous = function() {
+			if (this.images && this.currentBlock > 0) {
+				this.currentBlock--;
+				this.update();
+			}
+		};
 	}
 
 	function NextButton() {
@@ -547,25 +685,22 @@
 		this.logoutButton = _logoutButton;
 		this.continueButton = document.getElementById("id_continueBtn");
 		this.show = function(message) {
-			var that = this;
-			that.reset();
-			that.update(message);
-			that.alert.style.display = "block";
+			this.reset();
+			this.update(message);
+			this.alert.style.display = "block";
 
 
 		}
 
 		this.update = function(message) {
-			var that = this;
 			text = document.createTextNode(message);
-			that.textAlert.appendChild(text);
+			this.textAlert.appendChild(text);
 
 		}
 
 		this.reset = function() {
-			var that = this;
-			that.resetContinueButton();
-			that.textAlert.innerHTML = "";
+			this.resetContinueButton();
+			this.textAlert.innerHTML = "";
 		}
 
 
@@ -580,8 +715,7 @@
 		}
 
 		this.showLogin = function(message) {
-			that = this;
-			that.loginButton.show();
+			this.loginButton.show();
 			footer = document.getElementById("id_modalFooter");
 
 			this.show(message);
@@ -590,8 +724,7 @@
 
 		}
 		this.showLogout = function(message) {
-			that = this;
-			that.logoutButton.show();
+			this.logoutButton.show();
 			footer = document.getElementById("id_modalFooter");
 
 			this.show(message);
@@ -601,23 +734,21 @@
 		}
 
 		this.showContinueLogoutClient = function(message) {
-			that = this;
-			that.showContinueButton();
-			that.continueButton.addEventListener('click', (e) => {
+			this.show(message);
+			this.showContinueButton();
+			this.continueButton.addEventListener('click', (e) => {
 				e.preventDefault();
 				window.location.href = "index.html";
 			});
 		}
 
 		this.showContinueButton = function() {
-			that = this;
-			that.continueButton.classList.remove("d-none");
-			that.continueButton.classList.add("d-block");
+			this.continueButton.classList.remove("d-none");
+			this.continueButton.classList.add("d-block");
 		}
 		this.resetContinueButton = function() {
-			that = this;
-			that.continueButton.classList.remove("d-block");
-			that.continueButton.classList.add("d-none");
+			this.continueButton.classList.remove("d-block");
+			this.continueButton.classList.add("d-none");
 		}
 	}
 
@@ -863,7 +994,7 @@
 										window.location.href = "index.html";
 										break;
 									case 401: // unauthorized
-										orchestrator.showContinueLogoutClientAlert(message);
+										orchestrator.showContinueLogoutClientAlert("Errore, non eri loggato sul server, continua");
 										break;
 								}
 							}
