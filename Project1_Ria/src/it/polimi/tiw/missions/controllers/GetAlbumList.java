@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.lang.String;
 
@@ -17,8 +16,6 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
 
 import it.polimi.tiw.missions.beans.Album;
 import it.polimi.tiw.missions.beans.User;

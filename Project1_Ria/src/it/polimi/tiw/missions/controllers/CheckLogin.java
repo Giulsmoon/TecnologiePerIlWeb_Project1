@@ -12,11 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import it.polimi.tiw.missions.beans.User;
 import it.polimi.tiw.missions.dao.UserDAO;
 import it.polimi.tiw.missions.utils.ConnectionHandler;

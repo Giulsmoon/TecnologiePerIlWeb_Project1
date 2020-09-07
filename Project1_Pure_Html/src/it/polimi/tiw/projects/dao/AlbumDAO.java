@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.tiw.projects.beans.Album;
-import it.polimi.tiw.projects.beans.Image;
 
 public class AlbumDAO {
 	private Connection con;

@@ -1,5 +1,7 @@
-.force-overflow { /* TODO é per provare lo scrolling, da eliminare */
+.force-overflow { 
+	/* é per provare lo scrolling 
 	min-height: 350px;
+	*/
 }
 
 .scrollbar-cyan::-webkit-scrollbar-track {

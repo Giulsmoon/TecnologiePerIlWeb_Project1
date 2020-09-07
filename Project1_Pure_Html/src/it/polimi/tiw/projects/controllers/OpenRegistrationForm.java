@@ -1,13 +1,8 @@
 package it.polimi.tiw.projects.controllers;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +19,6 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 @WebServlet("/OpenRegistrationForm")
 public class OpenRegistrationForm extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private Connection connection = null;
 	private TemplateEngine templateEngine;
 
 	/**
@@ -41,20 +35,7 @@ public class OpenRegistrationForm extends HttpServlet {
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 		this.templateEngine = new TemplateEngine();
 		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
-		try {
-			ServletContext context = getServletContext();
-			String driver = context.getInitParameter("dbDriver");
-			String url = context.getInitParameter("dbUrl");
-			String user = context.getInitParameter("dbUser");
-			String password = context.getInitParameter("dbPassword");
-			Class.forName(driver);
-			connection = DriverManager.getConnection(url, user, password);
-		} catch (ClassNotFoundException e) {
-			throw new UnavailableException("Can't load database driver");
-		} catch (SQLException e) {
-			throw new UnavailableException("Couldn't get db connection");
-		}
+		templateResolver.setSuffix(".html");	
 	}
 
 	/**
@@ -65,7 +46,7 @@ public class OpenRegistrationForm extends HttpServlet {
 			throws ServletException, IOException {
 		Boolean characterDosentMatch = Boolean.parseBoolean(request.getParameter("characterDosentMatch"));
 		Boolean wrongPasswords = Boolean.parseBoolean(request.getParameter("wrongPasswords"));
-		Boolean checkUsername = Boolean.parseBoolean(request.getParameter("checkUsername"));
+		Boolean usernameExist = Boolean.parseBoolean(request.getParameter("usernameExist"));
 		String path = "index.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -79,8 +60,8 @@ public class OpenRegistrationForm extends HttpServlet {
 		if (wrongPasswords) {
 			ctx.setVariable("WrongPasswords", true); // le due password inserite sono sbagliate
 		}
-		if (checkUsername) {
-			ctx.setVariable("CheckUsername", true); // lo username inserito è già esistente nel database
+		if (usernameExist) {
+			ctx.setVariable("UsernameExist", true); // lo username inserito è già esistente nel database
 		}
 
 		templateEngine.process(path, ctx, response.getWriter());

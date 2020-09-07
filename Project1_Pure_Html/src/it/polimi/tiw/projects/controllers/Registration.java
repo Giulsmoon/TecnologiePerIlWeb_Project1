@@ -13,12 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.RegistrationDAO;
 
 /**
@@ -38,7 +32,6 @@ public class Registration extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -106,14 +99,13 @@ public class Registration extends HttpServlet {
 						return;
 					}
 				} else {
-					stringError=stringError.concat("&registrationForm=true");
 
 					if (!password.equals(passwordReinserted)) {
 						stringError=stringError.concat("&wrongPasswords=true");
 
 					}
 					if (!registrationDAO.controlRegistrationOfUser(username)) {
-						stringError=stringError.concat("&checkUsername=true");
+						stringError=stringError.concat("&usernameExist=true");
 					}
 
 				}
@@ -127,6 +119,15 @@ public class Registration extends HttpServlet {
 
 		response.sendRedirect(getServletContext().getContextPath() + "/OpenRegistrationForm?" + stringError);
 
+	}
+	
+	public void destroy() {
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (SQLException sqle) {
+		}
 	}
 
 }

@@ -88,15 +88,31 @@
 			this.registrationRow.classList.remove("invisible")
 			this.registrationRow.classList.add("visible")
 		};
-		
+
 		this.showErrorMessage = function(message) {
-			errorDialog=document.getElementById("errormessageReg");
+			errorDialog = document.getElementById("errormessageReg");
 			errorDialog.textContent = message;
-			errorDialog.classList.add("visible");
 			errorDialog.classList.remove("invisible");
+			errorDialog.classList.add("visible");
+
+		}
+		this.showRegistrationDone = function(message) {
+			registrationDone = document.getElementById("id_registrationDone");
+			registrationText = document.getElementById("id_registrationText");
+			registrationText.textContent = message;
+			registrationDone.classList.remove("d-none");
+			registrationDone.classList.add("d-block");
+		}
+		this.resetRegistrationDone = function() {
+			registrationDone = document.getElementById("id_registrationDone");
+			registrationDone.classList.remove("d-block");
+			registrationDone.classList.add("d-none");
+			registrationText = document.getElementById("id_registrationText");
+			registrationText.textContent = "";
+
 		}
 		this.resetErrorMessage = function() {
-			errorDialog=document.getElementById("errormessageReg");
+			errorDialog = document.getElementById("errormessageReg");
 			errorDialog.textContent = "";
 			errorDialog.classList.remove("visible");
 			errorDialog.classList.add("invisible");
@@ -118,8 +134,8 @@
 					var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
 					console.log(mailValidate);
 
-					if (password1 === password2 && mailValidate && usernameValidate 
-					&& password1Validate && password2Validate ) {
+					if (password1 === password2 && mailValidate && usernameValidate
+						&& password1Validate && password2Validate) {
 						form.username.closest("input").classList.remove("is-invalid");
 						form.email.closest("input").classList.remove("is-invalid");
 						form.password.closest("input").classList.remove("is-invalid");
@@ -132,8 +148,7 @@
 									switch (req.status) {
 										case 200:
 											orchestrator.refresh();
-											document.getElementById("errormessage").textContent
-												= "Registration Done";
+											that.showRegistrationDone("Registration Done");
 											break;
 										case 400: // bad request
 											that.showErrorMessage(message);
@@ -155,16 +170,16 @@
 					else {
 						if (!usernameValidate || !password1Validate || !password2Validate) {
 							this.showErrorMessage("username or password must be only number and letter value");
-								form.password.closest("input").classList.add("is-invalid");
-								form.passwordReinserted.closest("input").classList.add("is-invalid");
-								form.username.closest("input").classList.add("is-invalid");
-						
+							form.password.closest("input").classList.add("is-invalid");
+							form.passwordReinserted.closest("input").classList.add("is-invalid");
+							form.username.closest("input").classList.add("is-invalid");
+
 						}
 						else {
-								form.password.closest("input").classList.remove("is-invalid");
-								form.passwordReinserted.closest("input").classList.remove("is-invalid");
-								form.username.closest("input").classList.remove("is-invalid");
-								
+							form.password.closest("input").classList.remove("is-invalid");
+							form.passwordReinserted.closest("input").classList.remove("is-invalid");
+							form.username.closest("input").classList.remove("is-invalid");
+
 							if (mailValidate && password1 !== password2) {
 								this.showErrorMessage("password are different");
 								form.password.closest("input").classList.add("is-invalid");
@@ -248,6 +263,7 @@
 
 		this.refresh = function() {
 			registrationForm.resetErrorMessage();
+			registrationForm.resetRegistrationDone();
 			newAccountButton.reset();
 			registrationForm.reset();
 

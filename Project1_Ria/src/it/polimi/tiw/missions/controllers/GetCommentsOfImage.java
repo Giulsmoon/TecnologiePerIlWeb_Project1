@@ -16,7 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.missions.beans.Comment;
-import it.polimi.tiw.missions.beans.Image;
 import it.polimi.tiw.missions.dao.CommentDAO;
 import it.polimi.tiw.missions.dao.ImageDAO;
 import it.polimi.tiw.missions.utils.ConnectionHandler;

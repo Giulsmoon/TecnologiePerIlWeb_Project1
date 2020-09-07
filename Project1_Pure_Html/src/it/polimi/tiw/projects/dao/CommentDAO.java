@@ -5,15 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import it.polimi.tiw.projects.beans.Comment;
-import it.polimi.tiw.projects.beans.Image;
-import sun.java2d.d3d.D3DScreenUpdateManager;
 
 public class CommentDAO {
 	private Connection con;

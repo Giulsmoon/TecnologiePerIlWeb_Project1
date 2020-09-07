@@ -3,33 +3,17 @@ package it.polimi.tiw.missions.controllers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-
-import it.polimi.tiw.missions.beans.Comment;
 import it.polimi.tiw.missions.beans.User;
 import it.polimi.tiw.missions.dao.AlbumDAO;
-import it.polimi.tiw.missions.dao.CommentDAO;
 import it.polimi.tiw.missions.dao.UserDAO;
 import it.polimi.tiw.missions.utils.ConnectionHandler;
 

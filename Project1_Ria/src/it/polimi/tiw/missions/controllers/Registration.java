@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import it.polimi.tiw.missions.dao.RegistrationDAO;
 import it.polimi.tiw.missions.utils.ConnectionHandler;
 
