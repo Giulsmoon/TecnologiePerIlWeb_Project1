@@ -700,9 +700,11 @@
 
 		this.reset = function() {
 			this.resetContinueButton();
+			this.loginButton.reset();
+			this.logoutButton.reset();
 			this.textAlert.innerHTML = "";
 		}
-
+		
 
 		this.registerEvents = function() {
 			var that = this;
@@ -715,25 +717,27 @@
 		}
 
 		this.showLogin = function(message) {
+			this.show(message);
+
 			this.loginButton.show();
 			footer = document.getElementById("id_modalFooter");
 
-			this.show(message);
 			footer.classList.remove("d-none");
 			footer.classList.add("d-block");
 
 		}
 		this.showLogout = function(message) {
+			this.show(message);
+
 			this.logoutButton.show();
 			footer = document.getElementById("id_modalFooter");
 
-			this.show(message);
 			footer.classList.remove("d-none");
 			footer.classList.add("d-block");
 
 		}
 
-		this.showContinueLogoutClient = function(message) {
+		this.showContinue = function(message) {
 			this.show(message);
 			this.showContinueButton();
 			this.continueButton.addEventListener('click', (e) => {
@@ -879,7 +883,7 @@
 											orchestrator.showAlert(message);
 											break;
 										case 401: // unauthorized
-											orchestrator.showAlert(message);
+											orchestrator.showLogLoggedAlert(message);
 											break;
 										case 500: // server error
 											orchestrator.showAlert(message);
@@ -950,7 +954,7 @@
 									orchestrator.showAlert(message);
 									break;
 								case 401: // unauthorized
-									orchestrator.showAlert(message);
+									orchestrator.showLogLoggedAlert(message);
 									break;
 								case 500: // server error
 									orchestrator.showAlert(message);
@@ -994,7 +998,7 @@
 										window.location.href = "index.html";
 										break;
 									case 401: // unauthorized
-										orchestrator.showContinueLogoutClientAlert("Errore, non eri loggato sul server, continua");
+										orchestrator.showContinueLogoutClientAlert("Errore: eri loggato sul client ma non sul server. Sei stato sloggato sul client, continua");
 										break;
 								}
 							}
@@ -1002,7 +1006,7 @@
 
 					);
 				} else {
-					orchestrator.showNotLoggedAlert("You are not logged");
+					orchestrator.showLogNotLoggedAlert("You are not logged in client side");
 
 				}
 			}, false)
@@ -1035,7 +1039,7 @@
 										window.location.href = "index.html";
 										break;
 									case 401: // unauthorized
-										orchestrator.showGuestSloggedAlert(message);
+										orchestrator.showContinueLoginClientAlert("Errore: eri loggato sul server e non sul client, quindi sei stato sloggato sul server, continua");
 										break;
 								}
 							}
@@ -1203,9 +1207,18 @@
 		};
 
 		this.showContinueLogoutClientAlert = function(message) {
-			alertModal.showContinueLogoutClient(message);
+			sessionStorage.clear();
+			alertModal.showContinue(message);
 		};
 
-
+		this.showLogNotLoggedAlert = function(message) {
+			alertModal.showLogin(message);
+		};
+		this.showLogLoggedAlert = function(message) {
+			alertModal.showLogout(message);
+		};
+		this.showContinueLoginClientAlert = function(message) {
+			alertModal.showContinue(message);
+		};
 	}
 })();
