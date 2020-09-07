@@ -115,6 +115,9 @@ public class GetImagesOfAlbum extends HttpServlet {
 		return correct;
 	}
 
+	//controllo che i parametri next e previous siano corretti. Se così non fosse 
+	//mettiamo i valori di default come se stessimo visualizzando il primo blocco 
+	//di immagini di quell'album. 
 	public int[] updatePreviousAndNextValue(int nextImagesFromRequest, int previousImagesFromRequest, int numberOfBlocks) {
 		int somma = 0;
 		int[] update = new int[2];
