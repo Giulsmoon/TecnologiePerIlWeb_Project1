@@ -684,6 +684,8 @@
 		this.loginButton = _loginButton;
 		this.logoutButton = _logoutButton;
 		this.continueButton = document.getElementById("id_continueBtn");
+	
+		
 		this.show = function(message) {
 			this.reset();
 			this.update(message);
@@ -740,6 +742,10 @@
 		this.showContinue = function(message) {
 			this.show(message);
 			this.showContinueButton();
+			footer = document.getElementById("id_modalFooter");
+
+			footer.classList.remove("d-none");
+			footer.classList.add("d-block");
 			this.continueButton.addEventListener('click', (e) => {
 				e.preventDefault();
 				window.location.href = "index.html";
