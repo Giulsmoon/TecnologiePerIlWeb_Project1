@@ -36,10 +36,9 @@ public class LoggedUser implements Filter {
 		
 		if (s.isNew() || s.getAttribute("user") == null) {
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().println("You are not logged on server");
+			response.getWriter().println("Permission Denied:! You are not logged on server");
 			return;
 		}
-		res.setStatus(HttpServletResponse.SC_OK);
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 	}

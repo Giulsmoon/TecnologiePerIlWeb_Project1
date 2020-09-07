@@ -239,7 +239,6 @@
 
 
 	function PageOrchestrator() {
-		var alertContainer = document.getElementById("id_alert");
 		this.start = function() {
 
 			sessionStorage.clear(); //Ogni volta che apro il sito pulisco le sessioni vecchie

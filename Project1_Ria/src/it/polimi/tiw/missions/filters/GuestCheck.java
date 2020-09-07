@@ -17,7 +17,6 @@ import it.polimi.tiw.missions.beans.User;
 /**
  * Servlet Filter implementation class GuestCheck
  */
-@WebFilter("/GuestCheck")
 public class GuestCheck implements Filter {
 
 	/**
@@ -49,11 +48,11 @@ public class GuestCheck implements Filter {
 		res.setCharacterEncoding("UTF-8");
 		
 		if (s.getAttribute("user") != null) {
+			s.invalidate();
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().println("You are already logged on server");
+			response.getWriter().println("Permission Denied!: Slogged server side");
 			return;
 		}
-		res.setStatus(HttpServletResponse.SC_OK);
 
 		// pass the request along the filter chain
 		chain.doFilter(request, response);

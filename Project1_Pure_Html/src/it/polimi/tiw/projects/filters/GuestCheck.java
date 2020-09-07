@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet Filter implementation class GuestCheck
  */
-@WebFilter("/GuestCheck")
 public class GuestCheck implements Filter {
 
     /**

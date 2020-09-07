@@ -538,12 +538,14 @@
 
 	}
 
-	function AlertModal(_alert, _textAlert, _spanAlert) {
+	function AlertModal(_alert, _textAlert, _spanAlert, _loginButton, _logoutButton) {
 
 		this.alert = _alert;
 		this.textAlert = _textAlert //dove inserire il messaggio
 		this.span = _spanAlert;
-
+		this.loginButton = _loginButton;
+		this.logoutButton = _logoutButton;
+		this.continueButton = document.getElementById("id_continueBtn");
 		this.show = function(message) {
 			var that = this;
 			that.reset();
@@ -562,6 +564,7 @@
 
 		this.reset = function() {
 			var that = this;
+			that.resetContinueButton();
 			that.textAlert.innerHTML = "";
 		}
 
@@ -576,7 +579,46 @@
 
 		}
 
+		this.showLogin = function(message) {
+			that = this;
+			that.loginButton.show();
+			footer = document.getElementById("id_modalFooter");
 
+			this.show(message);
+			footer.classList.remove("d-none");
+			footer.classList.add("d-block");
+
+		}
+		this.showLogout = function(message) {
+			that = this;
+			that.logoutButton.show();
+			footer = document.getElementById("id_modalFooter");
+
+			this.show(message);
+			footer.classList.remove("d-none");
+			footer.classList.add("d-block");
+
+		}
+
+		this.showContinueLogoutClient = function(message) {
+			that = this;
+			that.showContinueButton();
+			that.continueButton.addEventListener('click', (e) => {
+				e.preventDefault();
+				window.location.href = "index.html";
+			});
+		}
+
+		this.showContinueButton = function() {
+			that = this;
+			that.continueButton.classList.remove("d-none");
+			that.continueButton.classList.add("d-block");
+		}
+		this.resetContinueButton = function() {
+			that = this;
+			that.continueButton.classList.remove("d-block");
+			that.continueButton.classList.add("d-none");
+		}
 	}
 
 	function CloseModalWindow() {
@@ -615,7 +657,7 @@
 
 	function RedirectToIndex() {
 
-		this.registerEvents = function() {
+		this.registerEvents = function(orchestrator) {
 
 			document.getElementById("id_loginToComment").addEventListener('click', (e) => {
 				e.preventDefault();
@@ -630,7 +672,7 @@
 										window.location.href = "index.html";
 										break;
 									case 401: // unauthorized
-										orchestrator.showAlert(message);
+										orchestrator.showGuestSloggedAlert(message);
 										break;
 								}
 							}
@@ -638,7 +680,7 @@
 
 					);
 				} else {
-					orchestrator.showAlreadyLoggedAlert("You are already logged");
+					orchestrator.showGuestLoggedAlert("Permission Denied!: You are logged client side");
 
 				}
 			}, false);
@@ -821,7 +863,7 @@
 										window.location.href = "index.html";
 										break;
 									case 401: // unauthorized
-										orchestrator.showLogoutAlert(message);
+										orchestrator.showContinueLogoutClientAlert(message);
 										break;
 								}
 							}
@@ -859,11 +901,10 @@
 								var message = req.responseText;
 								switch (req.status) {
 									case 200:
-
 										window.location.href = "index.html";
 										break;
 									case 401: // unauthorized
-										orchestrator.showLoginAlert(message);
+										orchestrator.showGuestSloggedAlert(message);
 										break;
 								}
 							}
@@ -872,7 +913,7 @@
 					);
 				}
 				else {
-					orchestrator.showAlreadyLoggedAlert("You are already logged");
+					orchestrator.showGuestLoggedAlert("Permission Denied!: You are logged client side");
 
 				}
 			}, false)
@@ -914,10 +955,18 @@
 
 			closeModalWindow = new CloseModalWindow();
 
+			loginButton2 = new LoginButton(
+				document.getElementById("id_alertLogintBtn"));
+
+			logoutButton2 = new LogoutButton(
+				document.getElementById("id_alertLogoutBtn"));
+
 			alertModal = new AlertModal(
 				document.getElementById("id_alertUser"),
 				document.getElementById("id_textAlert"),
-				document.getElementById("id_closeAlert"));
+				document.getElementById("id_closeAlert"),
+				loginButton2,
+				logoutButton2);
 
 			saveOrderButton = new SaveOrderButton(
 				document.getElementById("id_saveButton"));
@@ -936,13 +985,14 @@
 			nextButton.registerEvents(this);
 			previousButton.registerEvents(this);
 			commentForm.registerEvents(this);
-			redirectToIndex.registerEvents();
+			redirectToIndex.registerEvents(this);
 			closeModalWindow.registerEvents();
 			saveOrderButton.registerEvents(this);
 			alertModal.registerEvents();
 			logoutButton.registerEvents(this);
 			loginButton.registerEvents(this);
-
+			logoutButton2.registerEvents(this);
+			loginButton2.registerEvents(this);
 
 
 		};
@@ -1012,12 +1062,17 @@
 
 		};
 
-		this.showNotLoggedAlert = function(message) {
-			alertModal.show(message);
+		this.showGuestSloggedAlert = function(message) {
+			alertModal.showLogin(message);
+
 		};
 
-		this.showAlreadyLoggedAlert = function(message) {
-			alertModal.show(message);
+		this.showGuestLoggedAlert = function(message) {
+			alertModal.showLogout(message);
+		};
+
+		this.showContinueLogoutClientAlert = function(message) {
+			alertModal.showContinueLogoutClient(message);
 		};
 
 
