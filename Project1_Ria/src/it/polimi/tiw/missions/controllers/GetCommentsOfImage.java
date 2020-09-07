@@ -62,12 +62,12 @@ public class GetCommentsOfImage extends HttpServlet {
 		CommentDAO commentDAO = new CommentDAO(connection);
 
 		try {
-			if (imageDAO.checkImage(imageId)) {
+			//controllo che l'immagine richiesta esista nel database
+			if (imageDAO.checkImage(imageId)) { 
 				try {
-
+					//trovo i commenti dell'immagine
 					comments= commentDAO.findCommentsOfImage(imageId);
 					commentDAO.findUsernameOfComments(comments);
-
 				} catch (
 
 				SQLException e) {

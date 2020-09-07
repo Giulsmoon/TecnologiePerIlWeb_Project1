@@ -16,8 +16,8 @@ import it.polimi.tiw.projects.beans.Album;
 import it.polimi.tiw.projects.beans.User;
 import it.polimi.tiw.projects.dao.AlbumDAO;
 
-//@WebServlet(urlPatterns = {"/GetTopics", "/"})
 @WebServlet("/GoToAlbumListPage")
+//servlet che gestisce in modo dinamico il thymleaf della pagine AlbumList.html
 public class GoToAlbumListPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;

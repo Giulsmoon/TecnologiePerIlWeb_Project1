@@ -17,6 +17,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
  * Servlet implementation class OpenRegistrationForm
  */
 @WebServlet("/OpenRegistrationForm")
+//servlet che gestisce in modo dinamico il thymleaf della pagine index.html
 public class OpenRegistrationForm extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;

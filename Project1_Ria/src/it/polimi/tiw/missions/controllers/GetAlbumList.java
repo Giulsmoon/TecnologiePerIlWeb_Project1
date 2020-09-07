@@ -38,8 +38,7 @@ public class GetAlbumList extends HttpServlet {
 	
 	public List<Album> sortAlbumByUserPreference(int[] userPreference, List<Album> albums){
 		Album albumSupport = null;
-
-	
+		
 		for(int i=0; i<albums.size();i++) {
 			int position=0;
 			int j=0;	
@@ -82,10 +81,10 @@ public class GetAlbumList extends HttpServlet {
 				orderedAlbumsById = albumDAO.findAlbumsOrderedById();
 				}
 			if(user!=null && user.getPrefAlbumOrder()!=null && user.getPrefAlbumOrder().length==orderedAlbumsById.size()) {
-				
+				// l'utente ha una preferenza e ordino gli album in base alla sua preferenza
 				albums = sortAlbumByUserPreference(user.getPrefAlbumOrder(), orderedAlbumsById);
 			}else {
-				// ordine degli album di default
+				// l'utente non ha una preferenza e ordino gli album in base alla data (default)
 				albums = albumDAO.findAlbumsOrderedByDate();
 			}
 			

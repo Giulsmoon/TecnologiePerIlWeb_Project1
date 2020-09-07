@@ -11,11 +11,8 @@
 		pageOrchestrator.refresh();
 	}, false);
 
-
-	// Constructors of view components
-
-
-
+	//funzione che gestisce la lista di album, la makeCall per ottenere dal server la lista degli album, e aggiunge
+	//un eventListener all' evento click per selezionare un album, e gestisce gli eventi per il drag&drop
 	function AlbumsList(orchestrator, _albumsRow, _albumsBody) {
 
 		this.albumsRow = _albumsRow;
@@ -116,8 +113,8 @@
 		this.update = function(arrayAlbums) {
 			var elem, i, row, imageCell, imageTag, titleCell, linkTitle, dateCell, dateBody, titleAnchor;
 			this.albumsBody.innerHTML = ""; // empty the table body
-			// build updated list
 			var that = this;
+			// build updated list
 			arrayAlbums.forEach(function(album) {
 
 				row = document.createElement("tr");
@@ -164,183 +161,8 @@
 
 
 	}
-
-
-	function ImageList(orchestrator, _galleryRow, _galleryBody, _previousButton, _nextButton) {
-		this.galleryRow = _galleryRow;
-		this.galleryBody = _galleryBody;
-		this.previousButton = _previousButton;
-		this.nextButton = _nextButton;
-		this.images = null;
-		this.currentBlock = 0;
-		this.numToShow = 5;
-
-		this.reset = function() {
-			this.galleryRow.classList.remove("visible");
-			this.galleryRow.classList.add("invisible");
-		}
-
-		this.resetImages = function() {
-			this.images = null;
-			this.currentBlock = 0;
-			this.numToShow = 5;
-		}
-
-		this.resetButtonsNextAndPrevious = function() {
-			this.previousButton.classList.remove("visible");
-			this.previousButton.classList.add("invisible");
-			this.nextButton.classList.remove("visible");
-			this.nextButton.classList.add("invisible");
-		}
-
-
-		this.show = function(albumId) {
-			var that = this;
-
-			makeCall("GET", "GetImagesOfAlbum?albumId=" + albumId, null,
-				function(req) {
-
-					if (req.readyState == 4) {
-						var message = req.responseText;
-						switch (req.status) {
-							case 200:
-								var imagesToShow = JSON.parse(req.responseText);
-								if (imagesToShow.length > 0) {
-									that.images = imagesToShow;
-									that.update(); // that visible by closure
-								} else {
-									var text = "No images of this album available!";
-									orchestrator.showAlert(text);
-								}
-
-								break;
-							case 400: // SC_BAD_REQUEST
-								orchestrator.showAlert(message);
-								break;
-							case 500: // SC_INTERNAL_SERVER_ERROR
-								orchestrator.showAlert(message);
-								break;
-						}
-
-
-					}
-
-				}
-			);
-		};
-
-		this.findImageById = function(imageId) {
-			var that = this;
-			var i = 0;
-			for (i; i < that.images.length; i++) {
-				if (that.images[i].id == imageId) {
-					return that.images[i];
-				}
-			}
-		}
-
-		this.update = function() {
-			var timerDisplay;
-			var row, imageThumbnail, titleBody, imageAnchor, imageTag;
-			this.galleryBody.innerHTML = ""; // empty the table body
-			// build updated list
-			var that = this;
-
-			row = document.createElement("tr");
-
-			var i = that.currentBlock * that.numToShow;
-
-			var end = i + that.numToShow;
-			if (end > that.images.length) {
-				end = that.images.length;
-			}
-
-
-			if (end < that.images.length && that.currentBlock > 0) {
-				that.nextButton.classList.remove("invisible");
-				that.nextButton.classList.add("visible");
-				that.previousButton.classList.remove("invisible");
-				that.previousButton.classList.add("visible");
-			} else {
-				if (end >= that.images.length && that.currentBlock > 0) {
-					that.nextButton.classList.remove("visible");
-					that.nextButton.classList.add("invisible");
-					that.previousButton.classList.remove("invisible");
-					that.previousButton.classList.add("visible");
-				}
-				if (end < that.images.length && that.currentBlock === 0) {
-					that.nextButton.classList.remove("invisible");
-					that.nextButton.classList.add("visible");
-					that.previousButton.classList.remove("visible");
-					that.previousButton.classList.add("invisible");
-				}
-			}
-
-
-			for (; i < end; i++) {
-
-				var image = that.images[i];
-				imageThumbnail = document.createElement("td");
-				titleBody = document.createElement("p");
-				titleBody.textContent = image.title;
-				imageThumbnail.appendChild(titleBody);
-				imageAnchor = document.createElement("a");
-				imageTag = document.createElement("img");
-				imageTag.setAttribute('src', image.filePath);
-				imageTag.classList.add("image");
-				imageTag.classList.add("img-thumbnail");
-				imageAnchor.appendChild(imageTag);
-				imageThumbnail.appendChild(imageAnchor);
-				row.appendChild(imageThumbnail);
-
-				imageAnchor.setAttribute('imageId', image.id);
-				imageAnchor.addEventListener("mouseenter", (e) => {
-					e.preventDefault();
-					obj = e.currentTarget
-					timerDisplay = setTimeout(function() {
-						var imageEntered = that.findImageById(obj.getAttribute("imageId"));
-						orchestrator.showImageDetails(obj.getAttribute("imageId"), imageEntered);
-					}, 500);
-
-
-				}, false);
-				imageAnchor.addEventListener("mouseleave", (e) => {
-					e.preventDefault();
-					clearTimeout(timerDisplay);
-				}, false);
-				imageAnchor.href = "#";
-
-
-			}
-			that.galleryBody.appendChild(row);
-
-			this.galleryRow.classList.remove("invisible");
-			this.galleryRow.classList.add("visible");
-
-		}
-
-		this.next = function() {
-
-			if (this.images) {
-				if (((this.currentBlock * this.numToShow) + this.numToShow) < this.images.length) {
-					this.currentBlock++;
-					this.update();
-
-				}
-			}
-
-		}
-
-		this.previous = function() {
-
-			if (this.images && this.currentBlock > 0) {
-				this.currentBlock--;
-				this.update();
-
-			}
-		}
-
-	}
+	//funzione che gestisce la lista delle immagini, con la makeCall ottiene dal server la lista di immagini di un dato album
+	//implemente metodi per spostare in avanti e indietro le immagini a gruppi di 5
 	function ImageList(orchestrator, _galleryRow, _galleryBody, _previousButton, _nextButton) {
 		this.galleryRow = _galleryRow;
 		this.galleryBody = _galleryBody;
@@ -459,6 +281,11 @@
 					e.preventDefault();
 					clearTimeout(timerDisplay);
 				}, false);
+				imageAnchor.addEventListener("click", (e) => {
+					e.preventDefault();
+				}, false);
+
+
 				imageAnchor.href = "#";
 			}
 			that.galleryBody.appendChild(row);
@@ -481,6 +308,7 @@
 		};
 	}
 
+	//funzione per gestire la logica dei parametri per spostare le immagini in avanti
 	function NextButton() {
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_nextButton").addEventListener('click', (e) => {
@@ -491,6 +319,7 @@
 		}
 	}
 
+	//funzione per gestire la logica dei parametri per spostare le immagini in indietro
 	function PreviousButton() {
 		this.registerEvents = function(orchestrator) {
 			document.getElementById("id_previousButton").addEventListener('click', (e) => {
@@ -503,7 +332,9 @@
 	}
 
 
-
+	//funzione che gestisce la visualizzazione in una finestra modale della singola immagine e dei suoi commenti e informazioni
+	//annesse. Con la makeCall ottiene la lista di commenti associati all'immagine.
+	//Gestisce anche la visualizzazione dell'ultimo commento inserito
 	function ImageDetails(orchestrator, _titleRow, _titleBody, _descriptionBody, _commentRow,
 		_commentBody, _imageAndCommentsRow, _imageContainer) {
 
@@ -596,12 +427,12 @@
 		}
 
 		this.showComments = function() {
+
 			var that = this;
 			if (that.commentRow.classList.contains("invisible")) {
 				that.commentRow.classList.remove("invisible");
 				that.commentRow.classList.add("visible");
 			}
-
 		}
 
 		this.update = function(imageSelected, commentsOfImage) {
@@ -668,14 +499,17 @@
 
 			}
 
-
 			document.getElementById("box").style.display = 'block';
+			document.getElementById("box").scrollTop = 0;
+			document.getElementById("id_scrollbarComment").scrollTop = 0;
+
 		}
 
 
 
 	}
 
+	//gestisce la finestra modale degli alert e dei messaggi da mostrare a video all' utente
 	function AlertModal(_alert, _textAlert, _spanAlert, _loginButton, _logoutButton) {
 
 		this.alert = _alert;
@@ -762,6 +596,7 @@
 		}
 	}
 
+	//funzione che chiude la finestra modale dell'immagine
 	function CloseModalWindow() {
 		var timerClose;
 		var modal_close = document.getElementById("imageWindowClose");
@@ -778,6 +613,7 @@
 			// Chiude la finestra quando l'utente clicca al di fuori di essa
 			modal_area.addEventListener('mouseleave', (e) => {
 				e.preventDefault();
+				//l'if evita che la finestra modale delle immagini si chiuda quando compare la finestra modale degli alert
 				if (document.getElementById("id_alertUser").style.display !== "block") {
 					timerClose = setTimeout(function() {
 						box.style.display = "none"
@@ -796,6 +632,7 @@
 
 	}
 
+	//funzione che gestire la redirect to login se l'utente non è loggato quando vuole inserire un commento
 	function RedirectToIndex() {
 
 		this.registerEvents = function(orchestrator) {
@@ -829,6 +666,8 @@
 
 	}
 
+	//funzione che gestisce l'inserimento di un commento. Implemente una makeCall per inviare la form con i dati del commento
+	//da inserire nel database attraverso una post
 	function CommentForm(_commentRow, _userNotLogged, _userLogged) {
 
 		this.commentRow = _commentRow;
@@ -902,7 +741,7 @@
 						form.reportValidity();
 					}
 				} else {
-					orchestrator.showNotLoggedAlert("You are not logged");
+					orchestrator.showLogNotLoggedAlert("You are not logged");
 
 				}
 			}, false);
@@ -910,6 +749,8 @@
 
 	};
 
+	//Funzione che implementa la makeCall per inviare con una post i dati dell'ordine degli album da inserire nel database
+	//come preferenza dell'utente
 	function SaveOrderButton(_saveButton) {
 		this.saveButton = _saveButton;
 
@@ -971,12 +812,12 @@
 
 				);
 			} else {
-				orchestrator.showNotLoggedAlert("You are not logged");
+				orchestrator.showLogNotLoggedAlert("You are not logged");
 
 			}
 		}
 	}
-
+	//funzione che gestisce il bottone di Logout e invia una get per sloggare al server
 	function LogoutButton(_logoutBtn) {
 		this.logoutBtn = _logoutBtn;
 
@@ -1018,7 +859,7 @@
 			}, false)
 		}
 	}
-
+	//funzione che gestisce il bottone di Login e invia una get per chiedere al server di reindirizzarti alla login page
 	function LoginButton(_goLoginBtn) {
 		this.goLoginBtn = _goLoginBtn;
 
@@ -1061,6 +902,9 @@
 		}
 	}
 
+	//funzione principale che gestisce la creazione di tutti i componenti della pagina e di registrare gli eventi ad essi
+	//associati, e che gestisce i vari riferimenti tra i vari componenti (in modo tale che i componenti non debbano 
+	//interagire direttamente tra di loro)
 	function PageOrchestrator() {
 
 		this.start = function() {

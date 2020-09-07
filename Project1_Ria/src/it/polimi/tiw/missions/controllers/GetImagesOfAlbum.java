@@ -72,12 +72,13 @@ public class GetImagesOfAlbum extends HttpServlet {
 			response.getWriter().println("Incorrect param values");
 			return;
 		}
-
+		//controllo che l'album richiesto esista nel database
 		if (checkALbumId(albumId)) {
 
 			ImageDAO imgDao = new ImageDAO(connection);
 
 			try {
+				//ottengo la lista di immagini dal database
 				images = imgDao.findImagesByAlbum(albumId);
 			} catch (
 

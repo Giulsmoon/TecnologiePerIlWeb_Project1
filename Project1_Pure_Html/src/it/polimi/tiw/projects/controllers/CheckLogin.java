@@ -52,19 +52,20 @@ public class CheckLogin extends HttpServlet {
 		String usrn = request.getParameter("username");
 		String pwd = request.getParameter("pwd");
 		UserDAO usr = new UserDAO(connection);
-		User u = null;
+		User user = null;
 		try {
-			u = usr.checkCredentials(usrn, pwd);
+			//controlla le credenziali dell'utente dal database
+			user = usr.checkCredentials(usrn, pwd);
 		} catch (SQLException e) {
 			// throw new ServletException(e); for debugging
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in database credential checking");
 			return;
 		}
 		String path = getServletContext().getContextPath();
-		if (u == null) {
+		if (user == null) {
 			path = getServletContext().getContextPath() + "/GoLogin?logFailed="+true;
 		} else {
-			request.getSession().setAttribute("user", u);
+			request.getSession().setAttribute("user", user);
 			path = path + "/GoToAlbumListPage";
 		}
 		response.sendRedirect(path);

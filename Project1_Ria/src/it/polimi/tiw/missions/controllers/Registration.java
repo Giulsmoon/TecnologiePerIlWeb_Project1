@@ -76,7 +76,7 @@ public class Registration extends HttpServlet {
 			email = request.getParameter("email");
 			password = request.getParameter("password");
 			passwordReinserted = request.getParameter("passwordReinserted");
-
+			//controllo che i valori inseriti siano corretti anche a lato server
 			isBadRequest = username.isEmpty() || email.isEmpty() || password.isEmpty() || passwordReinserted.isEmpty()
 					|| !password.equals(passwordReinserted) || !username.matches("[a-zA-Z0-9]*")
 					|| !password.matches("[a-zA-Z0-9]*") || !passwordReinserted.matches("[a-zA-Z0-9]*")
@@ -91,8 +91,11 @@ public class Registration extends HttpServlet {
 			return;
 		} else {
 			try {
+				//controllo se il nome non esiste già
 				if (registrationDAO.controlRegistrationOfUserName(username)) {
+					//controllo se l'email non esiste già
 					if (registrationDAO.controlRegistrationOfUserEmail(email)) {
+						//se sia l'utente che l'email sono nuovi allora inserisco la nuova registrazione nel database
 						registrationDAO.createRegistrationOfUser(username, email, password);
 						response.setStatus(HttpServletResponse.SC_OK);
 						return;

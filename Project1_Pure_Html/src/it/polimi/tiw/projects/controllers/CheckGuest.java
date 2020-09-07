@@ -32,6 +32,7 @@ public class CheckGuest extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		String path = getServletContext().getContextPath() + "/GoToAlbumListPage";
 		response.sendRedirect(path);
 	}

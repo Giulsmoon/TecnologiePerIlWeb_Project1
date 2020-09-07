@@ -38,7 +38,7 @@
 				 th:class=" ${RegistrationDone} ? 'row align-items-center my-2 d-block' : 'row align-items-center my-2 d-none'">
 				<div class="col-lg-8 col-md-8 offset-2">
 					<p class="border rounded-lg shadow-sm text-success">
-						RegistrationDone!
+						Registration Done!
 					</p>
 				</div>
 			</div>
@@ -47,6 +47,14 @@
 				<div class="col-lg-8 col-md-8 offset-2">
 					<p class="border rounded-lg shadow-sm text-danger">
 						Log Failed: Retry!
+					</p>
+				</div>
+			</div>
+			<div class="row align-items-center my-2 d-none  "
+				 th:class=" ${Slogged} ? 'row align-items-center my-2 d-block' : 'row align-items-center my-2 d-none'">
+				<div class="col-lg-8 col-md-8 offset-2">
+					<p class="border rounded-lg shadow-sm text-success">
+						Logout Done!
 					</p>
 				</div>
 			</div>

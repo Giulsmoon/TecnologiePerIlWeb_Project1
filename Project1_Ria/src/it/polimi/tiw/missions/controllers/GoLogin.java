@@ -19,8 +19,9 @@ public class GoLogin extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		response.setStatus(HttpServletResponse.SC_OK);
-
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

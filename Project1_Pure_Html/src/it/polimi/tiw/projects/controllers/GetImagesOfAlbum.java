@@ -28,6 +28,7 @@ import it.polimi.tiw.projects.dao.CommentDAO;
 import it.polimi.tiw.projects.dao.ImageDAO;
 
 @WebServlet("/GetImagesOfAlbum")
+//servlet che gestisce in modo dinamico il thymleaf della pagine ImageList.html
 public class GetImagesOfAlbum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
@@ -99,7 +100,7 @@ public class GetImagesOfAlbum extends HttpServlet {
 		}
 		return albumTitle;
 	}
-
+	//controlla se l'id dell'immagine ricevuta dalla richiesta faccia parte dell'album che ho selezionato
 	public boolean selectedImageInTheAlbum(String urlImageId, List<Image> images) {
 		boolean correct = false;
 		if (urlImageId != null) {
@@ -115,9 +116,10 @@ public class GetImagesOfAlbum extends HttpServlet {
 		return correct;
 	}
 
-	//controllo che i parametri next e previous siano corretti. Se così non fosse 
+	//controllo che i parametri next e previous ottenuti dalla request siano corretti. Se così non fosse 
 	//mettiamo i valori di default come se stessimo visualizzando il primo blocco 
 	//di immagini di quell'album. 
+	//in caso contrario setto i valori di blocchi successivi/precedenti a quelli ricevuti dalla richiesta
 	public int[] updatePreviousAndNextValue(int nextImagesFromRequest, int previousImagesFromRequest, int numberOfBlocks) {
 		int somma = 0;
 		int[] update = new int[2];
@@ -178,15 +180,18 @@ public class GetImagesOfAlbum extends HttpServlet {
 					if (images.size() % 5 == 0) {
 						numberOfBlocks = Math.floorDiv(images.size(), 5);
 					} else {
+						//se il numero di immagini è minore di 5 il numero di blocchi è di default a 1 
+						//(c è almeno un blocco da visualizzare)
 						numberOfBlocks = Math.floorDiv(images.size(), 5) + 1;
 					}
 					// Se questi due valori dalla request sono null vuol dire
 					// che sono nel caso in cui la pagina è stata appena aperta
 					// e quindi setto dei valori di default
 					if (urlNextImages == null || urlPreviousImages == null) {
-						nextImages = numberOfBlocks - 1; // ci sono dei blocchi da 5 immagini successivi a quello visualizzato
-						previousImages = 0; // non ci sono blocchi da 5 immagini precedenti a quello aperto
+						nextImages = numberOfBlocks - 1; 
+						previousImages = 0; 
 					} else {
+						//se l'url ha entrambi i valori li parso.
 						int nextImagesFromRequest = 0;
 						int previousImagesFromRequest = 0;
 						try {
@@ -199,18 +204,19 @@ public class GetImagesOfAlbum extends HttpServlet {
 							return;
 
 						}
-						
+						//verifico che i parametri passati dalla richiesta siano corretti(somma = numero blocchi -1)
 						int[] updateNextAndPrevious =updatePreviousAndNextValue(nextImagesFromRequest,previousImagesFromRequest,numberOfBlocks);
 						nextImages = updateNextAndPrevious[0];
 						previousImages = updateNextAndPrevious[1];
 						
 					}
+					//cerco l'immagine da visualizzare
 					imagesToDisplay = findImagesToDisplay(previousImages, images);
 
 					// image selection (default or with id)
-					if (urlImageId == null || urlImageId != null && !selectedImageInTheAlbum(urlImageId, imagesToDisplay)) {
+					if (urlImageId == null || (urlImageId != null && !selectedImageInTheAlbum(urlImageId, imagesToDisplay))) {
 						chosenImageId = imagesToDisplay.get(0).getId();
-						selectedImage = imagesToDisplay.get(0); // Get the first of the list as "default"
+						selectedImage = imagesToDisplay.get(0);
 					} else {
 						chosenImageId = Integer.parseInt(urlImageId);
 						selectedImage = imgDao.findImageById(chosenImageId);

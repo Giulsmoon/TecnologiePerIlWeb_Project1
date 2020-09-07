@@ -15,6 +15,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @WebServlet("/GoLogin")
+//servlet che gestisce in modo dinamico il thymleaf della pagine index.html
 public class GoLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
@@ -38,10 +39,14 @@ public class GoLogin extends HttpServlet {
 		Boolean errorNotLogged = Boolean.parseBoolean(request.getParameter("errorNotLogged"));
 		Boolean registrationDone = Boolean.parseBoolean(request.getParameter("registrationDone"));
 		Boolean logFailed = Boolean.parseBoolean(request.getParameter("logFailed"));
+		Boolean slogged = Boolean.parseBoolean(request.getParameter("slogged"));
+		
 
 		String path = "index.html";
 
 		final WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+		
+		//setta i parametri per mostrare eventuali errori o messaggi nella index grazie ai parametri di thymeleaf
 		if(errorNotGuest||errorNotLogged) {
 			ctx.setVariable("Error", true);
 		}
@@ -56,6 +61,9 @@ public class GoLogin extends HttpServlet {
 		}
 		if (logFailed) {
 			ctx.setVariable("LogFailed", true);
+		}
+		if (slogged) {
+			ctx.setVariable("Slogged", true);
 		}
 		templateEngine.process(path, ctx, response.getWriter());
 	}

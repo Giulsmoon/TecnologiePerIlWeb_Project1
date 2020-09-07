@@ -90,6 +90,7 @@ public class CreateComment extends HttpServlet {
 		}
 		CommentDAO commentDAO = new CommentDAO(connection);
 		try {
+			//inserisce nel database il commento con i parametri passati nella richiesta
 			commentDAO.createComment(comment, imgId, userId);
 
 		} catch (SQLException e) {

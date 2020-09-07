@@ -32,7 +32,9 @@ public class CheckGuest extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
+		response.setStatus(HttpServletResponse.SC_OK);
+
 	}
 
 	/**

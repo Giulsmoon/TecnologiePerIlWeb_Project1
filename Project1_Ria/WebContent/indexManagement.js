@@ -1,6 +1,3 @@
-/**
- * Login management
- */
 (function() { // avoid variables ending up in the global scope
 
 	// page components
@@ -12,15 +9,14 @@
 		pageOrchestrator.refresh();
 	}, false);
 
-
+	//funzione che gestisce il login, inviando i dati inseriti dall'utente al server tramite una makeCall di tipo post.
 	function LoginForm() {
-
 		this.registerEvents = function(orchestrator) {
 
 			document.getElementById("id_loginButton").addEventListener('click', (e) => {
 				e.preventDefault();
 				var form = e.target.closest("form");
-				if (sessionStorage.getItem('username')=== null) {
+				if (sessionStorage.getItem('username') === null) {
 					if (form.checkValidity()) {
 						makeCall("POST", 'CheckLogin', e.target.closest("form"),
 							function(req) {
@@ -58,6 +54,7 @@
 
 	};
 
+	//funzione che mostra e nasconde dinamicamente la form di registrazione
 	function NewAccountButton(_buttonRow) {
 		this.buttonRow = _buttonRow;
 		this.reset = function() {
@@ -80,6 +77,9 @@
 
 		};
 	}
+
+	//funzione che gestisce la registrazione, inviando i dati inseriti dall'utente al server tramite una makeCall di tipo post.
+	//prima di inviare i dati ne controlla l'esattezza sintattica e se le due password inserite siano uguali tra loro
 	function RegistrationForm(_registrationRow) {
 		this.registrationRow = _registrationRow;
 		this.reset = function() {
@@ -138,7 +138,6 @@
 						var password2Validate = password1.match(/^[0-9a-zA-Z]+$/);
 
 						var mailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
-						console.log(mailValidate);
 
 						if (password1 === password2 && mailValidate && usernameValidate
 							&& password1Validate && password2Validate) {
@@ -212,6 +211,7 @@
 					}
 				} else {
 					sessionStorage.clear();
+					form.reset();
 					orchestrator.showAlert("Permission Denied!: You was logged -> Logout Done!");
 
 				}
@@ -220,6 +220,8 @@
 
 	};
 
+	//funzione che gestisce il bottone "continue as guest" e invia tramite una makeCall la richiesta al server per andare
+	//nella pagina successiva
 	function GuestButton() {
 
 		this.registerEvents = function(orchestrator) {
@@ -252,7 +254,9 @@
 		}
 	};
 
-
+	//funzione principale che gestisce la creazione di tutti i componenti della pagina e di registrare gli eventi ad essi
+	//associati, e che gestisce i vari riferimenti tra i vari componenti (in modo tale che i componenti non debbano 
+	//interagire direttamente tra di loro)
 	function PageOrchestrator() {
 		this.start = function() {
 
@@ -295,6 +299,8 @@
 			alertText.innerHTML = "";
 			alertRow.classList.remove("d-block");
 			alertRow.classList.add("d-none");
+			registrationForm.resetRegistrationDone();
+
 		}
 		this.showAlert = function(message) {
 			this.resetAlert();

@@ -51,7 +51,7 @@ public class RegistrationDAO {
 				else {
 					
 					return false; // la registrazione dell'utente non può essere effettuata perchè 
-					              //username già esistente nel database
+					              //email già esistente nel database
 				}
 			}
 		}

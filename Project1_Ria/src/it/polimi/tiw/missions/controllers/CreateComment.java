@@ -82,7 +82,10 @@ public class CreateComment extends HttpServlet {
 				CommentDAO commentDAO = new CommentDAO(connection);
 				try {
 					Comment commentResponse = new Comment();
+					//inserisco nel database il commento con i parametri presi dalla richiesta
 					commentDAO.createComment(comment, imageId, user.getId());
+					//ottengo dal database l'ultimo commento inserito per inviarlo al client per farlo visualizzare
+					//senza ricaricare tutta la pagina
 					commentResponse = commentDAO.findLastInsertedComment();
 					commentDAO.findUsernameOfComment(commentResponse);
 					response.setStatus(HttpServletResponse.SC_OK);
